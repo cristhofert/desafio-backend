@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { getRepository } from 'typeorm'  // getRepository"  traer una tabla de la base de datos asociada al objeto
 import { Users } from './entities/Users'
 import { Exception } from './utils'
+import { Empresa } from './entities/Empresa'
 
 export const createUser = async (req: Request, res:Response): Promise<Response> =>{
 
@@ -24,4 +25,36 @@ export const createUser = async (req: Request, res:Response): Promise<Response> 
 export const getUsers = async (req: Request, res: Response): Promise<Response> =>{
 		const users = await getRepository(Users).find();
 		return res.json(users);
+}
+
+export const obtenerEmpresas = async (req: Request, res: Response): Promise<Response> =>{
+		const users = await getRepository(Empresa).find();
+		return res.json(users);
+}
+
+export const obtenerEmpresa = async (req: Request, res: Response): Promise<Response> =>{
+		const users = await getRepository(Empresa).findOne(req.params.id);
+		return res.json(users);
+}
+
+export const crearEmpresa = async (req: Request, res:Response): Promise<Response> =>{
+
+	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
+	if(!req.body.email) throw new Exception("Por favor, provee una email")
+	if(!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
+	if(!req.body.nombre) throw new Exception("Por favor, provee una nombre")
+	if(!req.body.icono) throw new Exception("Por favor, provee una icono")
+	if(!req.body.descripcion) throw new Exception("Por favor, provee una descripcion")
+	if(!req.body.departamento) throw new Exception("Por favor, provee una departamento")
+	if(!req.body.direccion) throw new Exception("Por favor, provee una direccion")
+	if(!req.body.sitio_web) throw new Exception("Por favor, provee una sitio_web")
+	if(!req.body.comentarios) throw new Exception("Por favor, provee una comentarios")
+	if(!req.body.twitter) throw new Exception("Por favor, provee una twitter")
+	if(!req.body.facebook) throw new Exception("Por favor, provee una facebook")
+	if(!req.body.linkedin) throw new Exception("Por favor, provee una linkedin")
+	if(!req.body.github) throw new Exception("Por favor, provee una github")
+
+	const nuevaEmpresa = getRepository(Empresa).create(req.body);  
+	const results = await getRepository(Empresa).save(nuevaEmpresa); 
+	return res.json(results);
 }
