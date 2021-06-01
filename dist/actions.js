@@ -36,10 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getUsers = exports.createUser = void 0;
+exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
+var Empresa_1 = require("./entities/Empresa");
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
     return __generator(this, function (_a) {
@@ -81,3 +82,68 @@ var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 exports.getUsers = getUsers;
+var obtenerEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).find()];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.obtenerEmpresas = obtenerEmpresas;
+var obtenerEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne(req.params.id)];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.obtenerEmpresa = obtenerEmpresa;
+var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var nuevaEmpresa, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor, provee una email");
+                if (!req.body.contrasenna)
+                    throw new utils_1.Exception("Por favor, provee una contraseña");
+                if (!req.body.nombre)
+                    throw new utils_1.Exception("Por favor, provee una nombre");
+                if (!req.body.icono)
+                    throw new utils_1.Exception("Por favor, provee una icono");
+                if (!req.body.descripcion)
+                    throw new utils_1.Exception("Por favor, provee una descripcion");
+                if (!req.body.departamento)
+                    throw new utils_1.Exception("Por favor, provee una departamento");
+                if (!req.body.direccion)
+                    throw new utils_1.Exception("Por favor, provee una direccion");
+                if (!req.body.sitio_web)
+                    throw new utils_1.Exception("Por favor, provee una sitio_web");
+                if (!req.body.comentarios)
+                    throw new utils_1.Exception("Por favor, provee una comentarios");
+                if (!req.body.twitter)
+                    throw new utils_1.Exception("Por favor, provee una twitter");
+                if (!req.body.facebook)
+                    throw new utils_1.Exception("Por favor, provee una facebook");
+                if (!req.body.linkedin)
+                    throw new utils_1.Exception("Por favor, provee una linkedin");
+                if (!req.body.github)
+                    throw new utils_1.Exception("Por favor, provee una github");
+                nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(nuevaEmpresa)];
+            case 1:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.crearEmpresa = crearEmpresa;
