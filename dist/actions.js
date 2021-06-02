@@ -36,11 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = exports.getUsers = exports.createUser = void 0;
+exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
+var RegistroProfesional_1 = require("./entities/RegistroProfesional");
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
     return __generator(this, function (_a) {
@@ -113,31 +114,31 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.email)
-                    throw new utils_1.Exception("Por favor, provee una email");
+                    throw new utils_1.Exception("Por favor, provee un email");
                 if (!req.body.contrasenna)
                     throw new utils_1.Exception("Por favor, provee una contraseña");
                 if (!req.body.nombre)
-                    throw new utils_1.Exception("Por favor, provee una nombre");
+                    throw new utils_1.Exception("Por favor, provee un nombre");
                 if (!req.body.icono)
-                    throw new utils_1.Exception("Por favor, provee una icono");
+                    throw new utils_1.Exception("Por favor, provee un icono");
                 if (!req.body.descripcion)
                     throw new utils_1.Exception("Por favor, provee una descripcion");
                 if (!req.body.departamento)
-                    throw new utils_1.Exception("Por favor, provee una departamento");
+                    throw new utils_1.Exception("Por favor, provee un departamento");
                 if (!req.body.direccion)
                     throw new utils_1.Exception("Por favor, provee una direccion");
                 if (!req.body.sitio_web)
-                    throw new utils_1.Exception("Por favor, provee una sitio_web");
+                    throw new utils_1.Exception("Por favor, provee un sitio_web");
                 if (!req.body.comentarios)
-                    throw new utils_1.Exception("Por favor, provee una comentarios");
+                    throw new utils_1.Exception("Por favor, provee un comentarios");
                 if (!req.body.twitter)
-                    throw new utils_1.Exception("Por favor, provee una twitter");
+                    throw new utils_1.Exception("Por favor, provee una cuenta de twitter");
                 if (!req.body.facebook)
-                    throw new utils_1.Exception("Por favor, provee una facebook");
+                    throw new utils_1.Exception("Por favor, provee una cuenta de facebook");
                 if (!req.body.linkedin)
-                    throw new utils_1.Exception("Por favor, provee una linkedin");
+                    throw new utils_1.Exception("Por favor, provee una cuenta de linkedin");
                 if (!req.body.github)
-                    throw new utils_1.Exception("Por favor, provee una github");
+                    throw new utils_1.Exception("Por favor, provee una cuenta de github");
                 nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(req.body);
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(nuevaEmpresa)];
             case 1:
@@ -147,3 +148,46 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 exports.crearEmpresa = crearEmpresa;
+var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var nuevaProfesional, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor, provee una email");
+                if (!req.body.contrasenna)
+                    throw new utils_1.Exception("Por favor, provee una contraseña");
+                nuevaProfesional = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).create(req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(nuevaProfesional)];
+            case 1:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.crearProfesional = crearProfesional;
+var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesional, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne(req.params.id)];
+            case 1:
+                profesional = _a.sent();
+                if (!req.body.contrasennaVieja)
+                    throw new utils_1.Exception("Por favor, provee la contraseña vieja");
+                if (!req.body.contrasennaNueva)
+                    throw new utils_1.Exception("Por favor, provee una nueva contraseña");
+                if (!profesional)
+                    throw new utils_1.Exception("El profesional no existe");
+                if (req.body.contrasennaVieja != profesional.contrasenna)
+                    throw new utils_1.Exception("Contraseña incorrecta");
+                profesional.contrasenna = req.body.contrasennaNueva;
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(profesional)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.cambiarContraseña = cambiarContraseña;
