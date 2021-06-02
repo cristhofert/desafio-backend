@@ -5,6 +5,7 @@ import { Exception } from './utils'
 import { Empresa } from './entities/Empresa'
 import { RegistroProfesional } from './entities/RegistroProfesional'
 import jwt from 'jsonwebtoken'
+import { PerfilProfesional } from './entities/PerfilProfesional'
 
 export const obtenerEmpresas = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(Empresa).find();
@@ -46,9 +47,21 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     if (!req.body.email) throw new Exception("Por favor, provee una email")
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
 
-    const nuevaProfesional = getRepository(RegistroProfesional).create(req.body);
+    const perfilNuevo = getRepository(PerfilProfesional).create(
+        {nombre: "",
+        apellido: "",
+        descripcion: "",
+        facebook: "",
+        github: "",
+        linkedin: "",
+        twitter: ""
+    }
+    );
+    const results_perfil = await getRepository(PerfilProfesional).save(perfilNuevo);
+
+    const nuevaProfesional = getRepository(RegistroProfesional).create({...req.body, perfil: perfilNuevo});
     const results = await getRepository(RegistroProfesional).save(nuevaProfesional);
-    return res.json(results);
+    return res.json({results_perfil, results});
 }
 
 export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {

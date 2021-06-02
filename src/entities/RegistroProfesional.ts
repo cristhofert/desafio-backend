@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
 import { PerfilProfesional } from './PerfilProfesional';
 
 @Entity()
@@ -13,6 +13,7 @@ export class RegistroProfesional extends BaseEntity {
     @Column()
     contrasenna: string;
 
-    @OneToOne(() => PerfilProfesional, perfilProfesional => perfilProfesional.registro)
-    perfil: PerfilProfesional[];
+    @OneToOne(() => PerfilProfesional)
+    @JoinColumn()
+    perfil: PerfilProfesional;
 }

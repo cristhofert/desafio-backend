@@ -45,8 +45,9 @@ var RegistroProfesional = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], RegistroProfesional.prototype, "contrasenna");
     __decorate([
-        typeorm_1.OneToOne(function () { return PerfilProfesional_1.PerfilProfesional; }, function (perfilProfesional) { return perfilProfesional.registro; }),
-        __metadata("design:type", Array)
+        typeorm_1.OneToOne(function () { return PerfilProfesional_1.PerfilProfesional; }),
+        typeorm_1.JoinColumn(),
+        __metadata("design:type", PerfilProfesional_1.PerfilProfesional)
     ], RegistroProfesional.prototype, "perfil");
     RegistroProfesional = __decorate([
         typeorm_1.Entity()
