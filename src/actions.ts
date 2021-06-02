@@ -7,6 +7,12 @@ import { RegistroProfesional } from './entities/RegistroProfesional'
 import jwt from 'jsonwebtoken'
 import { PerfilProfesional } from './entities/PerfilProfesional'
 
+interface IToken{
+    user:User,
+    iat:number,
+    exp:number
+}
+
 export const obtenerEmpresas = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(Empresa).find();
     return res.json(users);
@@ -76,6 +82,19 @@ export const cambiarContraseña = async (req: Request, res: Response): Promise<R
     return res.json(results);
 }
 
+export const cambiarContraseñaEmpresa = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken
+    const empresa = await getRepository(Empresa).findOne(token.user.id);
+    if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
+    if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
+    if (!empresa) throw new Exception("El empresa no existe")
+    if (req.body.contrasennaVieja != empresa.contrasenna) throw new Exception("Contraseña incorrecta")
+    empresa.contrasenna = req.body.contrasennaNueva
+    const results = await getRepository(Empresa).save(empresa);
+    
+    return res.json(results);
+}
+
 //controlador para el logueo
 export const login = async (req: Request, res: Response): Promise<Response> => {
 
@@ -100,7 +119,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
 
     // this is the most important line in this function, it create a JWT token
-    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 60 * 60 });
+    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
     // return the user and the recently created token to the client
     return res.json({ user, token });
