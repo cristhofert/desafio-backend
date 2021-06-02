@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,6 +56,7 @@ var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
 var RegistroProfesional_1 = require("./entities/RegistroProfesional");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var PerfilProfesional_1 = require("./entities/PerfilProfesional");
 var obtenerEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
@@ -116,7 +128,7 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
 }); };
 exports.crearEmpresa = crearEmpresa;
 var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nuevaProfesional, results;
+    var perfilNuevo, results_perfil, nuevaProfesional, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -125,11 +137,22 @@ var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, vo
                     throw new utils_1.Exception("Por favor, provee una email");
                 if (!req.body.contrasenna)
                     throw new utils_1.Exception("Por favor, provee una contraseña");
-                nuevaProfesional = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).create(req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(nuevaProfesional)];
+                perfilNuevo = typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).create({ nombre: "",
+                    apellido: "",
+                    descripcion: "",
+                    facebook: "",
+                    github: "",
+                    linkedin: "",
+                    twitter: ""
+                });
+                return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).save(perfilNuevo)];
             case 1:
+                results_perfil = _a.sent();
+                nuevaProfesional = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).create(__assign(__assign({}, req.body), { perfil: perfilNuevo }));
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(nuevaProfesional)];
+            case 2:
                 results = _a.sent();
-                return [2 /*return*/, res.json(results)];
+                return [2 /*return*/, res.json({ results_perfil: results_perfil, results: results })];
         }
     });
 }); };
