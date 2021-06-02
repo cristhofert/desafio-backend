@@ -12,7 +12,6 @@ export class Empresa extends BaseEntity {
     @Column({ unique: true })
     email: string;
     @Column()
-
     contrasenna: string;
     @Column()
     nombre: string;
