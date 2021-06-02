@@ -1,7 +1,8 @@
 import {
     Entity, Column, PrimaryGeneratedColumn,
-    BaseEntity
+    BaseEntity, ManyToOne
 } from 'typeorm';
+import { PerfilProfesional } from './PerfilProfesional';
 
 @Entity()
 export class Empresa extends BaseEntity {
