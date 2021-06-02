@@ -10,13 +10,14 @@ exports.__esModule = true;
 var express_1 = require("express");
 var utils_1 = require("./utils");
 var actions_1 = require("./actions");
+var actions_2 = require("./actions");
 var router = express_1.Router();
 // signup route, creates a new user in the DB
-router.post('/user', utils_1.safe(actions_1.createUser));
 //Empresa
 router.get('/empresas', utils_1.safe(actions_1.obtenerEmpresas));
 router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));
 router.post('/empresa', utils_1.safe(actions_1.crearEmpresa));
 router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
 router.put('/cambiarcontraseña', utils_1.safe(actions_1.cambiarContraseña));
+router.post('/login', utils_1.safe(actions_2.login));
 exports["default"] = router;

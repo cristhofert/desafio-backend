@@ -18,6 +18,5 @@ import * as actions from './actions';
 // declare a new router to include all the endpoints
 const router = Router();
 
-router.get('/user', safe(actions.getUsers));
 
 export default router;

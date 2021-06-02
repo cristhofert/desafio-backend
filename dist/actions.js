@@ -35,54 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
-var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
 var RegistroProfesional_1 = require("./entities/RegistroProfesional");
-var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userRepo, user, newUser, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-                if (!req.body.first_name)
-                    throw new utils_1.Exception("Please provide a first_name");
-                if (!req.body.last_name)
-                    throw new utils_1.Exception("Please provide a last_name");
-                if (!req.body.email)
-                    throw new utils_1.Exception("Please provide an email");
-                if (!req.body.password)
-                    throw new utils_1.Exception("Please provide a password");
-                userRepo = typeorm_1.getRepository(Users_1.Users);
-                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email } })];
-            case 1:
-                user = _a.sent();
-                if (user)
-                    throw new utils_1.Exception("Users already exists with this email");
-                newUser = typeorm_1.getRepository(Users_1.Users).create(req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(newUser)];
-            case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
-        }
-    });
-}); };
-exports.createUser = createUser;
-var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).find()];
-            case 1:
-                users = _a.sent();
-                return [2 /*return*/, res.json(users)];
-        }
-    });
-}); };
-exports.getUsers = getUsers;
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var obtenerEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
@@ -191,3 +153,37 @@ var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.cambiarContraseña = cambiarContraseña;
+//controlador para el logueo
+var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesionalRepo, empresaRepo, profesional, user, empresa, token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400);
+                if (!req.body.contrasenna)
+                    throw new utils_1.Exception("Por favor, especifique una contraseña en el cuerpo de su solicitud", 400);
+                profesionalRepo = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional);
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
+                return [4 /*yield*/, profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })];
+            case 1:
+                profesional = _a.sent();
+                if (!!profesional) return [3 /*break*/, 3];
+                return [4 /*yield*/, empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })];
+            case 2:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("Email o contraseña inválido", 401);
+                user = empresa;
+                return [3 /*break*/, 4];
+            case 3:
+                user = profesional;
+                _a.label = 4;
+            case 4:
+                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 60 * 60 });
+                // return the user and the recently created token to the client
+                return [2 /*return*/, res.json({ user: user, token: token })];
+        }
+    });
+}); };
+exports.login = login;
