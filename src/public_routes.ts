@@ -8,7 +8,8 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { createUser, obtenerEmpresas, obtenerEmpresa, crearEmpresa } from './actions';
+import { createUser, obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, cambiarContraseña } from './actions';
+
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.post('/user', safe(createUser));
 router.get('/empresas', safe(obtenerEmpresas))
 router.get('/empresa/:id', safe(obtenerEmpresa))
 router.post('/empresa', safe(crearEmpresa))
-
+router.post('/registoprofesional', safe(crearProfesional))
+router.put('/cambiarcontraseña', safe(cambiarContraseña))
 export default router;

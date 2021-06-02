@@ -17,4 +17,6 @@ router.post('/user', utils_1.safe(actions_1.createUser));
 router.get('/empresas', utils_1.safe(actions_1.obtenerEmpresas));
 router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));
 router.post('/empresa', utils_1.safe(actions_1.crearEmpresa));
+router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
+router.put('/cambiarcontraseña', utils_1.safe(actions_1.cambiarContraseña));
 exports["default"] = router;
