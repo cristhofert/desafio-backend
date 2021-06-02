@@ -32,6 +32,8 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (!req.body.facebook) throw new Exception("Por favor, provee una cuenta de facebook")
     if (!req.body.linkedin) throw new Exception("Por favor, provee una cuenta de linkedin")
     if (!req.body.github) throw new Exception("Por favor, provee una cuenta de github")
+    const profecional = await getRepository(RegistroProfesional).findOne({email: req.body.email})
+    if (profecional) throw new Exception("Ya existe un profecional con ese email")
 
     const nuevaEmpresa = getRepository(Empresa).create(req.body);
     const results = await getRepository(Empresa).save(nuevaEmpresa);

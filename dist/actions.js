@@ -70,7 +70,7 @@ var obtenerEmpresa = function (req, res) { return __awaiter(void 0, void 0, void
 }); };
 exports.obtenerEmpresa = obtenerEmpresa;
 var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nuevaEmpresa, results;
+    var profecional, nuevaEmpresa, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -101,9 +101,14 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
                     throw new utils_1.Exception("Por favor, provee una cuenta de linkedin");
                 if (!req.body.github)
                     throw new utils_1.Exception("Por favor, provee una cuenta de github");
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: req.body.email })];
+            case 1:
+                profecional = _a.sent();
+                if (profecional)
+                    throw new utils_1.Exception("Ya existe un profecional con ese email");
                 nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(req.body);
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(nuevaEmpresa)];
-            case 1:
+            case 2:
                 results = _a.sent();
                 return [2 /*return*/, res.json(results)];
         }
