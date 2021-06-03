@@ -20,16 +20,24 @@ export class PerfilProfesional extends BaseEntity {
     @Column()
     descripcion: string;
 
-    @OneToMany(() => Estudio, estudio => estudio.perfilProfesional)
+    @OneToMany(() => Estudio, estudio => estudio.perfilProfesional, {
+        cascade: true,
+    })
     estudios: Estudio[];
 
-    @OneToMany(() => Experiencia, experiencia => experiencia.perfilProfesional)
+    @OneToMany(() => Experiencia, experiencia => experiencia.perfilProfesional,{
+        cascade: true,
+    })
     experiencias: Experiencia[];
 
-    @OneToMany(() => Certificacion, certificacion => certificacion.perfilProfesional)
+    @OneToMany(() => Certificacion, certificacion => certificacion.perfilProfesional,{
+        cascade: true,
+    })
     certificaciones: Certificacion[];
 
-    @OneToMany(() => Idioma, idioma => idioma.perfilProfesional)
+    @OneToMany(() => Idioma, idioma => idioma.perfilProfesional,{
+        cascade: true,
+    })
     idiomas: Idioma[];
 
     @OneToOne(() => RegistroProfesional, registroProfesional => registroProfesional.perfil)

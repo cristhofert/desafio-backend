@@ -6,6 +6,10 @@ import { Empresa } from './entities/Empresa'
 import { RegistroProfesional } from './entities/RegistroProfesional'
 import jwt from 'jsonwebtoken'
 import { PerfilProfesional } from './entities/PerfilProfesional'
+import { Estudio } from './entities/Estudio'
+import { Experiencia } from './entities/Experiencia'
+import { Certificacion } from './entities/Certificacion'
+import { Idioma } from './entities/Idioma'
 
 interface IToken {
     user: RegistroProfesional | Empresa,
@@ -145,6 +149,62 @@ export const putPerfilProfesional = async (req: Request, res: Response): Promise
 }
 
 export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
-    const users = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"], where: {id: req.params.id}});
+    const users = await getRepository(PerfilProfesional).findOne({ relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: req.params.id}});
     return res.json(users);
+}
+
+export const crearEstudio = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["estudios"], where: {id: req.params.id}});
+    
+    if(!profesional) throw new Exception("No existe el usuario");
+    if(!req.body.nombre) throw new Exception("Ingrese un nombre del estudio");
+
+    const nuevoEstudio = getRepository(Estudio).create();
+    nuevoEstudio.nombre = req.body.nombre;
+
+    profesional.estudios = [...profesional.estudios, nuevoEstudio];
+    const results = await getRepository(PerfilProfesional).save(profesional);
+    return res.json(results);
+}
+
+export const crearExperiencia = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["experiencias"], where: {id: req.params.id}});
+    
+    if(!profesional) throw new Exception("No existe el usuario");
+    if(!req.body.nombre) throw new Exception("Ingrese un nombre de la experiencia");
+
+    const nuevaExperiencia = getRepository(Experiencia).create();
+    nuevaExperiencia.nombre = req.body.nombre;
+
+    profesional.experiencias = [...profesional.experiencias, nuevaExperiencia];
+    const results = await getRepository(PerfilProfesional).save(profesional);
+    return res.json(results);
+}
+
+export const crearCertificacion = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["certificaciones"], where: {id: req.params.id}});
+    
+    if(!profesional) throw new Exception("No existe el usuario");
+    if(!req.body.nombre) throw new Exception("Ingrese el nombre de la certificacion");
+
+    const nuevoCertificado = getRepository(Certificacion).create();
+    nuevoCertificado.nombre = req.body.nombre;
+
+    profesional.certificaciones = [...profesional.certificaciones, nuevoCertificado];
+    const results = await getRepository(PerfilProfesional).save(profesional);
+    return res.json(results);
+}
+
+export const crearIdioma = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["idiomas"], where: {id: req.params.id}});
+    
+    if(!profesional) throw new Exception("No existe el usuario");
+    if(!req.body.nombre) throw new Exception("Ingrese el nombre del idioma");
+
+    const nuevoIdioma = getRepository(Idioma).create();
+    nuevoIdioma.nombre = req.body.nombre;
+
+    profesional.idiomas = [...profesional.idiomas, nuevoIdioma];
+    const results = await getRepository(PerfilProfesional).save(profesional);
+    return res.json(results);
 }
