@@ -7,6 +7,12 @@ import { RegistroProfesional } from './entities/RegistroProfesional'
 import jwt from 'jsonwebtoken'
 import { PerfilProfesional } from './entities/PerfilProfesional'
 
+interface IToken {
+    user: RegistroProfesional | Empresa,
+    iat: number,
+    exp: number
+}
+
 export const obtenerEmpresas = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(Empresa).find();
     return res.json(users);
@@ -47,6 +53,9 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     if (!req.body.email) throw new Exception("Por favor, provee una email")
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
 
+    const empresa = await getRepository(Empresa).findOne({ email: req.body.email })
+    if (empresa) throw new Exception("Ya existe un empresa con ese email")
+
     const perfilNuevo = getRepository(PerfilProfesional).create(
         {
             nombre: "",
@@ -66,13 +75,31 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
 }
 
 export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(RegistroProfesional).findOne(req.params.id);
+    const token = req.user as IToken
+    const tipo = "profesional"//cambiar a req.user.tipo
+    let usuario
+
     if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
     if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
-    if (!profesional) throw new Exception("El profesional no existe")
-    if (req.body.contrasennaVieja != profesional.contrasenna) throw new Exception("Contraseña incorrecta")
-    profesional.contrasenna = req.body.contrasennaNueva
-    const results = await getRepository(RegistroProfesional).save(profesional);
+  
+    if (tipo == "profesional") {
+        usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El profesional no existe")
+    }
+    else {
+        usuario = await getRepository(Empresa).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El empresa no existe")
+    }
+
+    if (req.body.contrasennaVieja != usuario.contrasenna) throw new Exception("Contraseña incorrecta")
+    usuario.contrasenna = req.body.contrasennaNueva
+
+    let results
+    if (tipo == "profesional") 
+        results = await getRepository(RegistroProfesional).save(usuario);
+    else 
+        results = await getRepository(Empresa).save(usuario);
+
 
     return res.json(results);
 }
@@ -89,21 +116,24 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     // We need to validate that a user with this email and password exists in the DB
     const profesional = await profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
     let user;
+    let tipo;
     if (!profesional) {
         const empresa = await empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
         user = empresa;
+        tipo = "empresa"
     }
     else {
         user = profesional;
+        tipo = "profesional"
     }
 
 
     // this is the most important line in this function, it create a JWT token
-    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 60 * 60 });
+    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
     // return the user and the recently created token to the client
-    return res.json({ user, token });
+    return res.json({ user: {...user, tipo}, token });
 }
 
 export const putPerfilProfesional = async (req: Request, res: Response): Promise<Response> => {
