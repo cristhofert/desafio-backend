@@ -8,7 +8,7 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, cambiarContraseña } from './actions';
+import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, cambiarContraseña, putPerfilProfesional, getProfesional } from './actions';
 import { login } from './actions'
 
 
@@ -23,4 +23,6 @@ router.post('/empresa', safe(crearEmpresa))
 router.post('/registoprofesional', safe(crearProfesional))
 router.put('/cambiarcontraseña', safe(cambiarContraseña))
 router.post('/login',safe(login))
+router.put('/perfilprofesional/:id', safe(putPerfilProfesional))
+router.get('/profesional/:id', safe(getProfesional))
 export default router;

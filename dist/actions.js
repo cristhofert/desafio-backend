@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.getProfesional = exports.putPerfilProfesional = exports.login = exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -137,7 +137,8 @@ var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, vo
                     throw new utils_1.Exception("Por favor, provee una email");
                 if (!req.body.contrasenna)
                     throw new utils_1.Exception("Por favor, provee una contraseña");
-                perfilNuevo = typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).create({ nombre: "",
+                perfilNuevo = typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).create({
+                    nombre: "",
                     apellido: "",
                     descripcion: "",
                     facebook: "",
@@ -215,3 +216,33 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 exports.login = login;
+var putPerfilProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesional, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne(req.params.id)];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception("No existe", 400);
+                PerfilProfesional_1.PerfilProfesional.merge(profesional, req.body);
+                return [4 /*yield*/, PerfilProfesional_1.PerfilProfesional.save(profesional)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.putPerfilProfesional = putPerfilProfesional;
+var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ relations: ["perfil"], where: { id: req.params.id } })];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.getProfesional = getProfesional;

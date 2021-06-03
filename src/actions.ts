@@ -33,7 +33,7 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (!req.body.facebook) throw new Exception("Por favor, provee una cuenta de facebook")
     if (!req.body.linkedin) throw new Exception("Por favor, provee una cuenta de linkedin")
     if (!req.body.github) throw new Exception("Por favor, provee una cuenta de github")
-    const profecional = await getRepository(RegistroProfesional).findOne({email: req.body.email})
+    const profecional = await getRepository(RegistroProfesional).findOne({ email: req.body.email })
     if (profecional) throw new Exception("Ya existe un profecional con ese email")
 
     const nuevaEmpresa = getRepository(Empresa).create(req.body);
@@ -48,20 +48,21 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
 
     const perfilNuevo = getRepository(PerfilProfesional).create(
-        {nombre: "",
-        apellido: "",
-        descripcion: "",
-        facebook: "",
-        github: "",
-        linkedin: "",
-        twitter: ""
-    }
+        {
+            nombre: "",
+            apellido: "",
+            descripcion: "",
+            facebook: "",
+            github: "",
+            linkedin: "",
+            twitter: ""
+        }
     );
     const results_perfil = await getRepository(PerfilProfesional).save(perfilNuevo);
 
-    const nuevaProfesional = getRepository(RegistroProfesional).create({...req.body, perfil: perfilNuevo});
+    const nuevaProfesional = getRepository(RegistroProfesional).create({ ...req.body, perfil: perfilNuevo });
     const results = await getRepository(RegistroProfesional).save(nuevaProfesional);
-    return res.json({results_perfil, results});
+    return res.json({ results_perfil, results });
 }
 
 export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
@@ -72,7 +73,7 @@ export const cambiarContraseña = async (req: Request, res: Response): Promise<R
     if (req.body.contrasennaVieja != profesional.contrasenna) throw new Exception("Contraseña incorrecta")
     profesional.contrasenna = req.body.contrasennaNueva
     const results = await getRepository(RegistroProfesional).save(profesional);
-    
+
     return res.json(results);
 }
 
@@ -93,8 +94,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
         user = empresa;
     }
-    else
-    {
+    else {
         user = profesional;
     }
 
@@ -106,3 +106,15 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     return res.json({ user, token });
 }
 
+export const putPerfilProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne(req.params.id);
+    if (!profesional) throw new Exception("No existe", 400)
+    PerfilProfesional.merge(profesional, req.body);
+    const results = await PerfilProfesional.save(profesional);
+    return res.send(results);
+}
+
+export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const users = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"], where: {id: req.params.id}});
+    return res.json(users);
+}
