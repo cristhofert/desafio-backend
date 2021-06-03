@@ -14,13 +14,18 @@ var actions_2 = require("./actions");
 var router = express_1.Router();
 // signup route, creates a new user in the DB
 //Empresa
+// GET
 router.get('/empresas', utils_1.safe(actions_1.obtenerEmpresas));
 router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));
+router.get('/profesional/:id', utils_1.safe(actions_1.getProfesional));
+// POST
 router.post('/empresa', utils_1.safe(actions_1.crearEmpresa));
 router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
 router.post('/login', utils_1.safe(actions_2.login));
-router.put('/perfilprofesional/:id', utils_1.safe(actions_1.putPerfilProfesional));
-router.get('/profesional/:id', utils_1.safe(actions_1.getProfesional));
+// PUT
+router.put('/perfilProfesional/:id', utils_1.safe(actions_1.putPerfilProfesional));
+router.put('/perfilEmpresa/:id', utils_1.safe(actions_1.putPerfilEmpresa));
+// DELETE
 router["delete"]('/deleteEstudio/:id', utils_1.safe(actions_1.deleteEstudio));
 router["delete"]('/deleteExperiencia/:id', utils_1.safe(actions_1.deleteExperiencia));
 router["delete"]('/deleteCertificacion/:id', utils_1.safe(actions_1.deleteCertificacion));
