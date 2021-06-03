@@ -7,6 +7,12 @@ import { RegistroProfesional } from './entities/RegistroProfesional'
 import jwt from 'jsonwebtoken'
 import { PerfilProfesional } from './entities/PerfilProfesional'
 
+interface IToken {
+    user: RegistroProfesional | Empresa,
+    iat: number,
+    exp: number
+}
+
 export const obtenerEmpresas = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(Empresa).find();
     return res.json(users);
@@ -33,7 +39,7 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (!req.body.facebook) throw new Exception("Por favor, provee una cuenta de facebook")
     if (!req.body.linkedin) throw new Exception("Por favor, provee una cuenta de linkedin")
     if (!req.body.github) throw new Exception("Por favor, provee una cuenta de github")
-    const profecional = await getRepository(RegistroProfesional).findOne({email: req.body.email})
+    const profecional = await getRepository(RegistroProfesional).findOne({ email: req.body.email })
     if (profecional) throw new Exception("Ya existe un profecional con ese email")
 
     const nuevaEmpresa = getRepository(Empresa).create(req.body);
@@ -48,31 +54,49 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
 
     const perfilNuevo = getRepository(PerfilProfesional).create(
-        {nombre: "",
-        apellido: "",
-        descripcion: "",
-        facebook: "",
-        github: "",
-        linkedin: "",
-        twitter: ""
-    }
+        {
+            nombre: "",
+            apellido: "",
+            descripcion: "",
+            facebook: "",
+            github: "",
+            linkedin: "",
+            twitter: ""
+        }
     );
     const results_perfil = await getRepository(PerfilProfesional).save(perfilNuevo);
 
-    const nuevaProfesional = getRepository(RegistroProfesional).create({...req.body, perfil: perfilNuevo});
+    const nuevaProfesional = getRepository(RegistroProfesional).create({ ...req.body, perfil: perfilNuevo });
     const results = await getRepository(RegistroProfesional).save(nuevaProfesional);
-    return res.json({results_perfil, results});
+    return res.json({ results_perfil, results });
 }
 
 export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(RegistroProfesional).findOne(req.params.id);
+    const token = req.user as IToken
+    const tipo = "profesional"//cambiar a req.user.tipo
+    let usuario
+
     if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
     if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
-    if (!profesional) throw new Exception("El profesional no existe")
-    if (req.body.contrasennaVieja != profesional.contrasenna) throw new Exception("Contraseña incorrecta")
-    profesional.contrasenna = req.body.contrasennaNueva
-    const results = await getRepository(RegistroProfesional).save(profesional);
-    
+
+    if (tipo == "profesional") {
+        usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El profesional no existe")
+    }
+    else {
+        usuario = await getRepository(Empresa).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El empresa no existe")
+    }
+
+    if (req.body.contrasennaVieja != usuario.contrasenna) throw new Exception("Contraseña incorrecta")
+    usuario.contrasenna = req.body.contrasennaNueva
+
+    let results
+    if (tipo == "profesional") 
+        results = await getRepository(RegistroProfesional).save(usuario);
+    else 
+        results = await getRepository(Empresa).save(usuario);
+
     return res.json(results);
 }
 
@@ -93,14 +117,13 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
         user = empresa;
     }
-    else
-    {
+    else {
         user = profesional;
     }
 
 
     // this is the most important line in this function, it create a JWT token
-    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 60 * 60 });
+    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
     // return the user and the recently created token to the client
     return res.json({ user, token });
