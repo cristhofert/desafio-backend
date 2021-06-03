@@ -53,6 +53,9 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     if (!req.body.email) throw new Exception("Por favor, provee una email")
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
 
+    const empresa = await getRepository(Empresa).findOne({ email: req.body.email })
+    if (empresa) throw new Exception("Ya existe un empresa con ese email")
+
     const perfilNuevo = getRepository(PerfilProfesional).create(
         {
             nombre: "",
