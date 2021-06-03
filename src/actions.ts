@@ -112,13 +112,16 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     // We need to validate that a user with this email and password exists in the DB
     const profesional = await profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
     let user;
+    let tipo;
     if (!profesional) {
         const empresa = await empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
         user = empresa;
+        tipo = "empresa"
     }
     else {
         user = profesional;
+        tipo = "profesional"
     }
 
 
@@ -126,6 +129,6 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
     // return the user and the recently created token to the client
-    return res.json({ user, token });
+    return res.json({ user: {...user, tipo}, token });
 }
 
