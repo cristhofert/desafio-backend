@@ -81,7 +81,7 @@ export const cambiarContraseña = async (req: Request, res: Response): Promise<R
 
     if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
     if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
-
+  
     if (tipo == "profesional") {
         usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
         if (!usuario) throw new Exception("El profesional no existe")
@@ -99,6 +99,7 @@ export const cambiarContraseña = async (req: Request, res: Response): Promise<R
         results = await getRepository(RegistroProfesional).save(usuario);
     else 
         results = await getRepository(Empresa).save(usuario);
+
 
     return res.json(results);
 }
@@ -135,3 +136,15 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     return res.json({ user: {...user, tipo}, token });
 }
 
+export const putPerfilProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne(req.params.id);
+    if (!profesional) throw new Exception("No existe", 400)
+    PerfilProfesional.merge(profesional, req.body);
+    const results = await PerfilProfesional.save(profesional);
+    return res.send(results);
+}
+
+export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const users = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"], where: {id: req.params.id}});
+    return res.json(users);
+}
