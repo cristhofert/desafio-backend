@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.getProfesional = exports.putPerfilProfesional = exports.login = exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getProfesional = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -66,6 +66,7 @@ var Estudio_1 = require("./entities/Estudio");
 var Experiencia_1 = require("./entities/Experiencia");
 var Certificacion_1 = require("./entities/Certificacion");
 var Idioma_1 = require("./entities/Idioma");
+// GET
 var obtenerEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
@@ -90,6 +91,19 @@ var obtenerEmpresa = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.obtenerEmpresa = obtenerEmpresa;
+var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"], where: { id: req.params.id } })];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.getProfesional = getProfesional;
+// POST
 var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profecional, nuevaEmpresa, results;
     return __generator(this, function (_a) {
@@ -172,191 +186,6 @@ var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.crearProfesional = crearProfesional;
-var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, tipo, usuario, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                token = req.user;
-                tipo = "profesional" //cambiar a req.user.tipo
-                ;
-                if (!req.body.contrasennaVieja)
-                    throw new utils_1.Exception("Por favor, provee la contraseña vieja");
-                if (!req.body.contrasennaNueva)
-                    throw new utils_1.Exception("Por favor, provee una nueva contraseña");
-                if (!(tipo == "profesional")) return [3 /*break*/, 2];
-                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: token.user.email })];
-            case 1:
-                usuario = _a.sent();
-                if (!usuario)
-                    throw new utils_1.Exception("El profesional no existe");
-                return [3 /*break*/, 4];
-            case 2: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: token.user.email })];
-            case 3:
-                usuario = _a.sent();
-                if (!usuario)
-                    throw new utils_1.Exception("El empresa no existe");
-                _a.label = 4;
-            case 4:
-                if (req.body.contrasennaVieja != usuario.contrasenna)
-                    throw new utils_1.Exception("Contraseña incorrecta");
-                usuario.contrasenna = req.body.contrasennaNueva;
-                if (!(tipo == "profesional")) return [3 /*break*/, 6];
-                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(usuario)];
-            case 5:
-                results = _a.sent();
-                return [3 /*break*/, 8];
-            case 6: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(usuario)];
-            case 7:
-                results = _a.sent();
-                _a.label = 8;
-            case 8: return [2 /*return*/, res.json(results)];
-        }
-    });
-}); };
-exports.cambiarContraseña = cambiarContraseña;
-//controlador para el logueo
-var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profesionalRepo, empresaRepo, profesional, user, tipo, empresa, token;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!req.body.email)
-                    throw new utils_1.Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400);
-                if (!req.body.contrasenna)
-                    throw new utils_1.Exception("Por favor, especifique una contraseña en el cuerpo de su solicitud", 400);
-                profesionalRepo = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional);
-                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
-                return [4 /*yield*/, profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })];
-            case 1:
-                profesional = _a.sent();
-                if (!!profesional) return [3 /*break*/, 3];
-                return [4 /*yield*/, empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })];
-            case 2:
-                empresa = _a.sent();
-                if (!empresa)
-                    throw new utils_1.Exception("Email o contraseña inválido", 401);
-                user = empresa;
-                tipo = "empresa";
-                return [3 /*break*/, 4];
-            case 3:
-                user = profesional;
-                tipo = "profesional";
-                _a.label = 4;
-            case 4:
-                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
-                // return the user and the recently created token to the client
-                return [2 /*return*/, res.json({ user: __assign(__assign({}, user), { tipo: tipo }), token: token })];
-        }
-    });
-}); };
-exports.login = login;
-var putPerfilProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profesional, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne(req.params.id)];
-            case 1:
-                profesional = _a.sent();
-                if (!profesional)
-                    throw new utils_1.Exception("No existe", 400);
-                PerfilProfesional_1.PerfilProfesional.merge(profesional, req.body);
-                return [4 /*yield*/, PerfilProfesional_1.PerfilProfesional.save(profesional)];
-            case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.send(results)];
-        }
-    });
-}); };
-exports.putPerfilProfesional = putPerfilProfesional;
-var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"], where: { id: req.params.id } })];
-            case 1:
-                users = _a.sent();
-                return [2 /*return*/, res.json(users)];
-        }
-    });
-}); };
-exports.getProfesional = getProfesional;
-var deleteEstudio = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var estudioRepo, estudio, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                estudioRepo = typeorm_1.getRepository(Estudio_1.Estudio);
-                return [4 /*yield*/, estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
-            case 1:
-                estudio = _a.sent();
-                if (!estudio)
-                    throw new utils_1.Exception("El estudio no existe");
-                return [4 /*yield*/, estudioRepo["delete"](estudio)];
-            case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
-        }
-    });
-}); };
-exports.deleteEstudio = deleteEstudio;
-var deleteExperiencia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var experienciaRepo, experiencia, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                experienciaRepo = typeorm_1.getRepository(Experiencia_1.Experiencia);
-                return [4 /*yield*/, experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
-            case 1:
-                experiencia = _a.sent();
-                if (!experiencia)
-                    throw new utils_1.Exception("La experiencia no existe");
-                return [4 /*yield*/, experienciaRepo["delete"](experiencia)];
-            case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
-        }
-    });
-}); };
-exports.deleteExperiencia = deleteExperiencia;
-var deleteCertificacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var certificacionRepo, certificacion, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                certificacionRepo = typeorm_1.getRepository(Certificacion_1.Certificacion);
-                return [4 /*yield*/, certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
-            case 1:
-                certificacion = _a.sent();
-                if (!certificacion)
-                    throw new utils_1.Exception("La certificación no existe");
-                return [4 /*yield*/, certificacionRepo["delete"](certificacion)];
-            case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
-        }
-    });
-}); };
-exports.deleteCertificacion = deleteCertificacion;
-var deleteIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var idiomaRepo, idioma, results;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                idiomaRepo = typeorm_1.getRepository(Idioma_1.Idioma);
-                return [4 /*yield*/, idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
-            case 1:
-                idioma = _a.sent();
-                if (!idioma)
-                    throw new utils_1.Exception("El idioma no existe");
-                return [4 /*yield*/, idiomaRepo["delete"](idioma)];
-            case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
-        }
-    });
-}); };
-exports.deleteIdioma = deleteIdioma;
 var crearEstudio = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesional, nuevoEstudio, results;
     return __generator(this, function (_a) {
@@ -445,3 +274,196 @@ var crearIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.crearIdioma = crearIdioma;
+//controlador para el logueo
+var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesionalRepo, empresaRepo, profesional, user, tipo, empresa, token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400);
+                if (!req.body.contrasenna)
+                    throw new utils_1.Exception("Por favor, especifique una contraseña en el cuerpo de su solicitud", 400);
+                profesionalRepo = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional);
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
+                return [4 /*yield*/, profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })];
+            case 1:
+                profesional = _a.sent();
+                if (!!profesional) return [3 /*break*/, 3];
+                return [4 /*yield*/, empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })];
+            case 2:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("Email o contraseña inválido", 401);
+                user = empresa;
+                tipo = "empresa";
+                return [3 /*break*/, 4];
+            case 3:
+                user = profesional;
+                tipo = "profesional";
+                _a.label = 4;
+            case 4:
+                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
+                // return the user and the recently created token to the client
+                return [2 /*return*/, res.json({ user: __assign(__assign({}, user), { tipo: tipo }), token: token })];
+        }
+    });
+}); };
+exports.login = login;
+// PUT
+var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, tipo, usuario, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                tipo = "profesional" //cambiar a req.user.tipo
+                ;
+                if (!req.body.contrasennaVieja)
+                    throw new utils_1.Exception("Por favor, provee la contraseña vieja");
+                if (!req.body.contrasennaNueva)
+                    throw new utils_1.Exception("Por favor, provee una nueva contraseña");
+                if (!(tipo == "profesional")) return [3 /*break*/, 2];
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: token.user.email })];
+            case 1:
+                usuario = _a.sent();
+                if (!usuario)
+                    throw new utils_1.Exception("El profesional no existe");
+                return [3 /*break*/, 4];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: token.user.email })];
+            case 3:
+                usuario = _a.sent();
+                if (!usuario)
+                    throw new utils_1.Exception("El empresa no existe");
+                _a.label = 4;
+            case 4:
+                if (req.body.contrasennaVieja != usuario.contrasenna)
+                    throw new utils_1.Exception("Contraseña incorrecta");
+                usuario.contrasenna = req.body.contrasennaNueva;
+                if (!(tipo == "profesional")) return [3 /*break*/, 6];
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(usuario)];
+            case 5:
+                results = _a.sent();
+                return [3 /*break*/, 8];
+            case 6: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(usuario)];
+            case 7:
+                results = _a.sent();
+                _a.label = 8;
+            case 8: return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.cambiarContraseña = cambiarContraseña;
+var putPerfilProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesional, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne(req.params.id)];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception("No existe", 400);
+                PerfilProfesional_1.PerfilProfesional.merge(profesional, req.body);
+                return [4 /*yield*/, PerfilProfesional_1.PerfilProfesional.save(profesional)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.putPerfilProfesional = putPerfilProfesional;
+var putPerfilEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var empresa, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne(req.params.id)];
+            case 1:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("No existe", 400);
+                Empresa_1.Empresa.merge(empresa, req.body);
+                return [4 /*yield*/, Empresa_1.Empresa.save(empresa)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.putPerfilEmpresa = putPerfilEmpresa;
+// DELETE
+var deleteEstudio = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var estudioRepo, estudio, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                estudioRepo = typeorm_1.getRepository(Estudio_1.Estudio);
+                return [4 /*yield*/, estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                estudio = _a.sent();
+                if (!estudio)
+                    throw new utils_1.Exception("El estudio no existe");
+                return [4 /*yield*/, estudioRepo["delete"](estudio)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteEstudio = deleteEstudio;
+var deleteExperiencia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var experienciaRepo, experiencia, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                experienciaRepo = typeorm_1.getRepository(Experiencia_1.Experiencia);
+                return [4 /*yield*/, experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                experiencia = _a.sent();
+                if (!experiencia)
+                    throw new utils_1.Exception("La experiencia no existe");
+                return [4 /*yield*/, experienciaRepo["delete"](experiencia)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteExperiencia = deleteExperiencia;
+var deleteCertificacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var certificacionRepo, certificacion, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                certificacionRepo = typeorm_1.getRepository(Certificacion_1.Certificacion);
+                return [4 /*yield*/, certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                certificacion = _a.sent();
+                if (!certificacion)
+                    throw new utils_1.Exception("La certificación no existe");
+                return [4 /*yield*/, certificacionRepo["delete"](certificacion)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteCertificacion = deleteCertificacion;
+var deleteIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var idiomaRepo, idioma, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                idiomaRepo = typeorm_1.getRepository(Idioma_1.Idioma);
+                return [4 /*yield*/, idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                idioma = _a.sent();
+                if (!idioma)
+                    throw new utils_1.Exception("El idioma no existe");
+                return [4 /*yield*/, idiomaRepo["delete"](idioma)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteIdioma = deleteIdioma;

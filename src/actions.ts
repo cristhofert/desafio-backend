@@ -17,6 +17,7 @@ interface IToken {
     exp: number
 }
 
+// GET
 export const obtenerEmpresas = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(Empresa).find();
     return res.json(users);
@@ -27,6 +28,12 @@ export const obtenerEmpresa = async (req: Request, res: Response): Promise<Respo
     return res.json(users);
 }
 
+export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const users = await getRepository(PerfilProfesional).findOne({ relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: req.params.id}});
+    return res.json(users);
+}
+
+// POST
 export const crearEmpresa = async (req: Request, res: Response): Promise<Response> => {
 
     // important validations to avoid ambiguos errors, the client needs to understand what went wrong
@@ -76,117 +83,6 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     const nuevaProfesional = getRepository(RegistroProfesional).create({ ...req.body, perfil: perfilNuevo });
     const results = await getRepository(RegistroProfesional).save(nuevaProfesional);
     return res.json({ results_perfil, results });
-}
-
-export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
-    const token = req.user as IToken
-    const tipo = "profesional"//cambiar a req.user.tipo
-    let usuario
-
-    if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
-    if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
-  
-    if (tipo == "profesional") {
-        usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
-        if (!usuario) throw new Exception("El profesional no existe")
-    }
-    else {
-        usuario = await getRepository(Empresa).findOne({ email: token.user.email });
-        if (!usuario) throw new Exception("El empresa no existe")
-    }
-
-    if (req.body.contrasennaVieja != usuario.contrasenna) throw new Exception("Contraseña incorrecta")
-    usuario.contrasenna = req.body.contrasennaNueva
-
-    let results
-    if (tipo == "profesional") 
-        results = await getRepository(RegistroProfesional).save(usuario);
-    else 
-        results = await getRepository(Empresa).save(usuario);
-
-
-    return res.json(results);
-}
-
-//controlador para el logueo
-export const login = async (req: Request, res: Response): Promise<Response> => {
-
-    if (!req.body.email) throw new Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400)
-    if (!req.body.contrasenna) throw new Exception("Por favor, especifique una contraseña en el cuerpo de su solicitud", 400)
-
-    const profesionalRepo = getRepository(RegistroProfesional)
-    const empresaRepo = getRepository(Empresa)
-
-    // We need to validate that a user with this email and password exists in the DB
-    const profesional = await profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
-    let user;
-    let tipo;
-    if (!profesional) {
-        const empresa = await empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
-        if (!empresa) throw new Exception("Email o contraseña inválido", 401)
-        user = empresa;
-        tipo = "empresa"
-    }
-    else {
-        user = profesional;
-        tipo = "profesional"
-    }
-
-
-    // this is the most important line in this function, it create a JWT token
-    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
-
-    // return the user and the recently created token to the client
-    return res.json({ user: {...user, tipo}, token });
-}
-
-export const putPerfilProfesional = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(PerfilProfesional).findOne(req.params.id);
-    if (!profesional) throw new Exception("No existe", 400)
-    PerfilProfesional.merge(profesional, req.body);
-    const results = await PerfilProfesional.save(profesional);
-    return res.send(results);
-}
-
-export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
-    const users = await getRepository(PerfilProfesional).findOne({ relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: req.params.id}});
-    return res.json(users);
-}
-
-export const deleteEstudio = async (req: Request, res: Response): Promise<Response> => {
-    const estudioRepo = getRepository(Estudio)
-    const estudio = await estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
-    if (!estudio) throw new Exception("El estudio no existe")
-    
-    const results = await estudioRepo.delete(estudio);
-    return res.json(results)
-}
-
-export const deleteExperiencia = async (req: Request, res: Response): Promise<Response> => {
-    const experienciaRepo = getRepository(Experiencia)
-    const experiencia = await experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
-    if (!experiencia) throw new Exception("La experiencia no existe")
-    
-    const results = await experienciaRepo.delete(experiencia);
-    return res.json(results)
-}
-
-export const deleteCertificacion = async (req: Request, res: Response): Promise<Response> => {
-    const certificacionRepo = getRepository(Certificacion)
-    const certificacion = await certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
-    if (!certificacion) throw new Exception("La certificación no existe")
-    
-    const results = await certificacionRepo.delete(certificacion);
-    return res.json(results)
-}
-
-export const deleteIdioma = async (req: Request, res: Response): Promise<Response> => {
-    const idiomaRepo = getRepository(Idioma)
-    const idioma = await idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
-    if (!idioma) throw new Exception("El idioma no existe")
-    
-    const results = await idiomaRepo.delete(idioma);
-    return res.json(results)
 }
 
 export const crearEstudio = async (req: Request, res: Response): Promise<Response> => {
@@ -243,4 +139,121 @@ export const crearIdioma = async (req: Request, res: Response): Promise<Response
     profesional.idiomas = [...profesional.idiomas, nuevoIdioma];
     const results = await getRepository(PerfilProfesional).save(profesional);
     return res.json(results);
+}
+
+
+//controlador para el logueo
+export const login = async (req: Request, res: Response): Promise<Response> => {
+    
+    if (!req.body.email) throw new Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400)
+    if (!req.body.contrasenna) throw new Exception("Por favor, especifique una contraseña en el cuerpo de su solicitud", 400)
+    
+    const profesionalRepo = getRepository(RegistroProfesional)
+    const empresaRepo = getRepository(Empresa)
+    
+    // We need to validate that a user with this email and password exists in the DB
+    const profesional = await profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
+    let user;
+    let tipo;
+    if (!profesional) {
+        const empresa = await empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
+        if (!empresa) throw new Exception("Email o contraseña inválido", 401)
+        user = empresa;
+        tipo = "empresa"
+    }
+    else {
+        user = profesional;
+        tipo = "profesional"
+    }
+    
+    
+    // this is the most important line in this function, it create a JWT token
+    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
+    
+    // return the user and the recently created token to the client
+    return res.json({ user: {...user, tipo}, token });
+}
+
+// PUT
+    export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
+        const token = req.user as IToken
+        const tipo = "profesional"//cambiar a req.user.tipo
+        let usuario
+    
+        if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
+        if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
+      
+        if (tipo == "profesional") {
+            usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
+            if (!usuario) throw new Exception("El profesional no existe")
+        }
+        else {
+            usuario = await getRepository(Empresa).findOne({ email: token.user.email });
+            if (!usuario) throw new Exception("El empresa no existe")
+        }
+    
+        if (req.body.contrasennaVieja != usuario.contrasenna) throw new Exception("Contraseña incorrecta")
+        usuario.contrasenna = req.body.contrasennaNueva
+    
+        let results
+        if (tipo == "profesional") 
+            results = await getRepository(RegistroProfesional).save(usuario);
+        else 
+            results = await getRepository(Empresa).save(usuario);
+    
+    
+        return res.json(results);
+    }
+
+export const putPerfilProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const profesional = await getRepository(PerfilProfesional).findOne(req.params.id);
+    if (!profesional) throw new Exception("No existe", 400)
+    PerfilProfesional.merge(profesional, req.body);
+    const results = await PerfilProfesional.save(profesional);
+    return res.send(results);
+}
+
+export const putPerfilEmpresa = async (req: Request, res: Response): Promise<Response> => {
+    const empresa = await getRepository(Empresa).findOne(req.params.id);
+    if (!empresa) throw new Exception("No existe", 400)
+    Empresa.merge(empresa, req.body);
+    const results = await Empresa.save(empresa);
+    return res.send(results);
+}
+
+// DELETE
+export const deleteEstudio = async (req: Request, res: Response): Promise<Response> => {
+    const estudioRepo = getRepository(Estudio)
+    const estudio = await estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!estudio) throw new Exception("El estudio no existe")
+    
+    const results = await estudioRepo.delete(estudio);
+    return res.json(results)
+}
+
+export const deleteExperiencia = async (req: Request, res: Response): Promise<Response> => {
+    const experienciaRepo = getRepository(Experiencia)
+    const experiencia = await experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!experiencia) throw new Exception("La experiencia no existe")
+    
+    const results = await experienciaRepo.delete(experiencia);
+    return res.json(results)
+}
+
+export const deleteCertificacion = async (req: Request, res: Response): Promise<Response> => {
+    const certificacionRepo = getRepository(Certificacion)
+    const certificacion = await certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!certificacion) throw new Exception("La certificación no existe")
+    
+    const results = await certificacionRepo.delete(certificacion);
+    return res.json(results)
+}
+
+export const deleteIdioma = async (req: Request, res: Response): Promise<Response> => {
+    const idiomaRepo = getRepository(Idioma)
+    const idioma = await idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!idioma) throw new Exception("El idioma no existe")
+    
+    const results = await idiomaRepo.delete(idioma);
+    return res.json(results)
 }
