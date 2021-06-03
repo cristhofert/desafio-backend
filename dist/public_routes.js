@@ -18,7 +18,6 @@ router.get('/empresas', utils_1.safe(actions_1.obtenerEmpresas));
 router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));
 router.post('/empresa', utils_1.safe(actions_1.crearEmpresa));
 router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
-router.put('/cambiarcontraseña', utils_1.safe(actions_1.cambiarContraseña));
 router.post('/login', utils_1.safe(actions_2.login));
 router.put('/perfilprofesional/:id', utils_1.safe(actions_1.putPerfilProfesional));
 router.get('/profesional/:id', utils_1.safe(actions_1.getProfesional));

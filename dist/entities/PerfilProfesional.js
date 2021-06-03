@@ -53,19 +53,27 @@ var PerfilProfesional = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], PerfilProfesional.prototype, "descripcion");
     __decorate([
-        typeorm_1.OneToMany(function () { return Estudio_1.Estudio; }, function (estudio) { return estudio.perfilProfesional; }),
+        typeorm_1.OneToMany(function () { return Estudio_1.Estudio; }, function (estudio) { return estudio.perfilProfesional; }, {
+            cascade: true
+        }),
         __metadata("design:type", Array)
     ], PerfilProfesional.prototype, "estudios");
     __decorate([
-        typeorm_1.OneToMany(function () { return Experiencia_1.Experiencia; }, function (experiencia) { return experiencia.perfilProfesional; }),
+        typeorm_1.OneToMany(function () { return Experiencia_1.Experiencia; }, function (experiencia) { return experiencia.perfilProfesional; }, {
+            cascade: true
+        }),
         __metadata("design:type", Array)
     ], PerfilProfesional.prototype, "experiencias");
     __decorate([
-        typeorm_1.OneToMany(function () { return Certificacion_1.Certificacion; }, function (certificacion) { return certificacion.perfilProfesional; }),
+        typeorm_1.OneToMany(function () { return Certificacion_1.Certificacion; }, function (certificacion) { return certificacion.perfilProfesional; }, {
+            cascade: true
+        }),
         __metadata("design:type", Array)
     ], PerfilProfesional.prototype, "certificaciones");
     __decorate([
-        typeorm_1.OneToMany(function () { return Idioma_1.Idioma; }, function (idioma) { return idioma.perfilProfesional; }),
+        typeorm_1.OneToMany(function () { return Idioma_1.Idioma; }, function (idioma) { return idioma.perfilProfesional; }, {
+            cascade: true
+        }),
         __metadata("design:type", Array)
     ], PerfilProfesional.prototype, "idiomas");
     __decorate([

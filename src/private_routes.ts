@@ -18,6 +18,11 @@ const verifyToken= (req: Request,res:Response, next:NextFunction) =>{
     next()
 }
 
-router.put('/cambiarcontraseña',verifyToken, safe(actions.cambiarContraseña))
+router.put('/cambiarcontraseña',verifyToken, safe(actions.cambiarContraseña));
+
+router.post('/perfil-profesional/estudio/:id', safe(actions.crearEstudio));
+router.post('/perfil-profesional/experiencia/:id', safe(actions.crearExperiencia));
+router.post('/perfil-profesional/certificacion/:id', safe(actions.crearCertificacion));
+router.post('/perfil-profesional/idioma/:id', safe(actions.crearIdioma));
 
 export default router;
