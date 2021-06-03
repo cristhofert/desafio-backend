@@ -18,6 +18,6 @@ const verifyToken= (req: Request,res:Response, next:NextFunction) =>{
     next()
 }
 
-router.put('/cambiarcontraseña',verifyToken, safe(actions.cambiarContraseñaEmpresa))
+router.put('/cambiarcontraseña',verifyToken, safe(actions.cambiarContraseña))
 
 export default router;
