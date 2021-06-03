@@ -39,4 +39,8 @@ var verifyToken = function (req, res, next) {
     next();
 };
 router.put('/cambiarcontraseña', verifyToken, utils_1.safe(actions.cambiarContraseña));
+router.post('/perfil-profesional/estudio/:id', utils_1.safe(actions.crearEstudio));
+router.post('/perfil-profesional/experiencia/:id', utils_1.safe(actions.crearExperiencia));
+router.post('/perfil-profesional/certificacion/:id', utils_1.safe(actions.crearCertificacion));
+router.post('/perfil-profesional/idioma/:id', utils_1.safe(actions.crearIdioma));
 exports["default"] = router;
