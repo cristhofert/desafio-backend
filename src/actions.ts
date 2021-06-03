@@ -6,6 +6,10 @@ import { Empresa } from './entities/Empresa'
 import { RegistroProfesional } from './entities/RegistroProfesional'
 import jwt from 'jsonwebtoken'
 import { PerfilProfesional } from './entities/PerfilProfesional'
+import { Estudio } from './entities/Estudio'
+import { Experiencia } from './entities/Experiencia'
+import { Certificacion } from './entities/Certificacion'
+import { Idioma } from './entities/Idioma'
 
 interface IToken {
     user: RegistroProfesional | Empresa,
@@ -147,4 +151,40 @@ export const putPerfilProfesional = async (req: Request, res: Response): Promise
 export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"], where: {id: req.params.id}});
     return res.json(users);
+}
+
+export const deleteEstudio = async (req: Request, res: Response): Promise<Response> => {
+    const estudioRepo = getRepository(Estudio)
+    const estudio = await estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!estudio) throw new Exception("El estudio no existe")
+    
+    const results = await estudioRepo.delete(estudio);
+    return res.json(results)
+}
+
+export const deleteExperiencia = async (req: Request, res: Response): Promise<Response> => {
+    const experienciaRepo = getRepository(Experiencia)
+    const experiencia = await experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!experiencia) throw new Exception("La experiencia no existe")
+    
+    const results = await experienciaRepo.delete(experiencia);
+    return res.json(results)
+}
+
+export const deleteCertificacion = async (req: Request, res: Response): Promise<Response> => {
+    const certificacionRepo = getRepository(Certificacion)
+    const certificacion = await certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!certificacion) throw new Exception("La certificación no existe")
+    
+    const results = await certificacionRepo.delete(certificacion);
+    return res.json(results)
+}
+
+export const deleteIdioma = async (req: Request, res: Response): Promise<Response> => {
+    const idiomaRepo = getRepository(Idioma)
+    const idioma = await idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
+    if (!idioma) throw new Exception("El idioma no existe")
+    
+    const results = await idiomaRepo.delete(idioma);
+    return res.json(results)
 }
