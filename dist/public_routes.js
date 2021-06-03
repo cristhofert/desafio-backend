@@ -21,4 +21,8 @@ router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
 router.post('/login', utils_1.safe(actions_2.login));
 router.put('/perfilprofesional/:id', utils_1.safe(actions_1.putPerfilProfesional));
 router.get('/profesional/:id', utils_1.safe(actions_1.getProfesional));
+router["delete"]('/deleteEstudio/:id', utils_1.safe(actions_1.deleteEstudio));
+router["delete"]('/deleteExperiencia/:id', utils_1.safe(actions_1.deleteExperiencia));
+router["delete"]('/deleteCertificacion/:id', utils_1.safe(actions_1.deleteCertificacion));
+router["delete"]('/deleteIdioma/:id', utils_1.safe(actions_1.deleteIdioma));
 exports["default"] = router;

@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.getProfesional = exports.putPerfilProfesional = exports.login = exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.getProfesional = exports.putPerfilProfesional = exports.login = exports.cambiarContraseña = exports.crearProfesional = exports.crearEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -281,6 +281,82 @@ var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.getProfesional = getProfesional;
+var deleteEstudio = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var estudioRepo, estudio, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                estudioRepo = typeorm_1.getRepository(Estudio_1.Estudio);
+                return [4 /*yield*/, estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                estudio = _a.sent();
+                if (!estudio)
+                    throw new utils_1.Exception("El estudio no existe");
+                return [4 /*yield*/, estudioRepo["delete"](estudio)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteEstudio = deleteEstudio;
+var deleteExperiencia = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var experienciaRepo, experiencia, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                experienciaRepo = typeorm_1.getRepository(Experiencia_1.Experiencia);
+                return [4 /*yield*/, experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                experiencia = _a.sent();
+                if (!experiencia)
+                    throw new utils_1.Exception("La experiencia no existe");
+                return [4 /*yield*/, experienciaRepo["delete"](experiencia)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteExperiencia = deleteExperiencia;
+var deleteCertificacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var certificacionRepo, certificacion, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                certificacionRepo = typeorm_1.getRepository(Certificacion_1.Certificacion);
+                return [4 /*yield*/, certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                certificacion = _a.sent();
+                if (!certificacion)
+                    throw new utils_1.Exception("La certificación no existe");
+                return [4 /*yield*/, certificacionRepo["delete"](certificacion)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteCertificacion = deleteCertificacion;
+var deleteIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var idiomaRepo, idioma, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                idiomaRepo = typeorm_1.getRepository(Idioma_1.Idioma);
+                return [4 /*yield*/, idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })];
+            case 1:
+                idioma = _a.sent();
+                if (!idioma)
+                    throw new utils_1.Exception("El idioma no existe");
+                return [4 /*yield*/, idiomaRepo["delete"](idioma)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteIdioma = deleteIdioma;
 var crearEstudio = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesional, nuevoEstudio, results;
     return __generator(this, function (_a) {

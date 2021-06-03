@@ -8,7 +8,7 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, cambiarContraseña, putPerfilProfesional, getProfesional } from './actions';
+import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, cambiarContraseña, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia } from './actions';
 import { login } from './actions'
 
 
@@ -24,4 +24,8 @@ router.post('/registoprofesional', safe(crearProfesional))
 router.post('/login',safe(login))
 router.put('/perfilprofesional/:id', safe(putPerfilProfesional))
 router.get('/profesional/:id', safe(getProfesional))
+router.delete('/deleteEstudio/:id', safe(deleteEstudio));
+router.delete('/deleteExperiencia/:id', safe(deleteExperiencia));
+router.delete('/deleteCertificacion/:id', safe(deleteCertificacion));
+router.delete('/deleteIdioma/:id', safe(deleteIdioma));
 export default router;
