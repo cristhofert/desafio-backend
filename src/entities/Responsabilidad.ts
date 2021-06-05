@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from 'typeorm';
+import { Oferta } from './Oferta';
 
 @Entity()
 export class Responsabilidad extends BaseEntity {
@@ -7,4 +8,7 @@ export class Responsabilidad extends BaseEntity {
 
     @Column()
     nombre: string;
+
+    @ManyToOne(() => Oferta, oferta => oferta.responsabilidades)
+    oferta: Oferta;
 }

@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getProfesional = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getProfesional = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -66,6 +66,11 @@ var Estudio_1 = require("./entities/Estudio");
 var Experiencia_1 = require("./entities/Experiencia");
 var Certificacion_1 = require("./entities/Certificacion");
 var Idioma_1 = require("./entities/Idioma");
+var Oferta_1 = require("./entities/Oferta");
+var Cualificacion_1 = require("./entities/Cualificacion");
+var Condicion_1 = require("./entities/Condicion");
+var Habilidad_1 = require("./entities/Habilidad");
+var Responsabilidad_1 = require("./entities/Responsabilidad");
 // GET
 var obtenerEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
@@ -105,7 +110,7 @@ var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void
 exports.getProfesional = getProfesional;
 // POST
 var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profecional, nuevaEmpresa, results;
+    var profesional, nuevaEmpresa, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -138,10 +143,10 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
                     throw new utils_1.Exception("Por favor, provee una cuenta de github");
                 return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: req.body.email })];
             case 1:
-                profecional = _a.sent();
-                if (profecional)
-                    throw new utils_1.Exception("Ya existe un profecional con ese email");
-                nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(req.body);
+                profesional = _a.sent();
+                if (profesional)
+                    throw new utils_1.Exception("Ya existe un profesional con ese email");
+                nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(__assign(__assign({}, req.body), { ofertas: [] }));
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(nuevaEmpresa)];
             case 2:
                 results = _a.sent();
@@ -467,3 +472,109 @@ var deleteIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 exports.deleteIdioma = deleteIdioma;
+var crearArregloRelacion = function (entidad, detallesArray) {
+    var repo = typeorm_1.getRepository(entidad);
+    var reqDetalles = detallesArray;
+    var newDetalles = [];
+    reqDetalles.forEach(function (detalleIterable) {
+        var nuevoDetalle = repo.create(detalleIterable);
+        newDetalles.push(nuevoDetalle);
+    });
+    return newDetalles;
+};
+/*
+    MODELO REQUEST CREAROFERTA
+    {
+        "nombre": "string",
+        "fecha": "string",
+        "descripcion": "string",
+        "politica_teletrabajo": "string",
+        "cualificaciones": [{nombre: "string"}, {nombre: "string"}, ...],
+        "condiciones": [{nombre: "string"}, {nombre: "string"}, ...],
+        "habilidades": [{nombre: "string"}, {nombre: "string"}, ...],
+        "responsabilidades": [{nombre: "string"}, {nombre: "string"}, ...],
+    }
+*/
+//esta funcion se debe llamar a la hora de guardar una oferta (no se debe de llamar cuando se crea oferta en la vista "Ofertas de un empleador")
+var crearOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, empresa, cualificacionesNueva, condicionesNueva, habilidadesNueva, responsabilidadesNueva, oferta, ofertaGuardada, empresaGuardada;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ relations: ["ofertas"], where: { email: token.user.email } })];
+            case 1:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("empresa no esta logeada"); //no se si esto es opcional.
+                if (!req.body.nombre)
+                    throw new utils_1.Exception("Ingrese un nombre para la oferta");
+                if (!req.body.fecha)
+                    throw new utils_1.Exception("Ingrese la fecha de la creacion de la oferta");
+                if (!req.body.descripcion)
+                    throw new utils_1.Exception("Ingrese una descripcion de oferta");
+                if (!req.body.politica_teletrabajo)
+                    throw new utils_1.Exception("Ingrese una politica de teletrabajo");
+                if (!req.body.cualificaciones)
+                    throw new utils_1.Exception("Ingrese alguna cualificacion");
+                if (!req.body.condiciones)
+                    throw new utils_1.Exception("Ingrese alguna condicion");
+                if (!req.body.habilidades)
+                    throw new utils_1.Exception("Ingrese alguna habilidad");
+                if (!req.body.responsabilidades)
+                    throw new utils_1.Exception("Ingrese alguna responsabilidad");
+                cualificacionesNueva = crearArregloRelacion(Cualificacion_1.Cualificacion, req.body.cualificaciones);
+                condicionesNueva = crearArregloRelacion(Condicion_1.Condicion, req.body.condiciones);
+                habilidadesNueva = crearArregloRelacion(Habilidad_1.Habilidad, req.body.habilidades);
+                responsabilidadesNueva = crearArregloRelacion(Responsabilidad_1.Responsabilidad, req.body.responsabilidades);
+                oferta = typeorm_1.getRepository(Oferta_1.Oferta).create();
+                oferta.nombre = req.body.nombre;
+                oferta.fecha = req.body.fecha;
+                oferta.descripcion = req.body.descripcion;
+                oferta.politica_teletrabajo = req.body.politica_teletrabajo;
+                oferta.cualificaciones = cualificacionesNueva;
+                oferta.condiciones = condicionesNueva;
+                oferta.habilidades = habilidadesNueva;
+                oferta.responsabilidades = responsabilidadesNueva;
+                return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).save(oferta)];
+            case 2:
+                ofertaGuardada = _a.sent();
+                console.log(empresa);
+                empresa.ofertas = __spreadArray(__spreadArray([], empresa.ofertas), [oferta]);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(empresa)];
+            case 3:
+                empresaGuardada = _a.sent();
+                return [2 /*return*/, res.json({ empresa: empresaGuardada, oferta: ofertaGuardada })];
+        }
+    });
+}); };
+exports.crearOferta = crearOferta;
+var getOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var oferta;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).findOne({
+                    relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"],
+                    where: { id: req.params.id }
+                })];
+            case 1:
+                oferta = _a.sent();
+                return [2 /*return*/, res.json(oferta)];
+        }
+    });
+}); };
+exports.getOferta = getOferta;
+var getOfertas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var oferta;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).find({
+                    relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"]
+                })];
+            case 1:
+                oferta = _a.sent();
+                return [2 /*return*/, res.json(oferta)];
+        }
+    });
+}); };
+exports.getOfertas = getOfertas;

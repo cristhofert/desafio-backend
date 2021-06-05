@@ -9,7 +9,7 @@ const router = Router();
 //middleware de verificación
 const verifyToken= (req: Request,res:Response, next:NextFunction) =>{
     //headers con el token
-     const token = req.header('Authorization');
+    const token = req.header('Authorization');
     if(!token) return res.status(400).json('ACCESS DENIED');
 
     const decoded = jwt.verify(token as string, process.env.JWT_KEY as string)
@@ -24,5 +24,6 @@ router.post('/perfil-profesional/estudio/:id', safe(actions.crearEstudio));
 router.post('/perfil-profesional/experiencia/:id', safe(actions.crearExperiencia));
 router.post('/perfil-profesional/certificacion/:id', safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', safe(actions.crearIdioma));
+router.post('/oferta', verifyToken, safe(actions.crearOferta));
 
 export default router;

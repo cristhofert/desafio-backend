@@ -1,8 +1,8 @@
 import {
     Entity, Column, PrimaryGeneratedColumn,
-    BaseEntity, ManyToOne
+    BaseEntity, OneToMany
 } from 'typeorm';
-import { PerfilProfesional } from './PerfilProfesional';
+import { Oferta } from './Oferta';
 
 @Entity()
 export class Empresa extends BaseEntity {
@@ -11,32 +11,43 @@ export class Empresa extends BaseEntity {
 
     @Column({ unique: true })
     email: string;
+
     @Column()
     contrasenna: string;
+
     @Column()
     nombre: string;
+
     @Column()
     icono: string;
+
     @Column()
     descripcion: string;
+
     @Column()
     departamento: string;
+
     @Column()
     direccion: string;
+
     @Column()
     sitio_web: string;
+
     @Column()
     comentarios: string;
+
     @Column()
     twitter: string;
+
     @Column()
     facebook: string;
+
     @Column()
     linkedin: string;
+
     @Column()
     github: string;
 
-    //@OneToMany(() => Oferta)
-    //ofertas: number[];
-
+    @OneToMany(() => Oferta, oferta => oferta.empresa)
+    ofertas: Oferta[];
 }

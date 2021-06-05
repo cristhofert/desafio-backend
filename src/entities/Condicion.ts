@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from 'typeorm';
-
-import { Oferta } from "./Oferta"
+import { Oferta } from './Oferta';
 
 @Entity()
 export class Condicion extends BaseEntity {

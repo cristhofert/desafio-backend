@@ -24,77 +24,67 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 exports.__esModule = true;
-exports.Empresa = void 0;
+exports.Oferta = void 0;
 var typeorm_1 = require("typeorm");
-var Oferta_1 = require("./Oferta");
-var Empresa = /** @class */ (function (_super) {
-    __extends(Empresa, _super);
-    function Empresa() {
+var Cualificacion_1 = require("./Cualificacion");
+var Habilidad_1 = require("./Habilidad");
+var Responsabilidad_1 = require("./Responsabilidad");
+var Condicion_1 = require("./Condicion");
+var RegistroProfesional_1 = require("./RegistroProfesional");
+var Empresa_1 = require("./Empresa");
+var Oferta = /** @class */ (function (_super) {
+    __extends(Oferta, _super);
+    function Oferta() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
-    ], Empresa.prototype, "id");
-    __decorate([
-        typeorm_1.Column({ unique: true }),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "email");
+    ], Oferta.prototype, "id");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "contrasenna");
+    ], Oferta.prototype, "nombre");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "nombre");
+    ], Oferta.prototype, "fecha");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "icono");
+    ], Oferta.prototype, "descripcion");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "descripcion");
+    ], Oferta.prototype, "politica_teletrabajo");
     __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "departamento");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "direccion");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "sitio_web");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "comentarios");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "twitter");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "facebook");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "linkedin");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "github");
-    __decorate([
-        typeorm_1.OneToMany(function () { return Oferta_1.Oferta; }, function (oferta) { return oferta.empresa; }),
+        typeorm_1.OneToMany(function () { return Cualificacion_1.Cualificacion; }, function (cualificacion) { return cualificacion.oferta; }, { cascade: true }),
         __metadata("design:type", Array)
-    ], Empresa.prototype, "ofertas");
-    Empresa = __decorate([
+    ], Oferta.prototype, "cualificaciones");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Condicion_1.Condicion; }, function (condicion) { return condicion.oferta; }, { cascade: true }),
+        __metadata("design:type", Array)
+    ], Oferta.prototype, "condiciones");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Habilidad_1.Habilidad; }, function (habilidad) { return habilidad.oferta; }, { cascade: true }),
+        __metadata("design:type", Array)
+    ], Oferta.prototype, "habilidades");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Responsabilidad_1.Responsabilidad; }, function (responsabilidad) { return responsabilidad.oferta; }, { cascade: true }),
+        __metadata("design:type", Array)
+    ], Oferta.prototype, "responsabilidades");
+    __decorate([
+        typeorm_1.ManyToOne(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.ofertas; }),
+        __metadata("design:type", Empresa_1.Empresa)
+    ], Oferta.prototype, "empresa");
+    __decorate([
+        typeorm_1.ManyToMany(function () { return RegistroProfesional_1.RegistroProfesional; }),
+        typeorm_1.JoinTable(),
+        __metadata("design:type", Array)
+    ], Oferta.prototype, "aplicantes");
+    Oferta = __decorate([
         typeorm_1.Entity()
-    ], Empresa);
-    return Empresa;
+    ], Oferta);
+    return Oferta;
 }(typeorm_1.BaseEntity));
-exports.Empresa = Empresa;
+exports.Oferta = Oferta;

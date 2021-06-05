@@ -1,10 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToMany, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
 
 import { Cualificacion } from "./Cualificacion"
 import { Habilidad } from "./Habilidad"
 import { Responsabilidad } from "./Responsabilidad"
 import { Condicion } from "./Condicion"
 import { RegistroProfesional } from './RegistroProfesional';
+import { Empresa } from './Empresa';
 
 @Entity()
 export class Oferta extends BaseEntity {
@@ -23,17 +24,20 @@ export class Oferta extends BaseEntity {
     @Column()
     politica_teletrabajo: string;
 
-    @OneToMany(() => Cualificacion, cualificacion => cualificacion.id)
+    @OneToMany(() => Cualificacion, cualificacion => cualificacion.oferta, {cascade: true})
     cualificaciones: Cualificacion[];
 
-    @OneToMany(()=> Condicion, condicion => condicion.id)
+    @OneToMany(()=> Condicion, condicion => condicion.oferta, {cascade: true})
     condiciones: Condicion[];
 
-    @OneToMany(() => Habilidad, habilidad => habilidad.id )
+    @OneToMany(() => Habilidad, habilidad => habilidad.oferta, {cascade: true})
     habilidades: Habilidad[];
 
-    @OneToMany(() => Responsabilidad, responsabilidad => responsabilidad.id )
+    @OneToMany(() => Responsabilidad, responsabilidad => responsabilidad.oferta, {cascade: true})
     responsabilidades: Responsabilidad[];
+
+    @ManyToOne(() => Empresa, empresa => empresa.ofertas)
+    empresa: Empresa;
 
     @ManyToMany(() => RegistroProfesional)
     @JoinTable()

@@ -8,7 +8,7 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, cambiarContraseña, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa } from './actions';
+import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas } from './actions';
 import { login } from './actions'
 
 const router = Router();
@@ -20,6 +20,8 @@ const router = Router();
 router.get('/empresas', safe(obtenerEmpresas))
 router.get('/empresa/:id', safe(obtenerEmpresa))
 router.get('/profesional/:id', safe(getProfesional))
+router.get('/oferta/:id', safe(getOferta))
+router.get('/oferta', safe(getOfertas))
 // POST
 router.post('/empresa', safe(crearEmpresa))
 router.post('/registoprofesional', safe(crearProfesional))
