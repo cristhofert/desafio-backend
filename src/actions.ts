@@ -32,6 +32,13 @@ export const obtenerEmpresa = async (req: Request, res: Response): Promise<Respo
     return res.json(users);
 }
 
+export const obtenerMiEmpresa = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    if (token.user !instanceof Empresa) throw new Exception("Debe ser una empresa")
+    const users = await getRepository(Empresa).findOne({email: token.user.email});
+    return res.json(users);
+}
+
 export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
     const users = await getRepository(PerfilProfesional).findOne({ relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: req.params.id}});
     return res.json(users);
@@ -224,6 +231,15 @@ export const putPerfilProfesional = async (req: Request, res: Response): Promise
 
 export const putPerfilEmpresa = async (req: Request, res: Response): Promise<Response> => {
     const empresa = await getRepository(Empresa).findOne(req.params.id);
+    if (!empresa) throw new Exception("No existe", 400)
+    Empresa.merge(empresa, req.body);
+    const results = await Empresa.save(empresa);
+    return res.send(results);
+}
+
+export const editarEmpresa = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken
+    const empresa = await getRepository(Empresa).findOne({email: token.user.email});
     if (!empresa) throw new Exception("No existe", 400)
     Empresa.merge(empresa, req.body);
     const results = await Empresa.save(empresa);
