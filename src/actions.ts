@@ -49,6 +49,11 @@ export const getProfesionales = async (req: Request, res: Response): Promise<Res
     return res.json(users);
 }
 
+export const getCualificacion = async (req: Request, res: Response): Promise<Response> => {
+    const users = await getRepository(Cualificacion).find();
+    return res.json(users);
+}
+
 // POST
 export const crearEmpresa = async (req: Request, res: Response): Promise<Response> => {
 
