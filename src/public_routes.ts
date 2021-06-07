@@ -22,7 +22,7 @@ router.get('/empresa/:id', safe(obtenerEmpresa))
 router.get('/profesional/:id', safe(getProfesional))
 router.get('/profesionales', safe(getProfesionales))
 router.get('/oferta/:id', safe(getOferta))
-router.get('/oferta', safe(getOfertas))
+
 // POST
 router.post('/empresa', safe(crearEmpresa))
 router.post('/registoprofesional', safe(crearProfesional))

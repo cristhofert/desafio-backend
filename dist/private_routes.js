@@ -44,4 +44,9 @@ router.post('/perfil-profesional/experiencia/:id', utils_1.safe(actions.crearExp
 router.post('/perfil-profesional/certificacion/:id', utils_1.safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', utils_1.safe(actions.crearIdioma));
 router.post('/oferta', verifyToken, utils_1.safe(actions.crearOferta));
+//EMPRESA
+router.put('/empresa/', verifyToken, utils_1.safe(actions.editarEmpresa));
+router.get('/empresa/', verifyToken, utils_1.safe(actions.obtenerMiEmpresa));
+//OFERTAS
+router.get('/ofertas', verifyToken, utils_1.safe(actions.getOfertas));
 exports["default"] = router;

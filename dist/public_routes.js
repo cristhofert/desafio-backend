@@ -20,7 +20,6 @@ router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));
 router.get('/profesional/:id', utils_1.safe(actions_1.getProfesional));
 router.get('/profesionales', utils_1.safe(actions_1.getProfesionales));
 router.get('/oferta/:id', utils_1.safe(actions_1.getOferta));
-router.get('/oferta', utils_1.safe(actions_1.getOfertas));
 // POST
 router.post('/empresa', utils_1.safe(actions_1.crearEmpresa));
 router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
