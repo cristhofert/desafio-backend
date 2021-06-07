@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getProfesional = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getProfesionales = exports.getProfesional = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -108,6 +108,18 @@ var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.getProfesional = getProfesional;
+var getProfesionales = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).find({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"] })];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.getProfesionales = getProfesionales;
 // POST
 var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesional, nuevaEmpresa, results;
@@ -395,6 +407,24 @@ var putPerfilEmpresa = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.putPerfilEmpresa = putPerfilEmpresa;
+var putOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var oferta, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).findOne(req.params.id)];
+            case 1:
+                oferta = _a.sent();
+                if (!oferta)
+                    throw new utils_1.Exception("No existe", 400);
+                Oferta_1.Oferta.merge(oferta, req.body);
+                return [4 /*yield*/, Oferta_1.Oferta.save(oferta)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.putOferta = putOferta;
 // DELETE
 var deleteEstudio = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var estudioRepo, estudio, results;
@@ -472,6 +502,82 @@ var deleteIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 exports.deleteIdioma = deleteIdioma;
+var deleteCualificacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cualificacionRepo, cualificacion, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cualificacionRepo = typeorm_1.getRepository(Cualificacion_1.Cualificacion);
+                return [4 /*yield*/, cualificacionRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })];
+            case 1:
+                cualificacion = _a.sent();
+                if (!cualificacion)
+                    throw new utils_1.Exception("La cualificacion no existe");
+                return [4 /*yield*/, cualificacionRepo["delete"](cualificacion)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteCualificacion = deleteCualificacion;
+var deleteHabilidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var habilidadRepo, habilidad, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                habilidadRepo = typeorm_1.getRepository(Habilidad_1.Habilidad);
+                return [4 /*yield*/, habilidadRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })];
+            case 1:
+                habilidad = _a.sent();
+                if (!habilidad)
+                    throw new utils_1.Exception("La habilidad no existe");
+                return [4 /*yield*/, habilidadRepo["delete"](habilidad)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteHabilidad = deleteHabilidad;
+var deleteCondicion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var condicionRepo, condicion, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                condicionRepo = typeorm_1.getRepository(Condicion_1.Condicion);
+                return [4 /*yield*/, condicionRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })];
+            case 1:
+                condicion = _a.sent();
+                if (!condicion)
+                    throw new utils_1.Exception("La condicion no existe");
+                return [4 /*yield*/, condicionRepo["delete"](condicion)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteCondicion = deleteCondicion;
+var deleteResponsabilidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var responsabilidadRepo, responsabilidad, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                responsabilidadRepo = typeorm_1.getRepository(Responsabilidad_1.Responsabilidad);
+                return [4 /*yield*/, responsabilidadRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })];
+            case 1:
+                responsabilidad = _a.sent();
+                if (!responsabilidad)
+                    throw new utils_1.Exception("La responsabilidad no existe");
+                return [4 /*yield*/, responsabilidadRepo["delete"](responsabilidad)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteResponsabilidad = deleteResponsabilidad;
 var crearArregloRelacion = function (entidad, detallesArray) {
     var repo = typeorm_1.getRepository(entidad);
     var reqDetalles = detallesArray;
