@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
-import { getRepository } from 'typeorm'  // getRepository"  traer una tabla de la base de datos asociada al objeto
-import { Users } from './entities/Users'
+import { getRepository, EntityTarget } from 'typeorm'  // getRepository"  traer una tabla de la base de datos asociada al objeto
 import { Exception } from './utils'
 import { Empresa } from './entities/Empresa'
 import { RegistroProfesional } from './entities/RegistroProfesional'
@@ -10,6 +9,11 @@ import { Estudio } from './entities/Estudio'
 import { Experiencia } from './entities/Experiencia'
 import { Certificacion } from './entities/Certificacion'
 import { Idioma } from './entities/Idioma'
+import { Oferta } from './entities/Oferta'
+import { Cualificacion } from './entities/Cualificacion'
+import { Condicion } from './entities/Condicion'
+import { Habilidad } from './entities/Habilidad'
+import { Responsabilidad } from './entities/Responsabilidad'
 
 interface IToken {
     user: RegistroProfesional | Empresa,
@@ -50,10 +54,11 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (!req.body.facebook) throw new Exception("Por favor, provee una cuenta de facebook")
     if (!req.body.linkedin) throw new Exception("Por favor, provee una cuenta de linkedin")
     if (!req.body.github) throw new Exception("Por favor, provee una cuenta de github")
-    const profecional = await getRepository(RegistroProfesional).findOne({ email: req.body.email })
-    if (profecional) throw new Exception("Ya existe un profecional con ese email")
+    const profesional = await getRepository(RegistroProfesional).findOne({ email: req.body.email })
+    if (profesional) throw new Exception("Ya existe un profesional con ese email")
 
-    const nuevaEmpresa = getRepository(Empresa).create(req.body);
+    //Ahora al crear una empresa, tambien se crea una lista de ofertas vacia con ella
+    const nuevaEmpresa = getRepository(Empresa).create({ ...req.body, ofertas: []});
     const results = await getRepository(Empresa).save(nuevaEmpresa);
     return res.json(results);
 }
@@ -256,4 +261,85 @@ export const deleteIdioma = async (req: Request, res: Response): Promise<Respons
     
     const results = await idiomaRepo.delete(idioma);
     return res.json(results)
+}
+
+
+const crearArregloRelacion = (entidad: EntityTarget<Cualificacion> | EntityTarget<Condicion> | EntityTarget<Habilidad> | EntityTarget<Responsabilidad>, detallesArray: Object[]): Cualificacion[] | Condicion[] | Habilidad[] | Responsabilidad[] => {
+    const repo = getRepository(entidad);
+    let reqDetalles = detallesArray;
+    let newDetalles: Cualificacion[] | Condicion[] | Habilidad[] | Responsabilidad[] = [];
+    reqDetalles.forEach((detalleIterable:Object)=>{
+        const nuevoDetalle = repo.create(detalleIterable)
+        newDetalles.push(nuevoDetalle);
+    })
+
+    return newDetalles;
+}
+
+/*
+    MODELO REQUEST CREAROFERTA
+    {
+        "nombre": "string",
+        "fecha": "string",
+        "descripcion": "string",
+        "politica_teletrabajo": "string",
+        "cualificaciones": [{nombre: "string"}, {nombre: "string"}, ...],
+        "condiciones": [{nombre: "string"}, {nombre: "string"}, ...],
+        "habilidades": [{nombre: "string"}, {nombre: "string"}, ...],
+        "responsabilidades": [{nombre: "string"}, {nombre: "string"}, ...],
+    }
+*/
+
+//esta funcion se debe llamar a la hora de guardar una oferta (no se debe de llamar cuando se crea oferta en la vista "Ofertas de un empleador")
+export const crearOferta = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken
+    const empresa = await getRepository(Empresa).findOne({relations: ["ofertas"], where: {email : token.user.email}})
+    if(!empresa) throw new Exception("empresa no esta logeada"); //no se si esto es opcional.
+
+    if (!req.body.nombre) throw new Exception("Ingrese un nombre para la oferta");
+    if (!req.body.fecha) throw new Exception("Ingrese la fecha de la creacion de la oferta");
+    if (!req.body.descripcion) throw new Exception("Ingrese una descripcion de oferta");
+    if (!req.body.politica_teletrabajo) throw new Exception("Ingrese una politica de teletrabajo");
+    if (!req.body.cualificaciones) throw new Exception("Ingrese alguna cualificacion");
+    if (!req.body.condiciones) throw new Exception("Ingrese alguna condicion");
+    if (!req.body.habilidades) throw new Exception("Ingrese alguna habilidad");
+    if (!req.body.responsabilidades) throw new Exception("Ingrese alguna responsabilidad");
+    
+    const cualificacionesNueva:Cualificacion[] = crearArregloRelacion(Cualificacion, req.body.cualificaciones);
+    const condicionesNueva:Condicion[] = crearArregloRelacion(Condicion, req.body.condiciones);
+    const habilidadesNueva:Habilidad[] = crearArregloRelacion(Habilidad, req.body.habilidades);
+    const responsabilidadesNueva:Responsabilidad[] = crearArregloRelacion(Responsabilidad, req.body.responsabilidades);
+
+    const oferta = getRepository(Oferta).create();
+    oferta.nombre = req.body.nombre;
+    oferta.fecha = req.body.fecha;
+    oferta.descripcion = req.body.descripcion;
+    oferta.politica_teletrabajo = req.body.politica_teletrabajo;
+    oferta.cualificaciones = cualificacionesNueva;
+    oferta.condiciones = condicionesNueva;
+    oferta.habilidades = habilidadesNueva;
+    oferta.responsabilidades = responsabilidadesNueva;
+
+    const ofertaGuardada = await getRepository(Oferta).save(oferta);
+    console.log(empresa);
+    empresa.ofertas = [...empresa.ofertas, oferta];
+    const empresaGuardada = await getRepository(Empresa).save(empresa);
+
+    return res.json({empresa: empresaGuardada, oferta: ofertaGuardada});
+}
+
+
+export const getOferta = async (req: Request, res: Response): Promise<Response> => {
+    const oferta = await getRepository(Oferta).findOne({
+        relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"],
+        where: { id: req.params.id }
+    })
+    return res.json(oferta);
+}
+
+export const getOfertas = async (req: Request, res: Response): Promise<Response> => {
+    const oferta = await getRepository(Oferta).find({
+        relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"]
+    })
+    return res.json(oferta);
 }

@@ -43,4 +43,5 @@ router.post('/perfil-profesional/estudio/:id', utils_1.safe(actions.crearEstudio
 router.post('/perfil-profesional/experiencia/:id', utils_1.safe(actions.crearExperiencia));
 router.post('/perfil-profesional/certificacion/:id', utils_1.safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', utils_1.safe(actions.crearIdioma));
+router.post('/oferta', verifyToken, utils_1.safe(actions.crearOferta));
 exports["default"] = router;
