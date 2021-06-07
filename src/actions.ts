@@ -37,6 +37,11 @@ export const getProfesional = async (req: Request, res: Response): Promise<Respo
     return res.json(users);
 }
 
+export const getProfesionales = async (req: Request, res: Response): Promise<Response> => {
+    const users = await getRepository(PerfilProfesional).find({ relations: ["estudios","experiencias", "certificaciones", "idiomas"]});
+    return res.json(users);
+}
+
 // POST
 export const crearEmpresa = async (req: Request, res: Response): Promise<Response> => {
 
@@ -146,7 +151,6 @@ export const crearIdioma = async (req: Request, res: Response): Promise<Response
     return res.json(results);
 }
 
-
 //controlador para el logueo
 export const login = async (req: Request, res: Response): Promise<Response> => {
     
@@ -226,6 +230,14 @@ export const putPerfilEmpresa = async (req: Request, res: Response): Promise<Res
     return res.send(results);
 }
 
+export const putOferta = async (req: Request, res: Response): Promise<Response> => {
+    const oferta = await getRepository(Oferta).findOne(req.params.id);
+    if (!oferta) throw new Exception("No existe", 400)
+    Oferta.merge(oferta, req.body);
+    const results = await Oferta.save(oferta);
+    return res.send(results);
+}
+
 // DELETE
 export const deleteEstudio = async (req: Request, res: Response): Promise<Response> => {
     const estudioRepo = getRepository(Estudio)
@@ -263,6 +275,41 @@ export const deleteIdioma = async (req: Request, res: Response): Promise<Respons
     return res.json(results)
 }
 
+export const deleteCualificacion = async (req: Request, res: Response): Promise<Response> => {
+    const cualificacionRepo = getRepository(Cualificacion)
+    const cualificacion = await cualificacionRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
+    if (!cualificacion) throw new Exception("La cualificacion no existe")
+    
+    const results = await cualificacionRepo.delete(cualificacion);
+    return res.json(results)
+}
+
+export const deleteHabilidad = async (req: Request, res: Response): Promise<Response> => {
+    const habilidadRepo = getRepository(Habilidad)
+    const habilidad = await habilidadRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
+    if (!habilidad) throw new Exception("La habilidad no existe")
+    
+    const results = await habilidadRepo.delete(habilidad);
+    return res.json(results)
+}
+
+export const deleteCondicion = async (req: Request, res: Response): Promise<Response> => {
+    const condicionRepo = getRepository(Condicion)
+    const condicion = await condicionRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
+    if (!condicion) throw new Exception("La condicion no existe")
+    
+    const results = await condicionRepo.delete(condicion);
+    return res.json(results)
+}
+
+export const deleteResponsabilidad = async (req: Request, res: Response): Promise<Response> => {
+    const responsabilidadRepo = getRepository(Responsabilidad)
+    const responsabilidad = await responsabilidadRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
+    if (!responsabilidad) throw new Exception("La responsabilidad no existe")
+    
+    const results = await responsabilidadRepo.delete(responsabilidad);
+    return res.json(results)
+}
 
 const crearArregloRelacion = (entidad: EntityTarget<Cualificacion> | EntityTarget<Condicion> | EntityTarget<Habilidad> | EntityTarget<Responsabilidad>, detallesArray: Object[]): Cualificacion[] | Condicion[] | Habilidad[] | Responsabilidad[] => {
     const repo = getRepository(entidad);
