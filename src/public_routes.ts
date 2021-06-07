@@ -8,7 +8,7 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales } from './actions';
+import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales, putOferta, getCualificacion } from './actions';
 import { login } from './actions'
 
 const router = Router();
@@ -22,14 +22,15 @@ router.get('/empresa/:id', safe(obtenerEmpresa))
 router.get('/profesional/:id', safe(getProfesional))
 router.get('/profesionales', safe(getProfesionales))
 router.get('/oferta/:id', safe(getOferta))
-
+router.get('/cualificacion', safe(getCualificacion))
 // POST
 router.post('/empresa', safe(crearEmpresa))
-router.post('/registoprofesional', safe(crearProfesional))
+router.post('/registroprofesional', safe(crearProfesional))
 router.post('/login',safe(login))
 // PUT
 router.put('/perfilProfesional/:id', safe(putPerfilProfesional))
 router.put('/perfilEmpresa/:id', safe(putPerfilEmpresa))
+router.put('/oferta/:id', safe(putOferta))
 // DELETE
 router.delete('/deleteEstudio/:id', safe(deleteEstudio));
 router.delete('/deleteExperiencia/:id', safe(deleteExperiencia));

@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -136,6 +136,18 @@ var getProfesionales = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.getProfesionales = getProfesionales;
+var getCualificacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Cualificacion_1.Cualificacion).find()];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.getCualificacion = getCualificacion;
 // POST
 var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesional, nuevaEmpresa, results;

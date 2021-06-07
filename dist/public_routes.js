@@ -20,13 +20,15 @@ router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));
 router.get('/profesional/:id', utils_1.safe(actions_1.getProfesional));
 router.get('/profesionales', utils_1.safe(actions_1.getProfesionales));
 router.get('/oferta/:id', utils_1.safe(actions_1.getOferta));
+router.get('/cualificacion', utils_1.safe(actions_1.getCualificacion));
 // POST
 router.post('/empresa', utils_1.safe(actions_1.crearEmpresa));
-router.post('/registoprofesional', utils_1.safe(actions_1.crearProfesional));
+router.post('/registroprofesional', utils_1.safe(actions_1.crearProfesional));
 router.post('/login', utils_1.safe(actions_2.login));
 // PUT
 router.put('/perfilProfesional/:id', utils_1.safe(actions_1.putPerfilProfesional));
 router.put('/perfilEmpresa/:id', utils_1.safe(actions_1.putPerfilEmpresa));
+router.put('/oferta/:id', utils_1.safe(actions_1.putOferta));
 // DELETE
 router["delete"]('/deleteEstudio/:id', utils_1.safe(actions_1.deleteEstudio));
 router["delete"]('/deleteExperiencia/:id', utils_1.safe(actions_1.deleteExperiencia));
