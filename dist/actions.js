@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -96,6 +96,22 @@ var obtenerEmpresa = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.obtenerEmpresa = obtenerEmpresa;
+var obtenerMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                if (token.user instanceof Empresa_1.Empresa)
+                    throw new utils_1.Exception("Debe ser una empresa");
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: token.user.email })];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, res.json(users)];
+        }
+    });
+}); };
+exports.obtenerMiEmpresa = obtenerMiEmpresa;
 var getProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
@@ -419,6 +435,26 @@ var putPerfilEmpresa = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.putPerfilEmpresa = putPerfilEmpresa;
+var editarEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, empresa, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: token.user.email })];
+            case 1:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("No existe", 400);
+                Empresa_1.Empresa.merge(empresa, req.body);
+                return [4 /*yield*/, Empresa_1.Empresa.save(empresa)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.editarEmpresa = editarEmpresa;
 var putOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var oferta, results;
     return __generator(this, function (_a) {
@@ -683,15 +719,18 @@ var getOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, f
 }); };
 exports.getOferta = getOferta;
 var getOfertas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var oferta;
+    var token, empresa, ofertas;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).find({
-                    relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"]
-                })];
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ relations: ["ofertas"], where: { email: token.user.email } })];
             case 1:
-                oferta = _a.sent();
-                return [2 /*return*/, res.json(oferta)];
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("no existe la empresa");
+                ofertas = empresa.ofertas;
+                return [2 /*return*/, res.json(ofertas)];
         }
     });
 }); };

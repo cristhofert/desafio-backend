@@ -25,7 +25,10 @@ router.post('/perfil-profesional/experiencia/:id', safe(actions.crearExperiencia
 router.post('/perfil-profesional/certificacion/:id', safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', safe(actions.crearIdioma));
 router.post('/oferta', verifyToken, safe(actions.crearOferta));
-//empresa
+//EMPRESA
 router.put('/empresa/', verifyToken, safe(actions.editarEmpresa))
 router.get('/empresa/', verifyToken, safe(actions.obtenerMiEmpresa))
+
+//OFERTAS
+router.get('/ofertas', verifyToken, safe(actions.getOfertas))
 export default router;
