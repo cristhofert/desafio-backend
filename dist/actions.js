@@ -56,7 +56,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 
+exports.recuperarPass = exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+
 exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -72,6 +75,7 @@ var Cualificacion_1 = require("./entities/Cualificacion");
 var Condicion_1 = require("./entities/Condicion");
 var Habilidad_1 = require("./entities/Habilidad");
 var Responsabilidad_1 = require("./entities/Responsabilidad");
+var nodemailer_1 = __importDefault(require("nodemailer"));
 // GET
 var obtenerEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
@@ -793,3 +797,63 @@ var getOfertas = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.getOfertas = getOfertas;
+var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesionalRepo, empresaRepo, profesional, user, tipo, empresa, token, testAccount, transporter, info;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400);
+                profesionalRepo = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional);
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
+                return [4 /*yield*/, profesionalRepo.findOne({ email: req.body.email })];
+            case 1:
+                profesional = _a.sent();
+                if (!!profesional) return [3 /*break*/, 3];
+                return [4 /*yield*/, empresaRepo.findOne({ email: req.body.email })];
+            case 2:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("El email no existe", 401);
+                user = empresa;
+                tipo = "empresa";
+                return [3 /*break*/, 4];
+            case 3:
+                user = profesional;
+                tipo = "profesional";
+                _a.label = 4;
+            case 4:
+                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
+                return [4 /*yield*/, nodemailer_1["default"].createTestAccount()];
+            case 5:
+                testAccount = _a.sent();
+                testAccount.user = "jobstack16@gmail.com";
+                testAccount.pass = process.env.GMAILPASS;
+                transporter = nodemailer_1["default"].createTransport({
+                    host: "smtp.gmail.com",
+                    port: 465,
+                    secure: false,
+                    auth: {
+                        user: testAccount.user,
+                        pass: testAccount.pass
+                    }
+                });
+                return [4 /*yield*/, transporter.sendMail({
+                        from: '"Fred Foo 👻" <jobstack16@gmail.com>',
+                        to: req.body.email,
+                        subject: "Recuperación de contraseña",
+                        text: "Hello world?",
+                        html: "<p>Si ha solicitado su contrase\u00F1a, por favor ingrese al siguiente <a href=\"" + process.env.FRONTEND + "/cambiarContrase\u00F1a/" + token.replace(".", "$") + "\">link</a>, en caso contrario, omita este email</p>"
+                    })];
+            case 6:
+                info = _a.sent();
+                console.log("Message sent: %s", info.messageId);
+                // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+                // Preview only available when sending through an Ethereal account
+                console.log("Preview URL: %s", nodemailer_1["default"].getTestMessageUrl(info));
+                // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                return [2 /*return*/, res.json({ message: "OK" })];
+        }
+    });
+}); };
+exports.recuperarPass = recuperarPass;
