@@ -38,12 +38,15 @@ var verifyToken = function (req, res, next) {
     req.user = decoded;
     next();
 };
+//cambiar contraseña
 router.put('/cambiarcontraseña', verifyToken, utils_1.safe(actions.cambiarContraseña));
+
 //PROFESIONAL
 router.post('/perfil-profesional/estudio/:id', utils_1.safe(actions.crearEstudio));
 router.post('/perfil-profesional/experiencia/:id', utils_1.safe(actions.crearExperiencia));
 router.post('/perfil-profesional/certificacion/:id', utils_1.safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', utils_1.safe(actions.crearIdioma));
+
 router.put('/perfil-profesional/', verifyToken, utils_1.safe(actions.editarProfesional));
 router.get('/perfil-profesional/', verifyToken, utils_1.safe(actions.obtenerProfesionalLogeado));
 //EMPRESA
