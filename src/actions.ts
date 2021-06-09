@@ -14,6 +14,7 @@ import { Cualificacion } from './entities/Cualificacion'
 import { Condicion } from './entities/Condicion'
 import { Habilidad } from './entities/Habilidad'
 import { Responsabilidad } from './entities/Responsabilidad'
+import bcrypt from "bcrypt"
 
 interface IToken {
     user: RegistroProfesional | Empresa,
@@ -73,6 +74,11 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (!req.body.github) throw new Exception("Por favor, provee una cuenta de github")
     const profesional = await getRepository(RegistroProfesional).findOne({ email: req.body.email })
     if (profesional) throw new Exception("Ya existe un profesional con ese email")
+        req.body.contrasenna = await bcrypt.hash(req.body.contrasenna, 10, (err: any, hash: any) => {
+        if(err) throw new Exception(err)
+        return hash
+    });
+
 
     //Ahora al crear una empresa, tambien se crea una lista de ofertas vacia con ella
     const nuevaEmpresa = getRepository(Empresa).create({ ...req.body, ofertas: [] });
@@ -85,6 +91,10 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     // important validations to avoid ambiguos errors, the client needs to understand what went wrong
     if (!req.body.email) throw new Exception("Por favor, provee una email")
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
+    req.body.contrasenna = await bcrypt.hash(req.body.contrasenna, 10, (err: any, hash: any) => {
+        if(err) throw new Exception(err)
+        return hash
+    });
 
     const empresa = await getRepository(Empresa).findOne({ email: req.body.email })
     if (empresa) throw new Exception("Ya existe un empresa con ese email")
@@ -184,16 +194,26 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const empresaRepo = getRepository(Empresa)
 
     // We need to validate that a user with this email and password exists in the DB
-    const profesional = await profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
+    const profesional = await profesionalRepo.findOne({ where: { email: req.body.email } })
     let user;
     let tipo;
     if (!profesional) {
-        const empresa = await empresaRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
+        const empresa = await empresaRepo.findOne({ where: { email: req.body.email } })
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
+        if(await bcrypt.compare(req.body.contrasenna, empresa.contrasenna).then(function(result: boolean) {
+            return !result
+        })){
+            throw new Exception("Email o contraseña inválido", 401)
+        }
         user = empresa;
         tipo = "empresa"
     }
     else {
+        if(await bcrypt.compare(req.body.contrasenna, profesional.contrasenna).then(function(result: boolean) {
+            return !result
+        })){
+            throw new Exception("Email o contraseña inválido", 401)
+        }
         user = profesional;
         tipo = "profesional"
     }
