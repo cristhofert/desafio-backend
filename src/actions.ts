@@ -15,6 +15,7 @@ import { Condicion } from './entities/Condicion'
 import { Habilidad } from './entities/Habilidad'
 import { Responsabilidad } from './entities/Responsabilidad'
 import bcrypt from "bcrypt"
+import nodemailer from 'nodemailer'
 
 interface IToken {
     user: RegistroProfesional | Empresa,
@@ -463,4 +464,62 @@ export const getOfertas = async (req: Request, res: Response): Promise<Response>
     if (!empresa) throw new Exception("no existe la empresa");
     const ofertas = empresa.ofertas;
     return res.json(ofertas);
+}
+
+export const recuperarPass = async (req: Request, res: Response): Promise<Response> => {
+    
+    if (!req.body.email) throw new Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400)
+    
+    const profesionalRepo = getRepository(RegistroProfesional)
+    const empresaRepo = getRepository(Empresa)
+    
+    // We need to validate that a user with this email and password exists in the DB
+    const profesional = await profesionalRepo.findOne({email: req.body.email})
+    let user;
+    let tipo;
+    if (!profesional) {
+        const empresa = await empresaRepo.findOne({email: req.body.email})
+        if (!empresa) throw new Exception("El email no existe", 401)
+        user = empresa;
+        tipo = "empresa"
+    }
+    else {
+        user = profesional;
+        tipo = "profesional"
+    }
+
+     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
+    
+     let testAccount = await nodemailer.createTestAccount();
+     testAccount.user = "jobstack16@gmail.com"
+     testAccount.pass = process.env.GMAILPASS as string
+
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: testAccount.user, // generated ethereal user
+      pass: testAccount.pass, // generated ethereal password
+    },
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"Fred Foo 👻" <jobstack16@gmail.com>', // sender address
+    to: req.body.email, // list of receivers
+    subject: "Recuperación de contraseña", // Subject line
+    text: "Hello world?", // plain text body
+    html: `<p>Si ha solicitado su contraseña, por favor ingrese al siguiente <a href="${process.env.FRONTEND}/cambiarContraseña/${token.replace(".", "$")}">link</a>, en caso contrario, omita este email</p>`, // html body
+  });
+
+  console.log("Message sent: %s", info.messageId);
+  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+  // Preview only available when sending through an Ethereal account
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    
+    return res.json({message: "OK"});
 }
