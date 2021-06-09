@@ -18,17 +18,18 @@ const verifyToken= (req: Request,res:Response, next:NextFunction) =>{
     next()
 }
 
+//cambiar contraseña
 router.put('/cambiarcontraseña',verifyToken, safe(actions.cambiarContraseña));
-
+//perfil profesional
 router.post('/perfil-profesional/estudio/:id', safe(actions.crearEstudio));
 router.post('/perfil-profesional/experiencia/:id', safe(actions.crearExperiencia));
 router.post('/perfil-profesional/certificacion/:id', safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', safe(actions.crearIdioma));
-router.post('/oferta', verifyToken, safe(actions.crearOferta));
 //EMPRESA
 router.put('/empresa/', verifyToken, safe(actions.editarEmpresa))
 router.get('/empresa/', verifyToken, safe(actions.obtenerMiEmpresa))
-
 //OFERTAS
 router.get('/ofertas', verifyToken, safe(actions.getOfertas))
+router.post('/oferta', verifyToken, safe(actions.crearOferta));
+
 export default router;
