@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.getOfertas = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -319,6 +319,25 @@ var crearIdioma = function (req, res) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.crearIdioma = crearIdioma;
+var obtenerProfesionalLogeado = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, profesional, infoProfesional;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ relations: ["perfil"], where: { email: token.user.email } })];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception("Profesional no encontrado");
+                return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"], where: { id: profesional.perfil.id } })];
+            case 2:
+                infoProfesional = _a.sent();
+                return [2 /*return*/, res.json(infoProfesional)];
+        }
+    });
+}); };
+exports.obtenerProfesionalLogeado = obtenerProfesionalLogeado;
 //controlador para el logueo
 var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesionalRepo, empresaRepo, profesional, user, tipo, empresa, token;
@@ -435,6 +454,27 @@ var putPerfilEmpresa = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.putPerfilEmpresa = putPerfilEmpresa;
+var editarProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, profesional, profesionalPerfil, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ relations: ["perfil"], where: { email: token.user.email } })];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception("No existe", 400);
+                profesionalPerfil = profesional.perfil;
+                PerfilProfesional_1.PerfilProfesional.merge(profesionalPerfil, req.body);
+                return [4 /*yield*/, PerfilProfesional_1.PerfilProfesional.save(profesionalPerfil)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.editarProfesional = editarProfesional;
 var editarEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var token, empresa, results;
     return __generator(this, function (_a) {
