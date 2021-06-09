@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getRepository, EntityTarget } from 'typeorm'  // getRepository"  traer una tabla de la base de datos asociada al objeto
+import { getRepository, EntityTarget, ILike } from 'typeorm'  // getRepository"  traer una tabla de la base de datos asociada al objeto
 import { Exception } from './utils'
 import { Empresa } from './entities/Empresa'
 import { RegistroProfesional } from './entities/RegistroProfesional'
@@ -35,18 +35,18 @@ export const obtenerEmpresa = async (req: Request, res: Response): Promise<Respo
 
 export const obtenerMiEmpresa = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken;
-    if (token.user !instanceof Empresa) throw new Exception("Debe ser una empresa")
-    const users = await getRepository(Empresa).findOne({email: token.user.email});
+    if (token.user! instanceof Empresa) throw new Exception("Debe ser una empresa")
+    const users = await getRepository(Empresa).findOne({ email: token.user.email });
     return res.json(users);
 }
 
 export const getProfesional = async (req: Request, res: Response): Promise<Response> => {
-    const users = await getRepository(PerfilProfesional).findOne({ relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: req.params.id}});
+    const users = await getRepository(PerfilProfesional).findOne({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"], where: { id: req.params.id } });
     return res.json(users);
 }
 
 export const getProfesionales = async (req: Request, res: Response): Promise<Response> => {
-    const users = await getRepository(PerfilProfesional).find({ relations: ["estudios","experiencias", "certificaciones", "idiomas"]});
+    const users = await getRepository(PerfilProfesional).find({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"] });
     return res.json(users);
 }
 
@@ -76,7 +76,7 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (profesional) throw new Exception("Ya existe un profesional con ese email")
 
     //Ahora al crear una empresa, tambien se crea una lista de ofertas vacia con ella
-    const nuevaEmpresa = getRepository(Empresa).create({ ...req.body, ofertas: []});
+    const nuevaEmpresa = getRepository(Empresa).create({ ...req.body, ofertas: [] });
     const results = await getRepository(Empresa).save(nuevaEmpresa);
     return res.json(results);
 }
@@ -109,10 +109,10 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
 }
 
 export const crearEstudio = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["estudios"], where: {id: req.params.id}});
-    
-    if(!profesional) throw new Exception("No existe el usuario");
-    if(!req.body.nombre) throw new Exception("Ingrese un nombre del estudio");
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["estudios"], where: { id: req.params.id } });
+
+    if (!profesional) throw new Exception("No existe el usuario");
+    if (!req.body.nombre) throw new Exception("Ingrese un nombre del estudio");
 
     const nuevoEstudio = getRepository(Estudio).create();
     nuevoEstudio.nombre = req.body.nombre;
@@ -123,10 +123,10 @@ export const crearEstudio = async (req: Request, res: Response): Promise<Respons
 }
 
 export const crearExperiencia = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["experiencias"], where: {id: req.params.id}});
-    
-    if(!profesional) throw new Exception("No existe el usuario");
-    if(!req.body.nombre) throw new Exception("Ingrese un nombre de la experiencia");
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["experiencias"], where: { id: req.params.id } });
+
+    if (!profesional) throw new Exception("No existe el usuario");
+    if (!req.body.nombre) throw new Exception("Ingrese un nombre de la experiencia");
 
     const nuevaExperiencia = getRepository(Experiencia).create();
     nuevaExperiencia.nombre = req.body.nombre;
@@ -137,10 +137,10 @@ export const crearExperiencia = async (req: Request, res: Response): Promise<Res
 }
 
 export const crearCertificacion = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["certificaciones"], where: {id: req.params.id}});
-    
-    if(!profesional) throw new Exception("No existe el usuario");
-    if(!req.body.nombre) throw new Exception("Ingrese el nombre de la certificacion");
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["certificaciones"], where: { id: req.params.id } });
+
+    if (!profesional) throw new Exception("No existe el usuario");
+    if (!req.body.nombre) throw new Exception("Ingrese el nombre de la certificacion");
 
     const nuevoCertificado = getRepository(Certificacion).create();
     nuevoCertificado.nombre = req.body.nombre;
@@ -151,10 +151,10 @@ export const crearCertificacion = async (req: Request, res: Response): Promise<R
 }
 
 export const crearIdioma = async (req: Request, res: Response): Promise<Response> => {
-    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["idiomas"], where: {id: req.params.id}});
-    
-    if(!profesional) throw new Exception("No existe el usuario");
-    if(!req.body.nombre) throw new Exception("Ingrese el nombre del idioma");
+    const profesional = await getRepository(PerfilProfesional).findOne({ relations: ["idiomas"], where: { id: req.params.id } });
+
+    if (!profesional) throw new Exception("No existe el usuario");
+    if (!req.body.nombre) throw new Exception("Ingrese el nombre del idioma");
 
     const nuevoIdioma = getRepository(Idioma).create();
     nuevoIdioma.nombre = req.body.nombre;
@@ -164,15 +164,26 @@ export const crearIdioma = async (req: Request, res: Response): Promise<Response
     return res.json(results);
 }
 
+export const obtenerProfesionalLogeado = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    
+    const profesional = await getRepository(RegistroProfesional).findOne({relations:["perfil"], where:{email: token.user.email}});
+    if (!profesional) throw new Exception("Profesional no encontrado");
+
+    const infoProfesional = await getRepository(PerfilProfesional).findOne({relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: profesional.perfil.id}})
+    
+    return res.json(infoProfesional);
+}
+
 //controlador para el logueo
 export const login = async (req: Request, res: Response): Promise<Response> => {
-    
+
     if (!req.body.email) throw new Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400)
     if (!req.body.contrasenna) throw new Exception("Por favor, especifique una contraseña en el cuerpo de su solicitud", 400)
-    
+
     const profesionalRepo = getRepository(RegistroProfesional)
     const empresaRepo = getRepository(Empresa)
-    
+
     // We need to validate that a user with this email and password exists in the DB
     const profesional = await profesionalRepo.findOne({ where: { email: req.body.email, contrasenna: req.body.contrasenna } })
     let user;
@@ -187,45 +198,45 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
         user = profesional;
         tipo = "profesional"
     }
-    
-    
+
+
     // this is the most important line in this function, it create a JWT token
     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
-    
+
     // return the user and the recently created token to the client
-    return res.json({ user: {...user, tipo}, token });
+    return res.json({ user: { ...user, tipo }, token });
 }
 
 // PUT
-    export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
-        const token = req.user as IToken
-        const tipo = "profesional"//cambiar a req.user.tipo
-        let usuario
-    
-        if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
-        if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
-      
-        if (tipo == "profesional") {
-            usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
-            if (!usuario) throw new Exception("El profesional no existe")
-        }
-        else {
-            usuario = await getRepository(Empresa).findOne({ email: token.user.email });
-            if (!usuario) throw new Exception("El empresa no existe")
-        }
-    
-        if (req.body.contrasennaVieja != usuario.contrasenna) throw new Exception("Contraseña incorrecta")
-        usuario.contrasenna = req.body.contrasennaNueva
-    
-        let results
-        if (tipo == "profesional") 
-            results = await getRepository(RegistroProfesional).save(usuario);
-        else 
-            results = await getRepository(Empresa).save(usuario);
-    
-    
-        return res.json(results);
+export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken
+    const tipo = "profesional"//cambiar a req.user.tipo
+    let usuario
+
+    if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
+    if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
+
+    if (tipo == "profesional") {
+        usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El profesional no existe")
     }
+    else {
+        usuario = await getRepository(Empresa).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El empresa no existe")
+    }
+
+    if (req.body.contrasennaVieja != usuario.contrasenna) throw new Exception("Contraseña incorrecta")
+    usuario.contrasenna = req.body.contrasennaNueva
+
+    let results
+    if (tipo == "profesional")
+        results = await getRepository(RegistroProfesional).save(usuario);
+    else
+        results = await getRepository(Empresa).save(usuario);
+
+
+    return res.json(results);
+}
 
 export const putPerfilProfesional = async (req: Request, res: Response): Promise<Response> => {
     const profesional = await getRepository(PerfilProfesional).findOne(req.params.id);
@@ -243,9 +254,19 @@ export const putPerfilEmpresa = async (req: Request, res: Response): Promise<Res
     return res.send(results);
 }
 
+export const editarProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    const profesional = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"] , where:{email: token.user.email}})
+    if (!profesional) throw new Exception("No existe", 400)
+    const profesionalPerfil = profesional.perfil;
+    PerfilProfesional.merge(profesionalPerfil, req.body);
+    const results = await PerfilProfesional.save(profesionalPerfil);
+    return res.send(results);
+}
+
 export const editarEmpresa = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken
-    const empresa = await getRepository(Empresa).findOne({email: token.user.email});
+    const empresa = await getRepository(Empresa).findOne({ email: token.user.email });
     if (!empresa) throw new Exception("No existe", 400)
     Empresa.merge(empresa, req.body);
     const results = await Empresa.save(empresa);
@@ -265,7 +286,7 @@ export const deleteEstudio = async (req: Request, res: Response): Promise<Respon
     const estudioRepo = getRepository(Estudio)
     const estudio = await estudioRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
     if (!estudio) throw new Exception("El estudio no existe")
-    
+
     const results = await estudioRepo.delete(estudio);
     return res.json(results)
 }
@@ -274,7 +295,7 @@ export const deleteExperiencia = async (req: Request, res: Response): Promise<Re
     const experienciaRepo = getRepository(Experiencia)
     const experiencia = await experienciaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
     if (!experiencia) throw new Exception("La experiencia no existe")
-    
+
     const results = await experienciaRepo.delete(experiencia);
     return res.json(results)
 }
@@ -283,7 +304,7 @@ export const deleteCertificacion = async (req: Request, res: Response): Promise<
     const certificacionRepo = getRepository(Certificacion)
     const certificacion = await certificacionRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
     if (!certificacion) throw new Exception("La certificación no existe")
-    
+
     const results = await certificacionRepo.delete(certificacion);
     return res.json(results)
 }
@@ -292,7 +313,7 @@ export const deleteIdioma = async (req: Request, res: Response): Promise<Respons
     const idiomaRepo = getRepository(Idioma)
     const idioma = await idiomaRepo.findOne({ relations: ["perfilProfesional"], where: { id: req.params.id } })
     if (!idioma) throw new Exception("El idioma no existe")
-    
+
     const results = await idiomaRepo.delete(idioma);
     return res.json(results)
 }
@@ -301,7 +322,7 @@ export const deleteCualificacion = async (req: Request, res: Response): Promise<
     const cualificacionRepo = getRepository(Cualificacion)
     const cualificacion = await cualificacionRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
     if (!cualificacion) throw new Exception("La cualificacion no existe")
-    
+
     const results = await cualificacionRepo.delete(cualificacion);
     return res.json(results)
 }
@@ -310,7 +331,7 @@ export const deleteHabilidad = async (req: Request, res: Response): Promise<Resp
     const habilidadRepo = getRepository(Habilidad)
     const habilidad = await habilidadRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
     if (!habilidad) throw new Exception("La habilidad no existe")
-    
+
     const results = await habilidadRepo.delete(habilidad);
     return res.json(results)
 }
@@ -319,7 +340,7 @@ export const deleteCondicion = async (req: Request, res: Response): Promise<Resp
     const condicionRepo = getRepository(Condicion)
     const condicion = await condicionRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
     if (!condicion) throw new Exception("La condicion no existe")
-    
+
     const results = await condicionRepo.delete(condicion);
     return res.json(results)
 }
@@ -328,7 +349,7 @@ export const deleteResponsabilidad = async (req: Request, res: Response): Promis
     const responsabilidadRepo = getRepository(Responsabilidad)
     const responsabilidad = await responsabilidadRepo.findOne({ relations: ["oferta"], where: { id: req.params.id } })
     if (!responsabilidad) throw new Exception("La responsabilidad no existe")
-    
+
     const results = await responsabilidadRepo.delete(responsabilidad);
     return res.json(results)
 }
@@ -337,7 +358,7 @@ const crearArregloRelacion = (entidad: EntityTarget<Cualificacion> | EntityTarge
     const repo = getRepository(entidad);
     let reqDetalles = detallesArray;
     let newDetalles: Cualificacion[] | Condicion[] | Habilidad[] | Responsabilidad[] = [];
-    reqDetalles.forEach((detalleIterable:Object)=>{
+    reqDetalles.forEach((detalleIterable: Object) => {
         const nuevoDetalle = repo.create(detalleIterable)
         newDetalles.push(nuevoDetalle);
     })
@@ -362,8 +383,8 @@ const crearArregloRelacion = (entidad: EntityTarget<Cualificacion> | EntityTarge
 //esta funcion se debe llamar a la hora de guardar una oferta (no se debe de llamar cuando se crea oferta en la vista "Ofertas de un empleador")
 export const crearOferta = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken
-    const empresa = await getRepository(Empresa).findOne({relations: ["ofertas"], where: {email : token.user.email}})
-    if(!empresa) throw new Exception("empresa no esta logeada"); //no se si esto es opcional.
+    const empresa = await getRepository(Empresa).findOne({ relations: ["ofertas"], where: { email: token.user.email } })
+    if (!empresa) throw new Exception("empresa no esta logeada"); //no se si esto es opcional.
 
     if (!req.body.nombre) throw new Exception("Ingrese un nombre para la oferta");
     if (!req.body.fecha) throw new Exception("Ingrese la fecha de la creacion de la oferta");
@@ -373,11 +394,11 @@ export const crearOferta = async (req: Request, res: Response): Promise<Response
     if (!req.body.condiciones) throw new Exception("Ingrese alguna condicion");
     if (!req.body.habilidades) throw new Exception("Ingrese alguna habilidad");
     if (!req.body.responsabilidades) throw new Exception("Ingrese alguna responsabilidad");
-    
-    const cualificacionesNueva:Cualificacion[] = crearArregloRelacion(Cualificacion, req.body.cualificaciones);
-    const condicionesNueva:Condicion[] = crearArregloRelacion(Condicion, req.body.condiciones);
-    const habilidadesNueva:Habilidad[] = crearArregloRelacion(Habilidad, req.body.habilidades);
-    const responsabilidadesNueva:Responsabilidad[] = crearArregloRelacion(Responsabilidad, req.body.responsabilidades);
+
+    const cualificacionesNueva: Cualificacion[] = crearArregloRelacion(Cualificacion, req.body.cualificaciones);
+    const condicionesNueva: Condicion[] = crearArregloRelacion(Condicion, req.body.condiciones);
+    const habilidadesNueva: Habilidad[] = crearArregloRelacion(Habilidad, req.body.habilidades);
+    const responsabilidadesNueva: Responsabilidad[] = crearArregloRelacion(Responsabilidad, req.body.responsabilidades);
 
     const oferta = getRepository(Oferta).create();
     oferta.nombre = req.body.nombre;
@@ -394,7 +415,7 @@ export const crearOferta = async (req: Request, res: Response): Promise<Response
     empresa.ofertas = [...empresa.ofertas, oferta];
     const empresaGuardada = await getRepository(Empresa).save(empresa);
 
-    return res.json({empresa: empresaGuardada, oferta: ofertaGuardada});
+    return res.json({ empresa: empresaGuardada, oferta: ofertaGuardada });
 }
 
 
@@ -406,11 +427,21 @@ export const getOferta = async (req: Request, res: Response): Promise<Response> 
     return res.json(oferta);
 }
 
+export const buscar = async (req: Request, res: Response): Promise<Response> => {
+    const oferta = await getRepository(Oferta).find({
+        where: [
+            {nombre: ILike(`%${req.params.consulta}%`)},
+            {descripcion: ILike(`%${req.params.consulta}%`) }
+    ]
+    })
+    return res.json(oferta);
+}
+
 export const getOfertas = async (req: Request, res: Response): Promise<Response> => {
-    
+
     const token = req.user as IToken
-    const empresa = await getRepository(Empresa).findOne({relations: ["ofertas"], where: {email : token.user.email}})
-    if(!empresa) throw new Exception("no existe la empresa");
+    const empresa = await getRepository(Empresa).findOne({ relations: ["ofertas"], where: { email: token.user.email } })
+    if (!empresa) throw new Exception("no existe la empresa");
     const ofertas = empresa.ofertas;
     return res.json(ofertas);
 }
