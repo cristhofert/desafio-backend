@@ -163,6 +163,17 @@ export const crearIdioma = async (req: Request, res: Response): Promise<Response
     return res.json(results);
 }
 
+export const obtenerProfesionalLogeado = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    
+    const profesional = await getRepository(RegistroProfesional).findOne({relations:["perfil"], where:{email: token.user.email}});
+    if (!profesional) throw new Exception("Profesional no encontrado");
+
+    const infoProfesional = await getRepository(PerfilProfesional).findOne({relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: profesional.perfil.id}})
+    
+    return res.json(infoProfesional);
+}
+
 //controlador para el logueo
 export const login = async (req: Request, res: Response): Promise<Response> => {
 
@@ -239,6 +250,16 @@ export const putPerfilEmpresa = async (req: Request, res: Response): Promise<Res
     if (!empresa) throw new Exception("No existe", 400)
     Empresa.merge(empresa, req.body);
     const results = await Empresa.save(empresa);
+    return res.send(results);
+}
+
+export const editarProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    const profesional = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"] , where:{email: token.user.email}})
+    if (!profesional) throw new Exception("No existe", 400)
+    const profesionalPerfil = profesional.perfil;
+    PerfilProfesional.merge(profesionalPerfil, req.body);
+    const results = await PerfilProfesional.save(profesionalPerfil);
     return res.send(results);
 }
 
