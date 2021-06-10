@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -152,9 +152,9 @@ var getCualificacion = function (req, res) { return __awaiter(void 0, void 0, vo
 exports.getCualificacion = getCualificacion;
 // POST
 var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profesional, _a, nuevaEmpresa, results;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var profesional, nuevaEmpresa, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.email)
@@ -185,56 +185,33 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
                     throw new utils_1.Exception("Por favor, provee una cuenta de github");
                 return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: req.body.email })];
             case 1:
-                profesional = _b.sent();
+                profesional = _a.sent();
                 if (profesional)
                     throw new utils_1.Exception("Ya existe un profesional con ese email");
-
-                _a = req.body;
-                return [4 /*yield*/, bcrypt_1["default"].hash(req.body.contrasenna, 10, function (err, hash) {
-                        if (err)
-                            throw new utils_1.Exception(err);
-                        return hash;
-                    })];
-            case 2:
-                _a.contrasenna = _b.sent();
-
                 req.body.contrasenna = bcrypt_1["default"].hashSync(req.body.contrasenna, 10);
-
                 nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(__assign(__assign({}, req.body), { ofertas: [] }));
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(nuevaEmpresa)];
-            case 3:
-                results = _b.sent();
+            case 2:
+                results = _a.sent();
                 return [2 /*return*/, res.json(results)];
         }
     });
 }); };
 exports.crearEmpresa = crearEmpresa;
 var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, empresa, perfilNuevo, results_perfil, nuevaProfesional, results;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var empresa, perfilNuevo, results_perfil, nuevaProfesional, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.email)
                     throw new utils_1.Exception("Por favor, provee una email");
                 if (!req.body.contrasenna)
                     throw new utils_1.Exception("Por favor, provee una contraseña");
-
-                _a = req.body;
-                return [4 /*yield*/, bcrypt_1["default"].hash(req.body.contrasenna, 10, function (err, hash) {
-                        if (err)
-                            throw new utils_1.Exception(err);
-                        return hash;
-                    })];
-
                 req.body.contrasenna = bcrypt_1["default"].hashSync(req.body.contrasenna, 10);
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: req.body.email })];
-
             case 1:
-                _a.contrasenna = _b.sent();
-                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: req.body.email })];
-            case 2:
-                empresa = _b.sent();
+                empresa = _a.sent();
                 if (empresa)
                     throw new utils_1.Exception("Ya existe un empresa con ese email");
                 perfilNuevo = typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).create({
@@ -247,12 +224,12 @@ var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, vo
                     twitter: ""
                 });
                 return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).save(perfilNuevo)];
-            case 3:
-                results_perfil = _b.sent();
+            case 2:
+                results_perfil = _a.sent();
                 nuevaProfesional = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).create(__assign(__assign({}, req.body), { perfil: perfilNuevo }));
                 return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(nuevaProfesional)];
-            case 4:
-                results = _b.sent();
+            case 3:
+                results = _a.sent();
                 return [2 /*return*/, res.json({ results_perfil: results_perfil, results: results })];
         }
     });
@@ -394,10 +371,6 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     throw new utils_1.Exception("Email o contraseña inválido", 401);
                 }
                 user = empresa;
-
-                tipo = "empresa";
-
-
                 return [3 /*break*/, 6];
             case 4: return [4 /*yield*/, bcrypt_1["default"].compare(req.body.contrasenna, profesional.contrasenna).then(function (result) {
                     return !result;
@@ -407,10 +380,6 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     throw new utils_1.Exception("Email o contraseña inválido", 401);
                 }
                 user = profesional;
-
-                tipo = "profesional";
-
-
                 _a.label = 6;
             case 6:
                 token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
@@ -462,6 +431,44 @@ var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.cambiarContraseña = cambiarContraseña;
+var cambiarPassRecuperacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, empresa, usuario, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                empresa = token.user;
+                if (!req.body.nuevaPass)
+                    throw new utils_1.Exception("Ingrese una nueva contraseña");
+                if (!empresa.comentarios) return [3 /*break*/, 2];
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: token.user.email })];
+            case 1:
+                usuario = _a.sent();
+                if (!usuario)
+                    throw new utils_1.Exception("La empresa no existe");
+                return [3 /*break*/, 4];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: token.user.email })];
+            case 3:
+                usuario = _a.sent();
+                if (!usuario)
+                    throw new utils_1.Exception("El profesional no existe");
+                _a.label = 4;
+            case 4:
+                usuario.contrasenna = bcrypt_1["default"].hashSync(req.body.nuevaPass, 10);
+                if (!empresa.comentarios) return [3 /*break*/, 6];
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(usuario)];
+            case 5:
+                results = _a.sent();
+                return [3 /*break*/, 8];
+            case 6: return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(usuario)];
+            case 7:
+                results = _a.sent();
+                _a.label = 8;
+            case 8: return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.cambiarPassRecuperacion = cambiarPassRecuperacion;
 var putPerfilProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesional, results;
     return __generator(this, function (_a) {
@@ -823,7 +830,7 @@ var getOfertas = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.getOfertas = getOfertas;
 var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profesionalRepo, empresaRepo, profesional, user, empresa, token, testAccount, transporter, info;
+    var profesionalRepo, empresaRepo, profesional, user, empresa, token, tokenSustituido, testAccount, transporter, info;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -848,6 +855,7 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
             case 4:
                 if (!user) return [3 /*break*/, 7];
                 token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
+                tokenSustituido = token.replace(/\./g, '$');
                 return [4 /*yield*/, nodemailer_1["default"].createTestAccount()];
             case 5:
                 testAccount = _a.sent();
@@ -863,11 +871,10 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
                     }
                 });
                 return [4 /*yield*/, transporter.sendMail({
-                        from: '"Fred Foo 👻" <jobstack16@gmail.com>',
+                        from: '"JobStack" <jobstack16@gmail.com>',
                         to: req.body.email,
                         subject: "Recuperación de contraseña",
-                        text: "Hello world?",
-                        html: "<p>Si ha solicitado su contrase\u00F1a, por favor ingrese al siguiente <a href=\"" + process.env.FRONTEND + "/cambiarContrase\u00F1a/" + token.replace(".", "$") + "\">link</a>, en caso contrario, omita este email</p>"
+                        html: "<p>Si ha solicitado su contrase\u00F1a, por favor ingrese al siguiente <a href=\"" + process.env.FRONTEND + "/recuperarContrase\u00F1a/" + tokenSustituido + "\">link</a>, en caso contrario, omita este email</p>"
                     })];
             case 6:
                 info = _a.sent();
