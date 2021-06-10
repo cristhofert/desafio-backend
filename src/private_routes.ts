@@ -20,6 +20,7 @@ const verifyToken= (req: Request,res:Response, next:NextFunction) =>{
 
 //cambiar contraseña
 router.put('/cambiarcontraseña',verifyToken, safe(actions.cambiarContraseña));
+router.put('/cambiarPassRecuperacion',verifyToken, safe(actions.cambiarPassRecuperacion));
 //perfil profesional
 
 router.post('/perfil-profesional/estudio/:id', safe(actions.crearEstudio));

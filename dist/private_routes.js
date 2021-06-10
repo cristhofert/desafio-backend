@@ -40,6 +40,7 @@ var verifyToken = function (req, res, next) {
 };
 //cambiar contraseña
 router.put('/cambiarcontraseña', verifyToken, utils_1.safe(actions.cambiarContraseña));
+router.put('/cambiarPassRecuperacion', verifyToken, utils_1.safe(actions.cambiarPassRecuperacion));
 //perfil profesional
 router.post('/perfil-profesional/estudio/:id', utils_1.safe(actions.crearEstudio));
 router.post('/perfil-profesional/experiencia/:id', utils_1.safe(actions.crearExperiencia));

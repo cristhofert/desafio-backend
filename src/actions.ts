@@ -215,7 +215,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
     // return the user and the recently created token to the client
-    return res.json({ user: user , token });
+    return res.json({ user: user, token });
 }
 
 // PUT
@@ -244,6 +244,33 @@ export const cambiarContraseña = async (req: Request, res: Response): Promise<R
     else
         results = await getRepository(Empresa).save(usuario);
 
+
+    return res.json(results);
+}
+
+export const cambiarPassRecuperacion = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken
+    const empresa = token.user as Empresa;
+    let usuario
+
+    if (!req.body.nuevaPass) throw new Exception("Ingrese una nueva contraseña")
+
+    if (empresa.comentarios) {
+        usuario = await getRepository(Empresa).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("La empresa no existe")
+    }
+    else {
+        usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
+        if (!usuario) throw new Exception("El profesional no existe")
+    }
+
+    usuario.contrasenna = bcrypt.hashSync(req.body.nuevaPass, 10);
+
+    let results
+    if (empresa.comentarios)
+        results = await getRepository(Empresa).save(usuario);
+    else
+        results = await getRepository(RegistroProfesional).save(usuario);
 
     return res.json(results);
 }
@@ -463,9 +490,10 @@ export const recuperarPass = async (req: Request, res: Response): Promise<Respon
 
     if (user) {
         const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
+        const tokenSustituido = token.replace(/\./g, '$');
 
         let testAccount = await nodemailer.createTestAccount();
-       
+
         testAccount.user = "jobstack16@gmail.com"
         testAccount.pass = process.env.GMAILPASS as string
 
@@ -482,11 +510,10 @@ export const recuperarPass = async (req: Request, res: Response): Promise<Respon
 
         // send mail with defined transport object
         let info = await transporter.sendMail({
-            from: '"Fred Foo 👻" <jobstack16@gmail.com>', // sender address
-            to: req.body.email, // list of receivers
-            subject: "Recuperación de contraseña", // Subject line
-            text: "Hello world?", // plain text body
-            html: `<p>Si ha solicitado su contraseña, por favor ingrese al siguiente <a href="${process.env.FRONTEND}/cambiarContraseña/${token.replace(".", "$")}">link</a>, en caso contrario, omita este email</p>`, // html body
+            from: '"JobStack" <jobstack16@gmail.com>',
+            to: req.body.email,
+            subject: "Recuperación de contraseña",
+            html: `<p>Si ha solicitado su contraseña, por favor ingrese al siguiente <a href="${process.env.FRONTEND}/recuperarContraseña/${tokenSustituido}">link</a>, en caso contrario, omita este email</p>`, // html body
         });
 
         console.log("Message sent: %s", info.messageId);
