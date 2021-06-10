@@ -824,7 +824,7 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
                 testAccount.pass = process.env.GMAILPASS;
                 transporter = nodemailer_1["default"].createTransport({
                     host: "smtp.gmail.com",
-                    port: 465,
+                    port: 587,
                     secure: false,
                     auth: {
                         user: testAccount.user,

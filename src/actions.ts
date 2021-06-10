@@ -465,13 +465,14 @@ export const recuperarPass = async (req: Request, res: Response): Promise<Respon
         const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
         let testAccount = await nodemailer.createTestAccount();
+       
         testAccount.user = "jobstack16@gmail.com"
         testAccount.pass = process.env.GMAILPASS as string
 
         // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
-            port: 465,
+            port: 587,
             secure: false, // true for 465, false for other ports
             auth: {
                 user: testAccount.user, // generated ethereal user
