@@ -24,6 +24,9 @@ export class Oferta extends BaseEntity {
     @Column()
     politica_teletrabajo: string;
 
+    @Column()
+    estado: string;
+
     @OneToMany(() => Cualificacion, cualificacion => cualificacion.oferta, {cascade: true})
     cualificaciones: Cualificacion[];
 

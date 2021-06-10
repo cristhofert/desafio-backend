@@ -58,6 +58,10 @@ var Oferta = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Oferta.prototype, "politica_teletrabajo");
     __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Oferta.prototype, "estado");
+    __decorate([
         typeorm_1.OneToMany(function () { return Cualificacion_1.Cualificacion; }, function (cualificacion) { return cualificacion.oferta; }, { cascade: true }),
         __metadata("design:type", Array)
     ], Oferta.prototype, "cualificaciones");
