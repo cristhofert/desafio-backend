@@ -188,6 +188,7 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
                 profesional = _b.sent();
                 if (profesional)
                     throw new utils_1.Exception("Ya existe un profesional con ese email");
+
                 _a = req.body;
                 return [4 /*yield*/, bcrypt_1["default"].hash(req.body.contrasenna, 10, function (err, hash) {
                         if (err)
@@ -196,6 +197,9 @@ var crearEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
                     })];
             case 2:
                 _a.contrasenna = _b.sent();
+
+                req.body.contrasenna = bcrypt_1["default"].hashSync(req.body.contrasenna, 10);
+
                 nuevaEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(__assign(__assign({}, req.body), { ofertas: [] }));
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(nuevaEmpresa)];
             case 3:
@@ -215,12 +219,17 @@ var crearProfesional = function (req, res) { return __awaiter(void 0, void 0, vo
                     throw new utils_1.Exception("Por favor, provee una email");
                 if (!req.body.contrasenna)
                     throw new utils_1.Exception("Por favor, provee una contraseña");
+
                 _a = req.body;
                 return [4 /*yield*/, bcrypt_1["default"].hash(req.body.contrasenna, 10, function (err, hash) {
                         if (err)
                             throw new utils_1.Exception(err);
                         return hash;
                     })];
+
+                req.body.contrasenna = bcrypt_1["default"].hashSync(req.body.contrasenna, 10);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: req.body.email })];
+
             case 1:
                 _a.contrasenna = _b.sent();
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ email: req.body.email })];
@@ -358,7 +367,7 @@ var obtenerProfesionalLogeado = function (req, res) { return __awaiter(void 0, v
 exports.obtenerProfesionalLogeado = obtenerProfesionalLogeado;
 //controlador para el logueo
 var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profesionalRepo, empresaRepo, profesional, user, tipo, empresa, token;
+    var profesionalRepo, empresaRepo, profesional, user, empresa, token;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -385,7 +394,10 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     throw new utils_1.Exception("Email o contraseña inválido", 401);
                 }
                 user = empresa;
+
                 tipo = "empresa";
+
+
                 return [3 /*break*/, 6];
             case 4: return [4 /*yield*/, bcrypt_1["default"].compare(req.body.contrasenna, profesional.contrasenna).then(function (result) {
                     return !result;
@@ -395,30 +407,31 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     throw new utils_1.Exception("Email o contraseña inválido", 401);
                 }
                 user = profesional;
+
                 tipo = "profesional";
+
+
                 _a.label = 6;
             case 6:
                 token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
                 // return the user and the recently created token to the client
-                return [2 /*return*/, res.json({ user: __assign(__assign({}, user), { tipo: tipo }), token: token })];
+                return [2 /*return*/, res.json({ user: user, token: token })];
         }
     });
 }); };
 exports.login = login;
 // PUT
 var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, tipo, usuario, results;
+    var token, usuario, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 token = req.user;
-                tipo = "profesional" //cambiar a req.user.tipo
-                ;
                 if (!req.body.contrasennaVieja)
                     throw new utils_1.Exception("Por favor, provee la contraseña vieja");
                 if (!req.body.contrasennaNueva)
                     throw new utils_1.Exception("Por favor, provee una nueva contraseña");
-                if (!(tipo == "profesional")) return [3 /*break*/, 2];
+                if (!(token.user instanceof RegistroProfesional_1.RegistroProfesional)) return [3 /*break*/, 2];
                 return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).findOne({ email: token.user.email })];
             case 1:
                 usuario = _a.sent();
@@ -435,7 +448,7 @@ var cambiarContraseña = function (req, res) { return __awaiter(void 0, void 0, 
                 if (req.body.contrasennaVieja != usuario.contrasenna)
                     throw new utils_1.Exception("Contraseña incorrecta");
                 usuario.contrasenna = req.body.contrasennaNueva;
-                if (!(tipo == "profesional")) return [3 /*break*/, 6];
+                if (!(token.user instanceof RegistroProfesional_1.RegistroProfesional)) return [3 /*break*/, 6];
                 return [4 /*yield*/, typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional).save(usuario)];
             case 5:
                 results = _a.sent();
@@ -707,20 +720,6 @@ var crearArregloRelacion = function (entidad, detallesArray) {
     });
     return newDetalles;
 };
-/*
-    MODELO REQUEST CREAROFERTA
-    {
-        "nombre": "string",
-        "fecha": "string",
-        "descripcion": "string",
-        "politica_teletrabajo": "string",
-        "cualificaciones": [{nombre: "string"}, {nombre: "string"}, ...],
-        "condiciones": [{nombre: "string"}, {nombre: "string"}, ...],
-        "habilidades": [{nombre: "string"}, {nombre: "string"}, ...],
-        "responsabilidades": [{nombre: "string"}, {nombre: "string"}, ...],
-    }
-*/
-//esta funcion se debe llamar a la hora de guardar una oferta (no se debe de llamar cuando se crea oferta en la vista "Ofertas de un empleador")
 var crearOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var token, empresa, cualificacionesNueva, condicionesNueva, habilidadesNueva, responsabilidadesNueva, oferta, ofertaGuardada, empresaGuardada;
     return __generator(this, function (_a) {
@@ -824,7 +823,7 @@ var getOfertas = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.getOfertas = getOfertas;
 var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var profesionalRepo, empresaRepo, profesional, user, tipo, empresa, token, testAccount, transporter, info;
+    var profesionalRepo, empresaRepo, profesional, user, empresa, token, testAccount, transporter, info;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -839,16 +838,15 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, empresaRepo.findOne({ email: req.body.email })];
             case 2:
                 empresa = _a.sent();
-                if (!empresa)
-                    throw new utils_1.Exception("El email no existe", 401);
-                user = empresa;
-                tipo = "empresa";
+                if (empresa) {
+                    user = empresa;
+                }
                 return [3 /*break*/, 4];
             case 3:
                 user = profesional;
-                tipo = "profesional";
                 _a.label = 4;
             case 4:
+                if (!user) return [3 /*break*/, 7];
                 token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
                 return [4 /*yield*/, nodemailer_1["default"].createTestAccount()];
             case 5:
@@ -857,7 +855,7 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
                 testAccount.pass = process.env.GMAILPASS;
                 transporter = nodemailer_1["default"].createTransport({
                     host: "smtp.gmail.com",
-                    port: 465,
+                    port: 587,
                     secure: false,
                     auth: {
                         user: testAccount.user,
@@ -877,8 +875,8 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
                 // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
                 // Preview only available when sending through an Ethereal account
                 console.log("Preview URL: %s", nodemailer_1["default"].getTestMessageUrl(info));
-                // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-                return [2 /*return*/, res.json({ message: "OK" })];
+                _a.label = 7;
+            case 7: return [2 /*return*/, res.json({ message: "OK" })];
         }
     });
 }); };

@@ -75,10 +75,7 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<Respons
     if (!req.body.github) throw new Exception("Por favor, provee una cuenta de github")
     const profesional = await getRepository(RegistroProfesional).findOne({ email: req.body.email })
     if (profesional) throw new Exception("Ya existe un profesional con ese email")
-        req.body.contrasenna = await bcrypt.hash(req.body.contrasenna, 10, (err: any, hash: any) => {
-        if(err) throw new Exception(err)
-        return hash
-    });
+    req.body.contrasenna = bcrypt.hashSync(req.body.contrasenna, 10);
 
 
     //Ahora al crear una empresa, tambien se crea una lista de ofertas vacia con ella
@@ -92,10 +89,7 @@ export const crearProfesional = async (req: Request, res: Response): Promise<Res
     // important validations to avoid ambiguos errors, the client needs to understand what went wrong
     if (!req.body.email) throw new Exception("Por favor, provee una email")
     if (!req.body.contrasenna) throw new Exception("Por favor, provee una contraseña")
-    req.body.contrasenna = await bcrypt.hash(req.body.contrasenna, 10, (err: any, hash: any) => {
-        if(err) throw new Exception(err)
-        return hash
-    });
+    req.body.contrasenna = bcrypt.hashSync(req.body.contrasenna, 10);
 
     const empresa = await getRepository(Empresa).findOne({ email: req.body.email })
     if (empresa) throw new Exception("Ya existe un empresa con ese email")
@@ -176,12 +170,12 @@ export const crearIdioma = async (req: Request, res: Response): Promise<Response
 
 export const obtenerProfesionalLogeado = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken;
-    
-    const profesional = await getRepository(RegistroProfesional).findOne({relations:["perfil"], where:{email: token.user.email}});
+
+    const profesional = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"], where: { email: token.user.email } });
     if (!profesional) throw new Exception("Profesional no encontrado");
 
-    const infoProfesional = await getRepository(PerfilProfesional).findOne({relations: ["estudios","experiencias", "certificaciones", "idiomas"], where: {id: profesional.perfil.id}})
-    
+    const infoProfesional = await getRepository(PerfilProfesional).findOne({ relations: ["estudios", "experiencias", "certificaciones", "idiomas"], where: { id: profesional.perfil.id } })
+
     return res.json(infoProfesional);
 }
 
@@ -197,26 +191,23 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     // We need to validate that a user with this email and password exists in the DB
     const profesional = await profesionalRepo.findOne({ where: { email: req.body.email } })
     let user;
-    let tipo;
     if (!profesional) {
         const empresa = await empresaRepo.findOne({ where: { email: req.body.email } })
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
-        if(await bcrypt.compare(req.body.contrasenna, empresa.contrasenna).then(function(result: boolean) {
+        if (await bcrypt.compare(req.body.contrasenna, empresa.contrasenna).then(function (result: boolean) {
             return !result
-        })){
+        })) {
             throw new Exception("Email o contraseña inválido", 401)
         }
         user = empresa;
-        tipo = "empresa"
     }
     else {
-        if(await bcrypt.compare(req.body.contrasenna, profesional.contrasenna).then(function(result: boolean) {
+        if (await bcrypt.compare(req.body.contrasenna, profesional.contrasenna).then(function (result: boolean) {
             return !result
-        })){
+        })) {
             throw new Exception("Email o contraseña inválido", 401)
         }
-        user = profesional;
-        tipo = "profesional"
+        user = profesional
     }
 
 
@@ -224,19 +215,18 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
     // return the user and the recently created token to the client
-    return res.json({ user: { ...user, tipo }, token });
+    return res.json({ user: user , token });
 }
 
 // PUT
 export const cambiarContraseña = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken
-    const tipo = "profesional"//cambiar a req.user.tipo
     let usuario
 
     if (!req.body.contrasennaVieja) throw new Exception("Por favor, provee la contraseña vieja")
     if (!req.body.contrasennaNueva) throw new Exception("Por favor, provee una nueva contraseña")
 
-    if (tipo == "profesional") {
+    if (token.user instanceof RegistroProfesional) {
         usuario = await getRepository(RegistroProfesional).findOne({ email: token.user.email });
         if (!usuario) throw new Exception("El profesional no existe")
     }
@@ -249,7 +239,7 @@ export const cambiarContraseña = async (req: Request, res: Response): Promise<R
     usuario.contrasenna = req.body.contrasennaNueva
 
     let results
-    if (tipo == "profesional")
+    if (token.user instanceof RegistroProfesional)
         results = await getRepository(RegistroProfesional).save(usuario);
     else
         results = await getRepository(Empresa).save(usuario);
@@ -276,7 +266,7 @@ export const putPerfilEmpresa = async (req: Request, res: Response): Promise<Res
 
 export const editarProfesional = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken;
-    const profesional = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"] , where:{email: token.user.email}})
+    const profesional = await getRepository(RegistroProfesional).findOne({ relations: ["perfil"], where: { email: token.user.email } })
     if (!profesional) throw new Exception("No existe", 400)
     const profesionalPerfil = profesional.perfil;
     PerfilProfesional.merge(profesionalPerfil, req.body);
@@ -386,21 +376,6 @@ const crearArregloRelacion = (entidad: EntityTarget<Cualificacion> | EntityTarge
     return newDetalles;
 }
 
-/*
-    MODELO REQUEST CREAROFERTA
-    {
-        "nombre": "string",
-        "fecha": "string",
-        "descripcion": "string",
-        "politica_teletrabajo": "string",
-        "cualificaciones": [{nombre: "string"}, {nombre: "string"}, ...],
-        "condiciones": [{nombre: "string"}, {nombre: "string"}, ...],
-        "habilidades": [{nombre: "string"}, {nombre: "string"}, ...],
-        "responsabilidades": [{nombre: "string"}, {nombre: "string"}, ...],
-    }
-*/
-
-//esta funcion se debe llamar a la hora de guardar una oferta (no se debe de llamar cuando se crea oferta en la vista "Ofertas de un empleador")
 export const crearOferta = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken
     const empresa = await getRepository(Empresa).findOne({ relations: ["ofertas"], where: { email: token.user.email } })
@@ -450,9 +425,9 @@ export const getOferta = async (req: Request, res: Response): Promise<Response> 
 export const buscar = async (req: Request, res: Response): Promise<Response> => {
     const oferta = await getRepository(Oferta).find({
         where: [
-            {nombre: ILike(`%${req.params.consulta}%`)},
-            {descripcion: ILike(`%${req.params.consulta}%`) }
-    ]
+            { nombre: ILike(`%${req.params.consulta}%`) },
+            { descripcion: ILike(`%${req.params.consulta}%`) }
+        ]
     })
     return res.json(oferta);
 }
@@ -467,59 +442,60 @@ export const getOfertas = async (req: Request, res: Response): Promise<Response>
 }
 
 export const recuperarPass = async (req: Request, res: Response): Promise<Response> => {
-    
+
     if (!req.body.email) throw new Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400)
-    
+
     const profesionalRepo = getRepository(RegistroProfesional)
     const empresaRepo = getRepository(Empresa)
-    
+
     // We need to validate that a user with this email and password exists in the DB
-    const profesional = await profesionalRepo.findOne({email: req.body.email})
+    const profesional = await profesionalRepo.findOne({ email: req.body.email })
     let user;
-    let tipo;
     if (!profesional) {
-        const empresa = await empresaRepo.findOne({email: req.body.email})
-        if (!empresa) throw new Exception("El email no existe", 401)
-        user = empresa;
-        tipo = "empresa"
+        const empresa = await empresaRepo.findOne({ email: req.body.email })
+        if (empresa) {
+            user = empresa;
+        }
     }
     else {
-        user = profesional;
-        tipo = "profesional"
+        user = profesional
     }
 
-     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
-    
-     let testAccount = await nodemailer.createTestAccount();
-     testAccount.user = "jobstack16@gmail.com"
-     testAccount.pass = process.env.GMAILPASS as string
+    if (user) {
+        const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
 
-  // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: testAccount.user, // generated ethereal user
-      pass: testAccount.pass, // generated ethereal password
-    },
-  });
+        let testAccount = await nodemailer.createTestAccount();
+       
+        testAccount.user = "jobstack16@gmail.com"
+        testAccount.pass = process.env.GMAILPASS as string
 
-  // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <jobstack16@gmail.com>', // sender address
-    to: req.body.email, // list of receivers
-    subject: "Recuperación de contraseña", // Subject line
-    text: "Hello world?", // plain text body
-    html: `<p>Si ha solicitado su contraseña, por favor ingrese al siguiente <a href="${process.env.FRONTEND}/cambiarContraseña/${token.replace(".", "$")}">link</a>, en caso contrario, omita este email</p>`, // html body
-  });
+        // create reusable transporter object using the default SMTP transport
+        let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: testAccount.user, // generated ethereal user
+                pass: testAccount.pass, // generated ethereal password
+            },
+        });
 
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+        // send mail with defined transport object
+        let info = await transporter.sendMail({
+            from: '"Fred Foo 👻" <jobstack16@gmail.com>', // sender address
+            to: req.body.email, // list of receivers
+            subject: "Recuperación de contraseña", // Subject line
+            text: "Hello world?", // plain text body
+            html: `<p>Si ha solicitado su contraseña, por favor ingrese al siguiente <a href="${process.env.FRONTEND}/cambiarContraseña/${token.replace(".", "$")}">link</a>, en caso contrario, omita este email</p>`, // html body
+        });
 
-  // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-    
-    return res.json({message: "OK"});
+        console.log("Message sent: %s", info.messageId);
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+        // Preview only available when sending through an Ethereal account
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    }
+
+    return res.json({ message: "OK" });
 }
