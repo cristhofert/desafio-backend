@@ -13,6 +13,8 @@ var actions_1 = require("./actions");
 var actions_2 = require("./actions");
 var router = express_1.Router();
 // signup route, creates a new user in the DB
+//usuario
+router.post('/recuperarPass', utils_1.safe(actions_1.recuperarPass));
 //Empresa
 router.get('/empresas', utils_1.safe(actions_1.obtenerEmpresas));
 router.get('/empresa/:id', utils_1.safe(actions_1.obtenerEmpresa));

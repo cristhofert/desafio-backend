@@ -8,13 +8,15 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales, putOferta, getCualificacion, buscar } from './actions';
+import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales, putOferta, getCualificacion, buscar, recuperarPass } from './actions';
 import { login } from './actions'
 
 const router = Router();
 
 // signup route, creates a new user in the DB
 
+//usuario
+router.post('/recuperarPass', safe(recuperarPass))
 //Empresa
 router.get('/empresas', safe(obtenerEmpresas))
 router.get('/empresa/:id', safe(obtenerEmpresa))
