@@ -30,13 +30,24 @@ router.post('/perfil-profesional/idioma/:id', safe(actions.crearIdioma));
 
 router.put('/perfil-profesional/', verifyToken, safe(actions.editarProfesional));
 router.get('/perfil-profesional/', verifyToken, safe(actions.obtenerProfesionalLogeado));
+router.put('/perfilProfesional/:id', safe(actions.putPerfilProfesional))
 
 //EMPRESA
 router.put('/empresa/', verifyToken, safe(actions.editarEmpresa))
 router.get('/empresa/', verifyToken, safe(actions.obtenerMiEmpresa))
+router.put('/perfilEmpresa/:id', safe(actions.putPerfilEmpresa))
 //OFERTAS
 router.get('/ofertas', verifyToken, safe(actions.getOfertas))
 router.post('/oferta', verifyToken, safe(actions.crearOferta));
+router.put('/oferta/:id', safe(actions.putOferta))
 
+//estudio
+router.delete('/deleteEstudio/:id', safe(actions.deleteEstudio));
+//experiencia
+router.delete('/deleteExperiencia/:id', safe(actions.deleteExperiencia));
+//certificacion
+router.delete('/deleteCertificacion/:id', safe(actions.deleteCertificacion));
+//idioma
+router.delete('/deleteIdioma/:id', safe(actions.deleteIdioma));
 
 export default router;
