@@ -22,7 +22,7 @@ export class Oferta extends BaseEntity {
     descripcion: string;
 
     @Column()
-    politica_teletrabajo: string;
+    presencialidad: string;
 
     @Column()
     estado: string;

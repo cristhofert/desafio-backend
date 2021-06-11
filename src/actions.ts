@@ -411,7 +411,8 @@ export const crearOferta = async (req: Request, res: Response): Promise<Response
     if (!req.body.nombre) throw new Exception("Ingrese un nombre para la oferta");
     if (!req.body.fecha) throw new Exception("Ingrese la fecha de la creacion de la oferta");
     if (!req.body.descripcion) throw new Exception("Ingrese una descripcion de oferta");
-    if (!req.body.politica_teletrabajo) throw new Exception("Ingrese una politica de teletrabajo");
+    if (!req.body.presencialidad) throw new Exception("Indique si es presencial o remoto");
+    if (!req.body.estado) throw new Exception("Indique el estado de la oferta");
     if (!req.body.cualificaciones) throw new Exception("Ingrese alguna cualificacion");
     if (!req.body.condiciones) throw new Exception("Ingrese alguna condicion");
     if (!req.body.habilidades) throw new Exception("Ingrese alguna habilidad");
@@ -426,7 +427,8 @@ export const crearOferta = async (req: Request, res: Response): Promise<Response
     oferta.nombre = req.body.nombre;
     oferta.fecha = req.body.fecha;
     oferta.descripcion = req.body.descripcion;
-    oferta.politica_teletrabajo = req.body.politica_teletrabajo;
+    oferta.presencialidad = req.body.presencialidad;
+    oferta.estado = req.body.estado;
     oferta.cualificaciones = cualificacionesNueva;
     oferta.condiciones = condicionesNueva;
     oferta.habilidades = habilidadesNueva;
