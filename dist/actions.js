@@ -744,8 +744,10 @@ var crearOferta = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     throw new utils_1.Exception("Ingrese la fecha de la creacion de la oferta");
                 if (!req.body.descripcion)
                     throw new utils_1.Exception("Ingrese una descripcion de oferta");
-                if (!req.body.politica_teletrabajo)
-                    throw new utils_1.Exception("Ingrese una politica de teletrabajo");
+                if (!req.body.presencialidad)
+                    throw new utils_1.Exception("Indique si es presencial o remoto");
+                if (!req.body.estado)
+                    throw new utils_1.Exception("Indique el estado de la oferta");
                 if (!req.body.cualificaciones)
                     throw new utils_1.Exception("Ingrese alguna cualificacion");
                 if (!req.body.condiciones)
@@ -762,7 +764,8 @@ var crearOferta = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 oferta.nombre = req.body.nombre;
                 oferta.fecha = req.body.fecha;
                 oferta.descripcion = req.body.descripcion;
-                oferta.politica_teletrabajo = req.body.politica_teletrabajo;
+                oferta.presencialidad = req.body.presencialidad;
+                oferta.estado = req.body.estado;
                 oferta.cualificaciones = cualificacionesNueva;
                 oferta.condiciones = condicionesNueva;
                 oferta.habilidades = habilidadesNueva;

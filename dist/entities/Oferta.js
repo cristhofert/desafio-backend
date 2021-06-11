@@ -56,7 +56,7 @@ var Oferta = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Oferta.prototype, "politica_teletrabajo");
+    ], Oferta.prototype, "presencialidad");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
