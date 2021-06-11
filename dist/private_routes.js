@@ -42,16 +42,27 @@ var verifyToken = function (req, res, next) {
 router.put('/cambiarcontraseña', verifyToken, utils_1.safe(actions.cambiarContraseña));
 router.put('/cambiarPassRecuperacion', verifyToken, utils_1.safe(actions.cambiarPassRecuperacion));
 //perfil profesional
-router.post('/perfil-profesional/estudio/:id', utils_1.safe(actions.crearEstudio));
-router.post('/perfil-profesional/experiencia/:id', utils_1.safe(actions.crearExperiencia));
-router.post('/perfil-profesional/certificacion/:id', utils_1.safe(actions.crearCertificacion));
-router.post('/perfil-profesional/idioma/:id', utils_1.safe(actions.crearIdioma));
+router.post('/perfil-profesional/estudio/:id', verifyToken, utils_1.safe(actions.crearEstudio));
+router.post('/perfil-profesional/experiencia/:id', verifyToken, utils_1.safe(actions.crearExperiencia));
+router.post('/perfil-profesional/certificacion/:id', verifyToken, utils_1.safe(actions.crearCertificacion));
+router.post('/perfil-profesional/idioma/:id', verifyToken, utils_1.safe(actions.crearIdioma));
 router.put('/perfil-profesional/', verifyToken, utils_1.safe(actions.editarProfesional));
 router.get('/perfil-profesional/', verifyToken, utils_1.safe(actions.obtenerProfesionalLogeado));
+router.put('/perfilProfesional/:id', verifyToken, utils_1.safe(actions.putPerfilProfesional));
 //EMPRESA
 router.put('/empresa/', verifyToken, utils_1.safe(actions.editarEmpresa));
 router.get('/empresa/', verifyToken, utils_1.safe(actions.obtenerMiEmpresa));
+router.put('/perfilEmpresa/:id', verifyToken, utils_1.safe(actions.putPerfilEmpresa));
 //OFERTAS
 router.get('/ofertas', verifyToken, utils_1.safe(actions.getOfertas));
 router.post('/oferta', verifyToken, utils_1.safe(actions.crearOferta));
+router.put('/oferta/:id', verifyToken, utils_1.safe(actions.putOferta));
+//estudio
+router["delete"]('/deleteEstudio/:id', verifyToken, utils_1.safe(actions.deleteEstudio));
+//experiencia
+router["delete"]('/deleteExperiencia/:id', verifyToken, utils_1.safe(actions.deleteExperiencia));
+//certificacion
+router["delete"]('/deleteCertificacion/:id', verifyToken, utils_1.safe(actions.deleteCertificacion));
+//idioma
+router["delete"]('/deleteIdioma/:id', verifyToken, utils_1.safe(actions.deleteIdioma));
 exports["default"] = router;
