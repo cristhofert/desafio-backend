@@ -528,3 +528,29 @@ export const recuperarPass = async (req: Request, res: Response): Promise<Respon
 
     return res.json({ message: "OK" });
 }
+
+export const loginGoogle = async (req: Request, res: Response): Promise<Response> => {
+
+    if (!req.body.email) throw new Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400)
+
+    const profesionalRepo = getRepository(RegistroProfesional)
+    const empresaRepo = getRepository(Empresa)
+
+    // We need to validate that a user with this email and password exists in the DB
+    const profesional = await profesionalRepo.findOne({ where: { email: req.body.email } })
+    let user;
+    if (!profesional) {
+        const empresa = await empresaRepo.findOne({ where: { email: req.body.email } })
+        if (!empresa) throw new Exception("Email o contraseña inválido", 401)
+        user = empresa;
+    }
+    else {
+        user = profesional
+    }
+
+    // this is the most important line in this function, it create a JWT token
+    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 24 * 60 * 60 });
+
+    // return the user and the recently created token to the client
+    return res.json({ user: user, token });
+}

@@ -8,7 +8,7 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales, putOferta, getCualificacion, buscar, recuperarPass } from './actions';
+import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales, putOferta, getCualificacion, buscar, recuperarPass, loginGoogle } from './actions';
 import { login } from './actions'
 
 const router = Router();
@@ -31,6 +31,7 @@ router.get('/cualificacion', safe(getCualificacion))
 
 //login
 router.post('/login',safe(login))
+router.post('/loginGoogle',safe(loginGoogle))
 //ofertas
 router.get('/oferta/:id', safe(getOferta))
 router.get('/buscar/:consulta', safe(buscar))

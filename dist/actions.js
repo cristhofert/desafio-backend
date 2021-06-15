@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.loginGoogle = exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -891,3 +891,34 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.recuperarPass = recuperarPass;
+var loginGoogle = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var profesionalRepo, empresaRepo, profesional, user, empresa, token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor, especifique un correo en el cuerpo de su solicitud", 400);
+                profesionalRepo = typeorm_1.getRepository(RegistroProfesional_1.RegistroProfesional);
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
+                return [4 /*yield*/, profesionalRepo.findOne({ where: { email: req.body.email } })];
+            case 1:
+                profesional = _a.sent();
+                if (!!profesional) return [3 /*break*/, 3];
+                return [4 /*yield*/, empresaRepo.findOne({ where: { email: req.body.email } })];
+            case 2:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("Email o contraseña inválido", 401);
+                user = empresa;
+                return [3 /*break*/, 4];
+            case 3:
+                user = profesional;
+                _a.label = 4;
+            case 4:
+                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 24 * 60 * 60 });
+                // return the user and the recently created token to the client
+                return [2 /*return*/, res.json({ user: user, token: token })];
+        }
+    });
+}); };
+exports.loginGoogle = loginGoogle;
