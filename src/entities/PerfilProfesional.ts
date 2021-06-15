@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToMany, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToMany, OneToOne, ManyToMany, JoinTable } from 'typeorm';
 import { Estudio } from './Estudio';
 import { Experiencia } from './Experiencia';
 import { Certificacion } from './Certificacion';
 import { Idioma } from './Idioma';
 import { RegistroProfesional } from './RegistroProfesional'
+import { Oferta } from './Oferta';
 
 @Entity()
 export class PerfilProfesional extends BaseEntity {
@@ -42,6 +43,10 @@ export class PerfilProfesional extends BaseEntity {
 
     @OneToOne(() => RegistroProfesional, registroProfesional => registroProfesional.perfil)
     registro: RegistroProfesional;
+
+    @ManyToMany(() => Oferta, oferta => oferta.aplicantes)
+    @JoinTable()
+    postulaciones: Oferta[];
 
     @Column()
     github: string;

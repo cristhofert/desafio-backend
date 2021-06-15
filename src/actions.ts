@@ -192,7 +192,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const profesional = await profesionalRepo.findOne({ where: { email: req.body.email } })
     let user;
     if (!profesional) {
-        const empresa = await empresaRepo.findOne({ where: { email: req.body.email } })
+        const empresa = await empresaRepo.findOne({relations: ["ofertas"], where: { email: req.body.email } })
         if (!empresa) throw new Exception("Email o contraseña inválido", 401)
         if (await bcrypt.compare(req.body.contrasenna, empresa.contrasenna).then(function (result: boolean) {
             return !result
@@ -527,4 +527,43 @@ export const recuperarPass = async (req: Request, res: Response): Promise<Respon
     }
 
     return res.json({ message: "OK" });
+}
+
+export const postularProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    const profesional = await getRepository(PerfilProfesional).findOne({relations: ['postulaciones'] ,where: {id: token.user.id}});
+    if(!profesional) throw new Exception('No se encontro un profesional');
+
+    const oferta = await getRepository(Oferta).findOne(req.body.idOferta);
+    if(!oferta) throw new Exception('No se encontro la oferta');
+    profesional.postulaciones = [...profesional.postulaciones, oferta];
+
+    const results = getRepository(PerfilProfesional).save(profesional);
+    return res.json(results);
+}
+
+export const borrarPostulacion = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    const profesional = await getRepository(PerfilProfesional).findOne({relations: ['postulaciones'] ,where: {id: token.user.id}});
+    if(!profesional) throw new Exception('No se encontro un profesional');
+
+    const oferta = await getRepository(Oferta).findOne(req.body.idOferta);
+    if(!oferta) throw new Exception('No se encontro la oferta');
+
+    const nuevasPostulaciones = profesional.postulaciones.filter((oferta)=>{
+        return oferta.id != req.body.idOferta;
+    })
+
+    profesional.postulaciones = nuevasPostulaciones;
+    const results = getRepository(PerfilProfesional).save(profesional);
+
+    return res.json(results);
+}
+
+export const postulacionesProfesional = async (req: Request, res: Response): Promise<Response> => {
+    const token = req.user as IToken;
+    const profesional = await getRepository(PerfilProfesional).findOne({relations: ['postulaciones'] ,where: {id: token.user.id}});
+    if(!profesional) throw new Exception('No se encontro un profesional');
+
+    return res.json(profesional.postulaciones);
 }

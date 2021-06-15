@@ -30,8 +30,8 @@ var Cualificacion_1 = require("./Cualificacion");
 var Habilidad_1 = require("./Habilidad");
 var Responsabilidad_1 = require("./Responsabilidad");
 var Condicion_1 = require("./Condicion");
-var RegistroProfesional_1 = require("./RegistroProfesional");
 var Empresa_1 = require("./Empresa");
+var PerfilProfesional_1 = require("./PerfilProfesional");
 var Oferta = /** @class */ (function (_super) {
     __extends(Oferta, _super);
     function Oferta() {
@@ -82,8 +82,7 @@ var Oferta = /** @class */ (function (_super) {
         __metadata("design:type", Empresa_1.Empresa)
     ], Oferta.prototype, "empresa");
     __decorate([
-        typeorm_1.ManyToMany(function () { return RegistroProfesional_1.RegistroProfesional; }),
-        typeorm_1.JoinTable(),
+        typeorm_1.ManyToMany(function () { return PerfilProfesional_1.PerfilProfesional; }, function (profesional) { return profesional.postulaciones; }),
         __metadata("design:type", Array)
     ], Oferta.prototype, "aplicantes");
     Oferta = __decorate([
