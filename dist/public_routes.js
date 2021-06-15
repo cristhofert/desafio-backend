@@ -27,6 +27,7 @@ router.post('/registroprofesional', utils_1.safe(actions_1.crearProfesional));
 router.get('/cualificacion', utils_1.safe(actions_1.getCualificacion));
 //login
 router.post('/login', utils_1.safe(actions_2.login));
+router.post('/loginGoogle', utils_1.safe(actions_1.loginGoogle));
 //ofertas
 router.get('/oferta/:id', utils_1.safe(actions_1.getOferta));
 router.get('/buscar/:consulta', utils_1.safe(actions_1.buscar));
