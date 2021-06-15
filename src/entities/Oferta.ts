@@ -4,8 +4,8 @@ import { Cualificacion } from "./Cualificacion"
 import { Habilidad } from "./Habilidad"
 import { Responsabilidad } from "./Responsabilidad"
 import { Condicion } from "./Condicion"
-import { RegistroProfesional } from './RegistroProfesional';
 import { Empresa } from './Empresa';
+import { PerfilProfesional } from './PerfilProfesional';
 
 @Entity()
 export class Oferta extends BaseEntity {
@@ -42,7 +42,6 @@ export class Oferta extends BaseEntity {
     @ManyToOne(() => Empresa, empresa => empresa.ofertas)
     empresa: Empresa;
 
-    @ManyToMany(() => RegistroProfesional)
-    @JoinTable()
-    aplicantes: RegistroProfesional[];
+    @ManyToMany(() => PerfilProfesional, profesional => profesional.postulaciones)
+    aplicantes: PerfilProfesional[];
 }

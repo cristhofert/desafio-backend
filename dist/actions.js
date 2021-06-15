@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
+exports.postulacionesProfesional = exports.borrarPostulacion = exports.postularProfesional = exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -358,7 +358,7 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
             case 1:
                 profesional = _a.sent();
                 if (!!profesional) return [3 /*break*/, 4];
-                return [4 /*yield*/, empresaRepo.findOne({ where: { email: req.body.email } })];
+                return [4 /*yield*/, empresaRepo.findOne({ relations: ["ofertas"], where: { email: req.body.email } })];
             case 2:
                 empresa = _a.sent();
                 if (!empresa)
@@ -891,3 +891,68 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.recuperarPass = recuperarPass;
+var postularProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, profesional, oferta, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne({ relations: ['postulaciones'], where: { id: token.user.id } })];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception('No se encontro un profesional');
+                return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).findOne(req.body.idOferta)];
+            case 2:
+                oferta = _a.sent();
+                if (!oferta)
+                    throw new utils_1.Exception('No se encontro la oferta');
+                profesional.postulaciones = __spreadArray(__spreadArray([], profesional.postulaciones), [oferta]);
+                results = typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).save(profesional);
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.postularProfesional = postularProfesional;
+var borrarPostulacion = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, profesional, oferta, nuevasPostulaciones, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne({ relations: ['postulaciones'], where: { id: token.user.id } })];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception('No se encontro un profesional');
+                return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).findOne(req.body.idOferta)];
+            case 2:
+                oferta = _a.sent();
+                if (!oferta)
+                    throw new utils_1.Exception('No se encontro la oferta');
+                nuevasPostulaciones = profesional.postulaciones.filter(function (oferta) {
+                    return oferta.id != req.body.idOferta;
+                });
+                profesional.postulaciones = nuevasPostulaciones;
+                results = typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).save(profesional);
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.borrarPostulacion = borrarPostulacion;
+var postulacionesProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, profesional;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(PerfilProfesional_1.PerfilProfesional).findOne({ relations: ['postulaciones'], where: { id: token.user.id } })];
+            case 1:
+                profesional = _a.sent();
+                if (!profesional)
+                    throw new utils_1.Exception('No se encontro un profesional');
+                return [2 /*return*/, res.json(profesional.postulaciones)];
+        }
+    });
+}); };
+exports.postulacionesProfesional = postulacionesProfesional;

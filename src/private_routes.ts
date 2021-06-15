@@ -28,6 +28,10 @@ router.post('/perfil-profesional/experiencia/:id', verifyToken, safe(actions.cre
 router.post('/perfil-profesional/certificacion/:id', verifyToken, safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', verifyToken, safe(actions.crearIdioma));
 
+router.get('/perfil-profesional/postulaciones', verifyToken, safe(actions.postulacionesProfesional));
+router.post('/perfil-profesional/postulaciones', verifyToken, safe(actions.postularProfesional));
+router.put('/perfil-profesional/postulaciones', verifyToken, safe(actions.borrarPostulacion));
+
 router.put('/perfil-profesional/', verifyToken, safe(actions.editarProfesional));
 router.get('/perfil-profesional/', verifyToken, safe(actions.obtenerProfesionalLogeado));
 router.put('/perfilProfesional/:id', verifyToken, safe(actions.putPerfilProfesional))
