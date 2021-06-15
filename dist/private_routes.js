@@ -46,6 +46,9 @@ router.post('/perfil-profesional/estudio/:id', verifyToken, utils_1.safe(actions
 router.post('/perfil-profesional/experiencia/:id', verifyToken, utils_1.safe(actions.crearExperiencia));
 router.post('/perfil-profesional/certificacion/:id', verifyToken, utils_1.safe(actions.crearCertificacion));
 router.post('/perfil-profesional/idioma/:id', verifyToken, utils_1.safe(actions.crearIdioma));
+router.get('/perfil-profesional/postulaciones', verifyToken, utils_1.safe(actions.postulacionesProfesional));
+router.post('/perfil-profesional/postulaciones', verifyToken, utils_1.safe(actions.postularProfesional));
+router.put('/perfil-profesional/postulaciones', verifyToken, utils_1.safe(actions.borrarPostulacion));
 router.put('/perfil-profesional/', verifyToken, utils_1.safe(actions.editarProfesional));
 router.get('/perfil-profesional/', verifyToken, utils_1.safe(actions.obtenerProfesionalLogeado));
 router.put('/perfilProfesional/:id', verifyToken, utils_1.safe(actions.putPerfilProfesional));

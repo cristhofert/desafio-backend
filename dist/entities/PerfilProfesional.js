@@ -31,6 +31,7 @@ var Experiencia_1 = require("./Experiencia");
 var Certificacion_1 = require("./Certificacion");
 var Idioma_1 = require("./Idioma");
 var RegistroProfesional_1 = require("./RegistroProfesional");
+var Oferta_1 = require("./Oferta");
 var PerfilProfesional = /** @class */ (function (_super) {
     __extends(PerfilProfesional, _super);
     function PerfilProfesional() {
@@ -80,6 +81,11 @@ var PerfilProfesional = /** @class */ (function (_super) {
         typeorm_1.OneToOne(function () { return RegistroProfesional_1.RegistroProfesional; }, function (registroProfesional) { return registroProfesional.perfil; }),
         __metadata("design:type", RegistroProfesional_1.RegistroProfesional)
     ], PerfilProfesional.prototype, "registro");
+    __decorate([
+        typeorm_1.ManyToMany(function () { return Oferta_1.Oferta; }, function (oferta) { return oferta.aplicantes; }),
+        typeorm_1.JoinTable(),
+        __metadata("design:type", Array)
+    ], PerfilProfesional.prototype, "postulaciones");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
