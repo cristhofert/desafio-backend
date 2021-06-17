@@ -445,7 +445,7 @@ export const crearOferta = async (req: Request, res: Response): Promise<Response
 
 export const getOferta = async (req: Request, res: Response): Promise<Response> => {
     const oferta = await getRepository(Oferta).findOne({
-        relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"],
+        relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades", "aplicantes"],
         where: { id: req.params.id }
     })
     return res.json(oferta);
@@ -554,6 +554,7 @@ export const loginGoogle = async (req: Request, res: Response): Promise<Response
 
     // return the user and the recently created token to the client
     return res.json({ user: user, token });
+}
 
 export const postularProfesional = async (req: Request, res: Response): Promise<Response> => {
     const token = req.user as IToken;

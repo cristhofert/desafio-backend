@@ -55,11 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-
-exports.loginGoogle = exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
-
-exports.postulacionesProfesional = exports.borrarPostulacion = exports.postularProfesional = exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
-
+exports.postulacionesProfesional = exports.borrarPostulacion = exports.postularProfesional = exports.loginGoogle = exports.recuperarPass = exports.getOfertas = exports.buscar = exports.getOferta = exports.crearOferta = exports.deleteResponsabilidad = exports.deleteCondicion = exports.deleteHabilidad = exports.deleteCualificacion = exports.deleteIdioma = exports.deleteCertificacion = exports.deleteExperiencia = exports.deleteEstudio = exports.putOferta = exports.editarEmpresa = exports.editarProfesional = exports.putPerfilEmpresa = exports.putPerfilProfesional = exports.cambiarPassRecuperacion = exports.cambiarContraseña = exports.login = exports.obtenerProfesionalLogeado = exports.crearIdioma = exports.crearCertificacion = exports.crearExperiencia = exports.crearEstudio = exports.crearProfesional = exports.crearEmpresa = exports.getCualificacion = exports.getProfesionales = exports.getProfesional = exports.obtenerMiEmpresa = exports.obtenerEmpresa = exports.obtenerEmpresas = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var utils_1 = require("./utils");
 var Empresa_1 = require("./entities/Empresa");
@@ -792,7 +788,7 @@ var getOferta = function (req, res) { return __awaiter(void 0, void 0, void 0, f
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, typeorm_1.getRepository(Oferta_1.Oferta).findOne({
-                    relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades"],
+                    relations: ["cualificaciones", "condiciones", "habilidades", "responsabilidades", "aplicantes"],
                     where: { id: req.params.id }
                 })];
             case 1:
@@ -895,7 +891,6 @@ var recuperarPass = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.recuperarPass = recuperarPass;
-
 var loginGoogle = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var profesionalRepo, empresaRepo, profesional, user, empresa, token;
     return __generator(this, function (_a) {
@@ -927,7 +922,6 @@ var loginGoogle = function (req, res) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.loginGoogle = loginGoogle;
-
 var postularProfesional = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var token, profesional, oferta, results;
     return __generator(this, function (_a) {
@@ -993,4 +987,3 @@ var postulacionesProfesional = function (req, res) { return __awaiter(void 0, vo
     });
 }); };
 exports.postulacionesProfesional = postulacionesProfesional;
-
