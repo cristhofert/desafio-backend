@@ -35,10 +35,6 @@ var Empresa = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
-        typeorm_1.PrimaryGeneratedColumn(),
-        __metadata("design:type", Number)
-    ], Empresa.prototype, "id");
-    __decorate([
         typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)
     ], Empresa.prototype, "razon_social");
@@ -47,7 +43,7 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "nombre_fantasia");
     __decorate([
-        typeorm_1.Column(),
+        typeorm_1.PrimaryColumn({ unique: true }),
         __metadata("design:type", Number)
     ], Empresa.prototype, "RUT");
     __decorate([
@@ -55,7 +51,7 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "direccion");
     __decorate([
-        typeorm_1.Column(),
+        typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)
     ], Empresa.prototype, "email");
     __decorate([
@@ -115,7 +111,7 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", Array)
     ], Empresa.prototype, "users");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.id; }),
+        typeorm_1.ManyToOne(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.empresa; }),
         __metadata("design:type", Array)
     ], Empresa.prototype, "empresa_persona");
     Empresa = __decorate([

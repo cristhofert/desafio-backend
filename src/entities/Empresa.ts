@@ -2,24 +2,22 @@ import { Users } from './Users';
 import { Localidad } from './Localidad';
 import {
   Entity, Column, PrimaryGeneratedColumn, ManyToOne, 
-  BaseEntity
+  BaseEntity,
+  PrimaryColumn
 } from 'typeorm';
 import { Empresa_Persona } from './Empresa_Persona';
 
 @Entity()
 export class Empresa extends BaseEntity{
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column({unique: true})
   razon_social: string;
   @Column()
   nombre_fantasia: string;
-  @Column()
+  @PrimaryColumn({unique: true})
   RUT: number;
   @Column()
   direccion: string;
-  @Column()
+  @Column({unique: true})
   email: string;
   @Column()
   celular: string;
@@ -52,6 +50,6 @@ export class Empresa extends BaseEntity{
   @ManyToOne(() => Users, user => user.id)
   users: Users[];
 
-  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.id)
+  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.empresa)
   empresa_persona: Empresa_Persona[];
 }

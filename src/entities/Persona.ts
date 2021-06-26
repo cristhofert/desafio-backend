@@ -20,6 +20,6 @@ export class Persona extends BaseEntity{
   @Column()
   estado: string;
  
-  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.id)
+  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.persona)
   empresa_persona: Empresa_Persona[];
 }
