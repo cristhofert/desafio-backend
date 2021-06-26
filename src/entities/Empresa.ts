@@ -1,53 +1,57 @@
+import { Users } from './Users';
+import { Localidad } from './Localidad';
 import {
-    Entity, Column, PrimaryGeneratedColumn,
-    BaseEntity, OneToMany
+  Entity, Column, PrimaryGeneratedColumn, ManyToOne, 
+  BaseEntity
 } from 'typeorm';
-import { Oferta } from './Oferta';
+import { Empresa_Persona } from './Empresa_Persona';
 
 @Entity()
-export class Empresa extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Empresa extends BaseEntity{
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ unique: true })
-    email: string;
+  @Column({unique: true})
+  razon_social: string;
+  @Column()
+  nombre_fantasia: string;
+  @Column()
+  RUT: number;
+  @Column()
+  direccion: string;
+  @Column()
+  email: string;
+  @Column()
+  celular: string;
+  @Column()
+  telefono: string;
+  @Column()
+  nro_BPS: string;
+  @Column()
+  nro_referencia: string;
+  @Column()
+  actividad_principal: string;
+  @Column()
+  actividad_secunadria: string;
+  @Column()
+  fecha_afiliacion: string;
+  @Column()
+  fecha_inicio_empresa: string;
+  @Column()
+  estado: string;
+  @Column()
+  fecha_de_baja: string;
+  @Column()
+  observaciones: string;
+  @Column()
+  imagen: string;
+ 
+  @ManyToOne(() => Localidad, localidad => localidad.id)
+  localidad: Localidad;
 
-    @Column()
-    contrasenna: string;
+  @ManyToOne(() => Users, user => user.id)
+  users: Users[];
 
-    @Column()
-    nombre: string;
-
-    @Column()
-    icono: string;
-
-    @Column()
-    descripcion: string;
-
-    @Column()
-    departamento: string;
-
-    @Column()
-    direccion: string;
-
-    @Column()
-    sitio_web: string;
-
-    @Column()
-    comentarios: string;
-
-    @Column()
-    twitter: string;
-
-    @Column()
-    facebook: string;
-
-    @Column()
-    linkedin: string;
-
-    @Column()
-    github: string;
-
-    @OneToMany(() => Oferta, oferta => oferta.empresa)
-    ofertas: Oferta[];
+  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.id)
+  empresa_persona: Empresa_Persona[];
 }

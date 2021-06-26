@@ -8,33 +8,16 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { obtenerEmpresas, obtenerEmpresa, crearEmpresa, crearProfesional, putPerfilProfesional, getProfesional, deleteEstudio, deleteCertificacion, deleteIdioma, deleteExperiencia, putPerfilEmpresa, crearOferta, getOferta, getOfertas, getProfesionales, putOferta, getCualificacion, buscar, recuperarPass, loginGoogle } from './actions';
-import { login } from './actions'
+import * as actions from './actions';
 
 const router = Router();
 
 // signup route, creates a new user in the DB
-
-//usuario
-router.post('/recuperarPass', safe(recuperarPass))
-//Empresa
-router.get('/empresas', safe(obtenerEmpresas))
-router.get('/empresa/:id', safe(obtenerEmpresa))
-router.post('/empresa', safe(crearEmpresa))
-
-//profesional
-router.get('/profesionales', safe(getProfesionales))
-router.get('/profesional/:id', safe(getProfesional))
-router.post('/registroprofesional', safe(crearProfesional))
-//cualificacion
-router.get('/cualificacion', safe(getCualificacion))
-
-//login
-router.post('/login',safe(login))
-router.post('/loginGoogle',safe(loginGoogle))
-//ofertas
-router.get('/oferta/:id', safe(getOferta))
-router.get('/buscar/:consulta', safe(buscar))
-
+//USERs
+router.get('/user', safe(actions.getUsers));
+router.get('/user/:id', safe(actions.getUser));
+router.post('/user', safe(actions.createUser));
+router.put('/user', safe(actions.updateUser));
+router.delete('/user/:id', safe(actions.deleteUser));
 
 export default router;

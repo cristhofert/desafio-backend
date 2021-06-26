@@ -1,6 +1,7 @@
+import { Empresa } from './Empresa';
 import {
   Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable
+  BaseEntity, JoinTable, OneToMany
 } from 'typeorm';
 
 @Entity()
@@ -8,11 +9,11 @@ export class Users extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  first_name: string;
+  @Column({unique: true})
+  username: string;
 
   @Column()
-  last_name: string;
+  name: string;
 
   @Column({unique: true})
   email: string;
@@ -20,8 +21,9 @@ export class Users extends BaseEntity{
   @Column()
   password: string;
 
-  // @ManyToMany(() => Planet)
-  // @JoinTable()
-  // planets: Planet[];
-  
+  @Column()
+  is_admin: boolean;
+ 
+  @OneToMany(() => Empresa, empresa => empresa.id)
+  empresa: Empresa;
 }
