@@ -24,45 +24,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 exports.__esModule = true;
-exports.Users = void 0;
-var Empresa_1 = require("./Empresa");
+exports.Localidad = void 0;
+var Departamento_1 = require("./Departamento");
 var typeorm_1 = require("typeorm");
-var Users = /** @class */ (function (_super) {
-    __extends(Users, _super);
-    function Users() {
+var Localidad = /** @class */ (function (_super) {
+    __extends(Localidad, _super);
+    function Localidad() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Localidad_1 = Localidad;
+    var Localidad_1;
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
-    ], Users.prototype, "id");
-    __decorate([
-        typeorm_1.Column({ unique: true }),
-        __metadata("design:type", String)
-    ], Users.prototype, "username");
+    ], Localidad.prototype, "id");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Users.prototype, "name");
+    ], Localidad.prototype, "nombre");
     __decorate([
-        typeorm_1.Column({ unique: true }),
-        __metadata("design:type", String)
-    ], Users.prototype, "email");
+        typeorm_1.ManyToOne(function () { return Departamento_1.Departamento; }, function (departamento) { return departamento.id; }),
+        __metadata("design:type", Departamento_1.Departamento)
+    ], Localidad.prototype, "departamento");
     __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "password");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", Boolean)
-    ], Users.prototype, "is_admin");
-    __decorate([
-        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.id; }),
-        __metadata("design:type", Empresa_1.Empresa)
-    ], Users.prototype, "empresa");
-    Users = __decorate([
+        typeorm_1.OneToMany(function () { return Localidad_1; }, function (localidad) { return localidad.id; }),
+        __metadata("design:type", Array)
+    ], Localidad.prototype, "localidad");
+    Localidad = Localidad_1 = __decorate([
         typeorm_1.Entity()
-    ], Users);
-    return Users;
+    ], Localidad);
+    return Localidad;
 }(typeorm_1.BaseEntity));
-exports.Users = Users;
+exports.Localidad = Localidad;

@@ -10,7 +10,7 @@ export const createUser = async (req: Request, res:Response): Promise<Response> 
 	if(!req.body.name) throw new Exception("Please provide a name")
 	if(!req.body.email) throw new Exception("Please provide an email")
 	if(!req.body.password) throw new Exception("Please provide a password")
-	if(!req.body.isAdmin) throw new Exception("Please provide is admin")
+	if(!req.body.is_admin) throw new Exception("Please provide is is_admin")
 
 	const userRepo = getRepository(Users)
 	// fetch for any user with this email
@@ -39,7 +39,7 @@ export const updateUser = async (req: Request, res:Response): Promise<Response> 
 	if(!req.body.name) throw new Exception("Please provide a name")
 	if(!req.body.email) throw new Exception("Please provide an email")
 	if(!req.body.password) throw new Exception("Please provide a password")
-	if(!req.body.isAdmin) throw new Exception("Please provide is admin")
+	if(!req.body.is_admin) throw new Exception("Please provide is is_admin")
 
 	const userRepo = getRepository(Users)
 	// fetch for any user with this email

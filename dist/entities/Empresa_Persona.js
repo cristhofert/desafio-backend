@@ -24,45 +24,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 exports.__esModule = true;
-exports.Users = void 0;
+exports.Empresa_Persona = void 0;
+var Persona_1 = require("./Persona");
 var Empresa_1 = require("./Empresa");
 var typeorm_1 = require("typeorm");
-var Users = /** @class */ (function (_super) {
-    __extends(Users, _super);
-    function Users() {
+var Empresa_Persona = /** @class */ (function (_super) {
+    __extends(Empresa_Persona, _super);
+    function Empresa_Persona() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
-    ], Users.prototype, "id");
-    __decorate([
-        typeorm_1.Column({ unique: true }),
-        __metadata("design:type", String)
-    ], Users.prototype, "username");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "name");
-    __decorate([
-        typeorm_1.Column({ unique: true }),
-        __metadata("design:type", String)
-    ], Users.prototype, "email");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "password");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", Boolean)
-    ], Users.prototype, "is_admin");
+    ], Empresa_Persona.prototype, "id");
     __decorate([
         typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.id; }),
         __metadata("design:type", Empresa_1.Empresa)
-    ], Users.prototype, "empresa");
-    Users = __decorate([
+    ], Empresa_Persona.prototype, "empresa");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Persona_1.Persona; }, function (persona) { return persona.id; }),
+        __metadata("design:type", Persona_1.Persona)
+    ], Empresa_Persona.prototype, "persona");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa_Persona.prototype, "cargo");
+    Empresa_Persona = __decorate([
         typeorm_1.Entity()
-    ], Users);
-    return Users;
+    ], Empresa_Persona);
+    return Empresa_Persona;
 }(typeorm_1.BaseEntity));
-exports.Users = Users;
+exports.Empresa_Persona = Empresa_Persona;

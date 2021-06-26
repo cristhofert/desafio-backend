@@ -25,8 +25,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 exports.__esModule = true;
 exports.Empresa = void 0;
+var Users_1 = require("./Users");
+var Localidad_1 = require("./Localidad");
 var typeorm_1 = require("typeorm");
-var Oferta_1 = require("./Oferta");
+var Empresa_Persona_1 = require("./Empresa_Persona");
 var Empresa = /** @class */ (function (_super) {
     __extends(Empresa, _super);
     function Empresa() {
@@ -39,27 +41,15 @@ var Empresa = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)
-    ], Empresa.prototype, "email");
+    ], Empresa.prototype, "razon_social");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "contrasenna");
+    ], Empresa.prototype, "nombre_fantasia");
     __decorate([
         typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "nombre");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "icono");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "descripcion");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "departamento");
+        __metadata("design:type", Number)
+    ], Empresa.prototype, "RUT");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
@@ -67,31 +57,67 @@ var Empresa = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "sitio_web");
+    ], Empresa.prototype, "email");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "comentarios");
+    ], Empresa.prototype, "celular");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "twitter");
+    ], Empresa.prototype, "telefono");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "facebook");
+    ], Empresa.prototype, "nro_BPS");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "linkedin");
+    ], Empresa.prototype, "nro_referencia");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Empresa.prototype, "github");
+    ], Empresa.prototype, "actividad_principal");
     __decorate([
-        typeorm_1.OneToMany(function () { return Oferta_1.Oferta; }, function (oferta) { return oferta.empresa; }),
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "actividad_secunadria");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "fecha_afiliacion");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "fecha_inicio_empresa");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "estado");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "fecha_de_baja");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "observaciones");
+    __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", String)
+    ], Empresa.prototype, "imagen");
+    __decorate([
+        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.id; }),
+        __metadata("design:type", Localidad_1.Localidad)
+    ], Empresa.prototype, "localidad");
+    __decorate([
+        typeorm_1.ManyToOne(function () { return Users_1.Users; }, function (user) { return user.id; }),
         __metadata("design:type", Array)
-    ], Empresa.prototype, "ofertas");
+    ], Empresa.prototype, "users");
+    __decorate([
+        typeorm_1.ManyToOne(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.id; }),
+        __metadata("design:type", Array)
+    ], Empresa.prototype, "empresa_persona");
     Empresa = __decorate([
         typeorm_1.Entity()
     ], Empresa);
