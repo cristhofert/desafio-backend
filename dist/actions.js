@@ -35,8 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -45,6 +48,7 @@ var Persona_1 = require("./entities/Persona");
 var Departamento_1 = require("./entities/Departamento");
 var Localidad_1 = require("./entities/Localidad");
 var Empresa_Persona_1 = require("./entities/Empresa_Persona");
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 //USER
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
@@ -651,3 +655,30 @@ var deleteEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0
     });
 }); };
 exports.deleteEmpresaPersona = deleteEmpresaPersona;
+//LOGIN
+var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, user, token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.username)
+                    throw new utils_1.Exception("Please specify an email on your request body", 400);
+                if (!req.body.password)
+                    throw new utils_1.Exception("Please specify a password on your request body", 400);
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)
+                    // We need to validate that a user with this email and password exists in the DB
+                ];
+            case 1:
+                userRepo = _a.sent();
+                return [4 /*yield*/, userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })];
+            case 2:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("Invalid email or password", 401);
+                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 60 * 60 });
+                // return the user and the recently created token to the client
+                return [2 /*return*/, res.json({ user: user, token: token })];
+        }
+    });
+}); };
+exports.login = login;
