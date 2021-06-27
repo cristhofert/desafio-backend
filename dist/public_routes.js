@@ -61,4 +61,10 @@ router.get('/departamento/:id', utils_1.safe(actions.getDepartamento));
 router.post('/departamento', utils_1.safe(actions.createDepartamento));
 router.put('/departamento', utils_1.safe(actions.updateDepartamento));
 router["delete"]('/departamento/:id', utils_1.safe(actions.deleteDepartamento));
+//empresa_persona
+router.get('/empresa_persona', utils_1.safe(actions.getEmpresaPersonas));
+router.get('/empresa_persona/:empresaId/:personaId', utils_1.safe(actions.getEmpresaPersona));
+router.post('/empresa_persona', utils_1.safe(actions.createEmpresaPersona));
+router.put('/empresa_persona', utils_1.safe(actions.updateEmpresaPersona));
+router["delete"]('/empresa_persona/:empresaId/:personaId', utils_1.safe(actions.deleteEmpresaPersona));
 exports["default"] = router;

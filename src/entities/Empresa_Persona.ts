@@ -7,12 +7,12 @@ import {
 
 @Entity()
 export class Empresa_Persona extends BaseEntity{
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @PrimaryColumn()
   @OneToMany(() => Empresa, empresa => empresa.RUT)
   empresa: Empresa;
 
-  @PrimaryColumn()
   @OneToMany(() => Persona, persona => persona.id)
   persona: Persona;
 
