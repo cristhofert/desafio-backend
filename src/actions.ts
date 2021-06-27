@@ -295,9 +295,8 @@ export const createEmpresaPersona = async (req: Request, res:Response): Promise<
 
 	// fetch for any user with this email
 	const persona = await getRepository(Persona).findOne(req.body.personaId)
-	if(persona) throw new Exception("Persona already exists with this id")
 	const empresa = await getRepository(Empresa).findOne(req.body.empresaId)
-	if(empresa) throw new Exception("Empresa already exists with this id")
+	if(persona && empresa) throw new Exception("Persona and Empresa relationship exists")
     
 	const empresaPersonaRepo = getRepository(Empresa_Persona)
     const newEmpresaPersona = empresaPersonaRepo.create(req.body);

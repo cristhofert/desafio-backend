@@ -34,12 +34,14 @@ var Empresa_Persona = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
-        typeorm_1.PrimaryColumn(),
+        typeorm_1.PrimaryGeneratedColumn(),
+        __metadata("design:type", Number)
+    ], Empresa_Persona.prototype, "id");
+    __decorate([
         typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.RUT; }),
         __metadata("design:type", Empresa_1.Empresa)
     ], Empresa_Persona.prototype, "empresa");
     __decorate([
-        typeorm_1.PrimaryColumn(),
         typeorm_1.OneToMany(function () { return Persona_1.Persona; }, function (persona) { return persona.id; }),
         __metadata("design:type", Persona_1.Persona)
     ], Empresa_Persona.prototype, "persona");

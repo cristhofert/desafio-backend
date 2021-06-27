@@ -570,13 +570,11 @@ var createEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0
                 return [4 /*yield*/, typeorm_1.getRepository(Persona_1.Persona).findOne(req.body.personaId)];
             case 1:
                 persona = _a.sent();
-                if (persona)
-                    throw new utils_1.Exception("Persona already exists with this id");
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne(req.body.empresaId)];
             case 2:
                 empresa = _a.sent();
-                if (empresa)
-                    throw new utils_1.Exception("Empresa already exists with this id");
+                if (persona && empresa)
+                    throw new utils_1.Exception("Persona and Empresa relationship exists");
                 empresaPersonaRepo = typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona);
                 newEmpresaPersona = empresaPersonaRepo.create(req.body);
                 return [4 /*yield*/, empresaPersonaRepo.save(newEmpresaPersona)];
