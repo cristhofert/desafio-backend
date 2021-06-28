@@ -2,6 +2,7 @@ import {
   Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
   BaseEntity, JoinTable, OneToMany
 } from 'typeorm';
+import { Localidad } from './Localidad';
 
 @Entity()
 export class Departamento extends BaseEntity{
@@ -10,6 +11,7 @@ export class Departamento extends BaseEntity{
   @Column({unique: true})
   nombre: string; 
 
-  @OneToMany(() => Departamento, departamento => departamento.id)
-  departamento: Departamento[];
+   @OneToMany(() => Localidad, localidad => localidad.departamentos)
+   localidades: Localidad[];
+
 }
