@@ -57,9 +57,9 @@ var Users = /** @class */ (function (_super) {
         __metadata("design:type", Boolean)
     ], Users.prototype, "is_admin");
     __decorate([
-        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.RUT; }),
+        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.user; }),
         __metadata("design:type", Empresa_1.Empresa)
-    ], Users.prototype, "empresa");
+    ], Users.prototype, "empresas");
     Users = __decorate([
         typeorm_1.Entity()
     ], Users);

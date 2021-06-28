@@ -10,10 +10,10 @@ export class Empresa_Persona extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: number;
 
-  @OneToMany(() => Empresa, empresa => empresa.RUT)
+  @OneToMany(() => Empresa, empresa => empresa.empresa_persona)
   empresa: Empresa;
 
-  @OneToMany(() => Persona, persona => persona.id)
+  @OneToMany(() => Persona, persona => persona.empresa_persona)
   persona: Persona;
 
   @Column()

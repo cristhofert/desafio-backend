@@ -24,6 +24,6 @@ export class Users extends BaseEntity{
   @Column()
   is_admin: boolean;
  
-  @OneToMany(() => Empresa, empresa => empresa.RUT)
-  empresa: Empresa;
+  @OneToMany(() => Empresa, empresa => empresa.user)
+  empresas: Empresa;
 }

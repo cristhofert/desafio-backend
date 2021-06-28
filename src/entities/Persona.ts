@@ -11,12 +11,16 @@ export class Persona extends BaseEntity{
  
   @Column()
   nombre: string;
+
   @Column()
   apellido: string;
+
   @Column({unique: true})
   email: string;
+
   @Column()
   celular: string;
+  
   @Column()
   estado: string;
  

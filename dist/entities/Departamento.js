@@ -26,13 +26,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 exports.__esModule = true;
 exports.Departamento = void 0;
 var typeorm_1 = require("typeorm");
+var Localidad_1 = require("./Localidad");
 var Departamento = /** @class */ (function (_super) {
     __extends(Departamento, _super);
     function Departamento() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Departamento_1 = Departamento;
-    var Departamento_1;
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
@@ -42,10 +41,10 @@ var Departamento = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Departamento.prototype, "nombre");
     __decorate([
-        typeorm_1.OneToMany(function () { return Departamento_1; }, function (departamento) { return departamento.id; }),
+        typeorm_1.OneToMany(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.departamentos; }),
         __metadata("design:type", Array)
-    ], Departamento.prototype, "departamento");
-    Departamento = Departamento_1 = __decorate([
+    ], Departamento.prototype, "localidades");
+    Departamento = __decorate([
         typeorm_1.Entity()
     ], Departamento);
     return Departamento;
