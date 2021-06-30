@@ -16,7 +16,7 @@ export class Empresa extends BaseEntity{
   nombre_fantasia: string;
 
   @PrimaryColumn({unique: true})
-  RUT: number;
+  RUT: string;
 
   @Column()
   direccion: string;

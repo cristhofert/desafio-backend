@@ -9,6 +9,37 @@ import { Localidad } from './entities/Localidad'
 import { Empresa_Persona } from './entities/Empresa_Persona'
 import jwt from 'jsonwebtoken'
 
+function validate_isRUT(rut: string)
+{
+	if (rut.length != 12){
+		return false;
+	}
+	if (!/^([0-9])*$/.test(rut)){
+               return false;
+  	}
+	let dc = rut.substr(11, 1);
+	rut = rut.substr(0, 11);
+	let total = 0;
+	let factor = 2;
+ 
+	for (let i = 10; i >= 0; i--) {
+		total += (factor * Number(rut.substr(i, 1)));
+		factor = (factor == 9)?2:++factor;
+	}
+ 
+	var dv = 11 - (total % 11);
+ 
+	if (dv == 11){
+		dv = 0;
+	}else if(dv == 10){
+		dv = 1;
+	}
+	if(dv == Number(dc)){
+		return true;
+	}
+	return false;
+}
+
 //USER
 export const createUser = async (req: Request, res:Response): Promise<Response> =>{
 
@@ -88,7 +119,9 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.estado) throw new Exception("Please provide is estado")
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
-	if(!req.body.imagen) throw new Exception("Please provide is imagen")
+    if(!req.body.imagen) throw new Exception("Please provide is imagen")
+    if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
+    
 
 	const empresaRepo = getRepository(Empresa)
 	// fetch for any Empresa with this email
