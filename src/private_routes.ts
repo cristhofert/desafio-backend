@@ -74,6 +74,8 @@ router.post('/empresa_persona', verifyToken, verifyAdmin, safe(actions.createEmp
 router.put('/empresa_persona', verifyToken, verifyAdmin, safe(actions.updateEmpresaPersona));
 router.delete('/empresa_persona/:empresaId/:personaId', verifyToken, verifyAdmin, safe(actions.deleteEmpresaPersona));
 
+//localidades
+router.get('/departamento/:id/localidades', verifyToken, safe(actions.getLocalidadesDeDepartamento));
 
 
 
