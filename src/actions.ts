@@ -38,6 +38,12 @@ export const getUser = async (req: Request, res: Response): Promise<Response> =>
 		const users = await getRepository(Users).findOne({where: {username: req.params.username}});
 		return res.json(users);
 }
+export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> =>{
+        const departamento = await getRepository(Departamento).findOne(req.params.id);
+        if(!departamento) throw new Exception("Departamento not exist")
+		const localidades = await getRepository(Localidad).find({where: {departamentos: departamento}});
+		return res.json(localidades);
+}
 
 export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
 
