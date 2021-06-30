@@ -70,7 +70,8 @@ router.put('/departamento', verifyToken, verifyAdmin, safe(actions.updateDeparta
 router.delete('/departamento/:id', verifyToken, verifyAdmin, safe(actions.deleteDepartamento));
 
 //empresa_persona
-router.get('/empresa_persona', verifyToken, safe(actions.getEmpresaPersonas));
+router.get('/empresa_persona/:empresaId', safe(actions.getEmpresasPersonas));
+router.get('/empresa_persona', safe(actions.getEmpresaPersonas));
 router.get('/empresa_persona/:empresaId/:personaId', verifyToken, safe(actions.getEmpresaPersona));
 router.post('/empresa_persona', verifyToken, verifyAdmin, safe(actions.createEmpresaPersona));
 router.put('/empresa_persona', verifyToken, verifyAdmin, safe(actions.updateEmpresaPersona));

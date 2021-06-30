@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -105,6 +105,23 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     });
 }); };
 exports.getUser = getUser;
+var getLocalidadesDeDepartamento = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var departamento, localidades;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).findOne(req.params.id)];
+            case 1:
+                departamento = _a.sent();
+                if (!departamento)
+                    throw new utils_1.Exception("Departamento not exist");
+                return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).find({ where: { departamentos: departamento } })];
+            case 2:
+                localidades = _a.sent();
+                return [2 /*return*/, res.json(localidades)];
+        }
+    });
+}); };
+exports.getLocalidadesDeDepartamento = getLocalidadesDeDepartamento;
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, results;
     return __generator(this, function (_a) {
@@ -571,16 +588,21 @@ var createEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0
                     throw new utils_1.Exception("Please provide a empresa");
                 if (!req.body.personaId)
                     throw new utils_1.Exception("Please provide a persona");
+                if (!req.body.cargo)
+                    throw new utils_1.Exception("Please provide a persona");
                 return [4 /*yield*/, typeorm_1.getRepository(Persona_1.Persona).findOne(req.body.personaId)];
             case 1:
                 persona = _a.sent();
-                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne(req.body.empresaId)];
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ where: { RUT: req.body.empresaId } })];
             case 2:
                 empresa = _a.sent();
-                if (persona && empresa)
+                if (!persona || !empresa)
                     throw new utils_1.Exception("Persona and Empresa relationship exists");
                 empresaPersonaRepo = typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona);
-                newEmpresaPersona = empresaPersonaRepo.create(req.body);
+                newEmpresaPersona = empresaPersonaRepo.create();
+                newEmpresaPersona.persona = persona;
+                newEmpresaPersona.empresa = empresa;
+                newEmpresaPersona.cargo = req.body.cargo;
                 return [4 /*yield*/, empresaPersonaRepo.save(newEmpresaPersona)];
             case 3:
                 results = _a.sent();
@@ -593,7 +615,7 @@ var getEmpresaPersonas = function (req, res) { return __awaiter(void 0, void 0, 
     var empresaPersonaes;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona).find({ relations: ["persona", "empresa"] })];
             case 1:
                 empresaPersonaes = _a.sent();
                 return [2 /*return*/, res.json(empresaPersonaes)];
@@ -613,6 +635,18 @@ var getEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.getEmpresaPersona = getEmpresaPersona;
+var getEmpresasPersonas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var empresaPersona;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona).find({ relations: ["persona", "empresa"], where: { empresa: req.params.empresaId } })];
+            case 1:
+                empresaPersona = _a.sent();
+                return [2 /*return*/, res.json(empresaPersona)];
+        }
+    });
+}); };
+exports.getEmpresasPersonas = getEmpresasPersonas;
 var updateEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var empresaPersonaRepo, empresaPersona, results;
     return __generator(this, function (_a) {

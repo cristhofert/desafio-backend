@@ -1,7 +1,7 @@
 import { Users } from './Users';
 import { Localidad } from './Localidad';
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToOne, 
+  Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, 
   BaseEntity,
   PrimaryColumn
 } from 'typeorm';
@@ -66,6 +66,6 @@ export class Empresa extends BaseEntity{
   @ManyToOne(() => Users, user => user.empresas)
   user: Users[];
 
-  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.empresa)
+  @OneToMany(() => Empresa_Persona, empresa_persona => empresa_persona.empresa)
   empresa_persona: Empresa_Persona[];
 }
