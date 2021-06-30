@@ -111,7 +111,7 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", Array)
     ], Empresa.prototype, "user");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.empresa; }),
+        typeorm_1.OneToMany(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.empresa; }),
         __metadata("design:type", Array)
     ], Empresa.prototype, "empresa_persona");
     Empresa = __decorate([

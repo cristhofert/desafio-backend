@@ -298,26 +298,35 @@ export const createEmpresaPersona = async (req: Request, res:Response): Promise<
 
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.empresaId) throw new Exception("Please provide a empresa")
-	if(!req.body.personaId) throw new Exception("Please provide a persona")
+    if(!req.body.personaId) throw new Exception("Please provide a persona")
+    if(!req.body.cargo) throw new Exception("Please provide a persona")
 
 	// fetch for any user with this email
 	const persona = await getRepository(Persona).findOne(req.body.personaId)
-	const empresa = await getRepository(Empresa).findOne(req.body.empresaId)
-	if(persona && empresa) throw new Exception("Persona and Empresa relationship exists")
+    const empresa = await getRepository(Empresa).findOne({where: {RUT: req.body.empresaId }})
+	if(!persona || !empresa) throw new Exception("Persona and Empresa relationship exists")
     
 	const empresaPersonaRepo = getRepository(Empresa_Persona)
-    const newEmpresaPersona = empresaPersonaRepo.create(req.body);
+    const newEmpresaPersona = empresaPersonaRepo.create();
+    newEmpresaPersona.persona = persona
+    newEmpresaPersona.empresa = empresa
+    newEmpresaPersona.cargo = req.body.cargo
 	const results = await empresaPersonaRepo.save(newEmpresaPersona);
 	return res.json(results);
 }
 
 export const getEmpresaPersonas = async (req: Request, res: Response): Promise<Response> =>{
-		const empresaPersonaes = await getRepository(Empresa_Persona).find();
+		const empresaPersonaes = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"]});
 		return res.json(empresaPersonaes);
 }
 
 export const getEmpresaPersona = async (req: Request, res: Response): Promise<Response> =>{
 		const empresaPersona = await getRepository(Empresa_Persona).findOne({where: {empresa: req.params.empresaId, persona: req.params.personaId}});
+		return res.json(empresaPersona);
+}
+
+export const getEmpresasPersonas = async (req: Request, res: Response): Promise<Response> =>{
+        const empresaPersona = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"], where: { empresa: req.params.empresaId } });
 		return res.json(empresaPersona);
 }
 

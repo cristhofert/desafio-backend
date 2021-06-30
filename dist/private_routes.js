@@ -76,9 +76,12 @@ router.post('/departamento', verifyToken, verifyAdmin, utils_1.safe(actions.crea
 router.put('/departamento', verifyToken, verifyAdmin, utils_1.safe(actions.updateDepartamento));
 router["delete"]('/departamento/:id', verifyToken, verifyAdmin, utils_1.safe(actions.deleteDepartamento));
 //empresa_persona
-router.get('/empresa_persona', verifyToken, utils_1.safe(actions.getEmpresaPersonas));
+router.get('/empresa_persona/:empresaId', utils_1.safe(actions.getEmpresasPersonas));
+router.get('/empresa_persona', utils_1.safe(actions.getEmpresaPersonas));
 router.get('/empresa_persona/:empresaId/:personaId', verifyToken, utils_1.safe(actions.getEmpresaPersona));
 router.post('/empresa_persona', verifyToken, verifyAdmin, utils_1.safe(actions.createEmpresaPersona));
 router.put('/empresa_persona', verifyToken, verifyAdmin, utils_1.safe(actions.updateEmpresaPersona));
 router["delete"]('/empresa_persona/:empresaId/:personaId', verifyToken, verifyAdmin, utils_1.safe(actions.deleteEmpresaPersona));
+//localidades
+router.get('/departamento/:id/localidades', verifyToken, utils_1.safe(actions.getLocalidadesDeDepartamento));
 exports["default"] = router;
