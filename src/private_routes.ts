@@ -45,7 +45,9 @@ router.get('/empresa/:RUT', verifyToken, safe(actions.getEmpresa));
 router.post('/empresa', verifyToken, verifyAdmin, safe(actions.createEmpresa));
 router.put('/empresa', verifyToken, safe(actions.updateEmpresa));
 router.delete('/empresa/:RUT', verifyToken, verifyAdmin, safe(actions.deleteEmpresa));
-
+//mi_empresa
+router.get('/mi_empresa/', verifyToken, safe(actions.getMIEmpresa));
+router.put('/mi_empresa', verifyToken, safe(actions.updateMiEmpresa));
 //Persona
 router.get('/persona', verifyToken, safe(actions.getPersonas));
 router.get('/persona/:email', verifyToken, verifyAdmin, safe(actions.getPersona));
