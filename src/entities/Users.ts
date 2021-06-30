@@ -25,5 +25,5 @@ export class Users extends BaseEntity{
   is_admin: boolean;
  
   @OneToMany(() => Empresa, empresa => empresa.user)
-  empresas: Empresa;
+  empresa: Empresa;
 }
