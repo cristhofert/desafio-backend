@@ -1,7 +1,8 @@
 import { Departamento } from './Departamento';
 import {
     Entity, Column, PrimaryGeneratedColumn, ManyToOne,
-    BaseEntity
+    BaseEntity,
+    OneToMany
 } from 'typeorm';
 import { Empresa } from './Empresa';
 
@@ -15,4 +16,8 @@ export class Localidad extends BaseEntity {
 
     @ManyToOne(() => Departamento, departamento => departamento.localidades)
     departamento: Departamento;
+
+    @ManyToOne(() => Empresa, empresa => empresa.user)
+    empresa: Empresa[];
+
 }

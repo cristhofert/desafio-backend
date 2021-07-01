@@ -186,6 +186,7 @@ export const deleteEmpresa = async (req: Request, res:Response): Promise<Respons
 // Mi Empresa
 export const getMIEmpresa = async (req: Request, res: Response): Promise<Response> =>{
     const token = req.user as IToken;
+	console.log(token.user)
     return res.json(token.user.empresa);
 }
 
@@ -210,11 +211,11 @@ export const updateMiEmpresa = async (req: Request, res:Response): Promise<Respo
     if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
 
-    const empresaRepo = getRepository(Empresa)
     // fetch for any Empresa with this email
     const empresa = token.user.empresa;
-    if(!empresa) throw new Exception("Empresa not exist")
-
+    if(!empresa || Array.isArray(empresa)) throw new Exception("Empresa not exist")
+	
+    const empresaRepo = getRepository(Empresa)
     empresaRepo.merge(empresa, req.body);
     const results = await getRepository(Empresa).save(empresa);
     return res.json(results);
@@ -445,7 +446,7 @@ export const deleteEmpresaPersona = async (req: Request, res:Response): Promise<
     const userRepo = await getRepository(Users)
 
     // We need to validate that a user with this email and password exists in the DB
-    const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })
+    const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password }, relations: ["empresa"] })
     if (!user) throw new Exception("Invalid email or password", 401)
 
     // this is the most important line in this function, it create a JWT token

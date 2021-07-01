@@ -60,6 +60,9 @@ export class Empresa extends BaseEntity{
   @Column()
   imagen: string;
 
+  @OneToMany(() => Localidad, localidad => localidad.empresa)
+  localidad: Localidad;
+  
   @ManyToOne(() => Users, user => user.empresa)
   user: Users[];
 

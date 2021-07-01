@@ -342,12 +342,13 @@ var getMIEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
     var token;
     return __generator(this, function (_a) {
         token = req.user;
+        console.log(token.user);
         return [2 /*return*/, res.json(token.user.empresa)];
     });
 }); };
 exports.getMIEmpresa = getMIEmpresa;
 var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, empresaRepo, empresa, results;
+    var token, empresa, empresaRepo, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -385,10 +386,10 @@ var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, voi
                     throw new utils_1.Exception("Please provide is observaciones");
                 if (!req.body.imagen)
                     throw new utils_1.Exception("Please provide is imagen");
-                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 empresa = token.user.empresa;
-                if (!empresa)
+                if (!empresa || Array.isArray(empresa))
                     throw new utils_1.Exception("Empresa not exist");
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 empresaRepo.merge(empresa, req.body);
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(empresa)];
             case 1:
@@ -801,7 +802,7 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                 ];
             case 1:
                 userRepo = _a.sent();
-                return [4 /*yield*/, userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })];
+                return [4 /*yield*/, userRepo.findOne({ where: { username: req.body.username, password: req.body.password }, relations: ["empresa"] })];
             case 2:
                 user = _a.sent();
                 if (!user)
