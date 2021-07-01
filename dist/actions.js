@@ -231,8 +231,6 @@ var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
                     throw new utils_1.Exception("Please provide is observaciones");
                 if (!req.body.imagen)
                     throw new utils_1.Exception("Please provide is imagen");
-                if (!validate_isRUT(req.body.RUT))
-                    throw new utils_1.Exception("RUT incorrecto");
                 empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 return [4 /*yield*/, empresaRepo.findOne({ where: { RUT: req.body.RUT } })];
             case 1:
