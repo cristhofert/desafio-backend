@@ -255,16 +255,25 @@ export const updatePersona = async (req: Request, res:Response): Promise<Respons
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.nombre) throw new Exception("Please provide a nombre")
 	if(!req.body.apellido) throw new Exception("Please provide a apellido")
-	if(!req.body.email) throw new Exception("Please provide an email")
+    if(!req.body.emailNuevo) throw new Exception("Please provide an email")
+    if(!req.body.emailActual) throw new Exception("Please provide an email")
 	if(!req.body.celular) throw new Exception("Please provide a celular")
-	if(!req.body.estado) throw new Exception("Please provide is estado")
+    if(!req.body.estado) throw new Exception("Please provide is estado")
+    
+    const body = {
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
+        email: req.body.emailNuevo,
+        celular: req.body.celular,
+        estado: req.body.estado
+    }
 
 	const personaRepo = getRepository(Persona)
 	// fetch for any user with this email
-	const p = await personaRepo.findOne({ where: {email: req.body.email }})
+	const p = await personaRepo.findOne({ where: {email: req.body.emailActual }})
 	if(!p) throw new Exception("User not exist")
 
-    personaRepo.merge(p, req.body);
+    personaRepo.merge(p, body);
 	const results = await personaRepo.save(p);
 	return res.json(results);
 }
@@ -324,13 +333,12 @@ export const deleteLocalidad = async (req: Request, res:Response): Promise<Respo
 //Departamento
 export const createDepartamento = async (req: Request, res:Response): Promise<Response> =>{
 
-	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.nombre) throw new Exception("Please provide a nombre")
+	if(!req.body.nombre) throw new Exception("Por favor ingresa un nombre para el departamento");
 
-	const departamentoRepo = getRepository(Departamento)
-	// fetch for any user with this email
-	const departamento = await departamentoRepo.findOne({ where: {nombre: req.body.nombre }})
-	if(departamento) throw new Exception("Departamento already exists with this nombre")
+    const departamentoRepo = getRepository(Departamento);
+    
+	const departamento = await departamentoRepo.findOne({ where: {nombre: req.body.nombre }});
+	if(departamento) throw new Exception("Ya existe un departamento con este nombre");
 
     const newDepartamento = departamentoRepo.create(req.body);
 	const results = await departamentoRepo.save(newDepartamento);
@@ -338,8 +346,8 @@ export const createDepartamento = async (req: Request, res:Response): Promise<Re
 }
 
 export const getDepartamentos = async (req: Request, res: Response): Promise<Response> =>{
-		const departamentoes = await getRepository(Departamento).find();
-		return res.json(departamentoes);
+		const departamentos = await getRepository(Departamento).find();
+		return res.json(departamentos);
 }
 
 export const getDepartamento = async (req: Request, res: Response): Promise<Response> =>{
@@ -349,17 +357,17 @@ export const getDepartamento = async (req: Request, res: Response): Promise<Resp
 
 export const updateDepartamento = async (req: Request, res:Response): Promise<Response> =>{
 
-    // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.id) throw new Exception("Please provide a id")
-	if(!req.body.nombre) throw new Exception("Please provide a nombre")
+	if(!req.body.id) throw new Exception("Por favor ingresa el id del departamento");
+	if(!req.body.nombre) throw new Exception("Por favor ingresa un nombre para el Departamento");
 
-	const departamentoRepo = getRepository(Departamento)
-	// fetch for any user with this email
-	const departamento = await departamentoRepo.findOne(req.body.id)
-	if(!departamento) throw new Exception("Departamento not exist")
+    const departamentoRepo = getRepository(Departamento);
+    
+	const departamento = await departamentoRepo.findOne(req.body.id);
+	if(!departamento) throw new Exception("El Departamento con ese nombre no existe");
 
     departamentoRepo.merge(departamento, req.body);
-	const results = await departamentoRepo.save(departamento);
+    const results = await departamentoRepo.save(departamento);
+    
 	return res.json(results);
 }
 

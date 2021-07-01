@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -49,6 +49,33 @@ var Departamento_1 = require("./entities/Departamento");
 var Localidad_1 = require("./entities/Localidad");
 var Empresa_Persona_1 = require("./entities/Empresa_Persona");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+function validate_isRUT(rut) {
+    if (rut.length != 12) {
+        return false;
+    }
+    if (!/^([0-9])*$/.test(rut)) {
+        return false;
+    }
+    var dc = rut.substr(11, 1);
+    rut = rut.substr(0, 11);
+    var total = 0;
+    var factor = 2;
+    for (var i = 10; i >= 0; i--) {
+        total += (factor * Number(rut.substr(i, 1)));
+        factor = (factor == 9) ? 2 : ++factor;
+    }
+    var dv = 11 - (total % 11);
+    if (dv == 11) {
+        dv = 0;
+    }
+    else if (dv == 10) {
+        dv = 1;
+    }
+    if (dv == Number(dc)) {
+        return true;
+    }
+    return false;
+}
 //USER
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
@@ -204,6 +231,8 @@ var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
                     throw new utils_1.Exception("Please provide is observaciones");
                 if (!req.body.imagen)
                     throw new utils_1.Exception("Please provide is imagen");
+                if (!validate_isRUT(req.body.RUT))
+                    throw new utils_1.Exception("RUT incorrecto");
                 empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 return [4 /*yield*/, empresaRepo.findOne({ where: { RUT: req.body.RUT } })];
             case 1:
@@ -308,6 +337,67 @@ var deleteEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.deleteEmpresa = deleteEmpresa;
+// Mi Empresa
+var getMIEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
+    return __generator(this, function (_a) {
+        token = req.user;
+        return [2 /*return*/, res.json(token.user.empresa)];
+    });
+}); };
+exports.getMIEmpresa = getMIEmpresa;
+var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, empresaRepo, empresa, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+                if (!req.body.razon_social)
+                    throw new utils_1.Exception("Please provide a razon_social");
+                if (!req.body.nombre_fantasia)
+                    throw new utils_1.Exception("Please provide an nombre_fantasia");
+                if (!req.body.RUT)
+                    throw new utils_1.Exception("Please provide a RUT");
+                if (!req.body.email)
+                    throw new utils_1.Exception("Please provide is email");
+                if (!req.body.celular)
+                    throw new utils_1.Exception("Please provide is celular");
+                if (!req.body.telefono)
+                    throw new utils_1.Exception("Please provide is telefono");
+                if (!req.body.nro_BPS)
+                    throw new utils_1.Exception("Please provide is nro_BPS");
+                if (!req.body.nro_referencia)
+                    throw new utils_1.Exception("Please provide is nro_referencia");
+                if (!req.body.actividad_principal)
+                    throw new utils_1.Exception("Please provide is actividad_principal");
+                if (!req.body.actividad_secunadria)
+                    throw new utils_1.Exception("Please provide is actividad_secunadria");
+                if (!req.body.fecha_afiliacion)
+                    throw new utils_1.Exception("Please provide is fecha_afiliacion");
+                if (!req.body.fecha_inicio_empresa)
+                    throw new utils_1.Exception("Please provide is fecha_inicio_empresa");
+                if (!req.body.estado)
+                    throw new utils_1.Exception("Please provide is estado");
+                if (!req.body.fecha_de_baja)
+                    throw new utils_1.Exception("Please provide is fecha_de_baja");
+                if (!req.body.observaciones)
+                    throw new utils_1.Exception("Please provide is observaciones");
+                if (!req.body.imagen)
+                    throw new utils_1.Exception("Please provide is imagen");
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
+                empresa = token.user.empresa;
+                if (!empresa)
+                    throw new utils_1.Exception("Empresa not exist");
+                empresaRepo.merge(empresa, req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(empresa)];
+            case 1:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.updateMiEmpresa = updateMiEmpresa;
 //Persona
 var createPersona = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var personaRepo, persona, newPersona, results;
@@ -365,7 +455,7 @@ var getPersona = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.getPersona = getPersona;
 var updatePersona = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var personaRepo, p, results;
+    var body, personaRepo, p, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -374,19 +464,28 @@ var updatePersona = function (req, res) { return __awaiter(void 0, void 0, void 
                     throw new utils_1.Exception("Please provide a nombre");
                 if (!req.body.apellido)
                     throw new utils_1.Exception("Please provide a apellido");
-                if (!req.body.email)
+                if (!req.body.emailNuevo)
+                    throw new utils_1.Exception("Please provide an email");
+                if (!req.body.emailActual)
                     throw new utils_1.Exception("Please provide an email");
                 if (!req.body.celular)
                     throw new utils_1.Exception("Please provide a celular");
                 if (!req.body.estado)
                     throw new utils_1.Exception("Please provide is estado");
+                body = {
+                    nombre: req.body.nombre,
+                    apellido: req.body.apellido,
+                    email: req.body.emailNuevo,
+                    celular: req.body.celular,
+                    estado: req.body.estado
+                };
                 personaRepo = typeorm_1.getRepository(Persona_1.Persona);
-                return [4 /*yield*/, personaRepo.findOne({ where: { email: req.body.email } })];
+                return [4 /*yield*/, personaRepo.findOne({ where: { email: req.body.emailActual } })];
             case 1:
                 p = _a.sent();
                 if (!p)
                     throw new utils_1.Exception("User not exist");
-                personaRepo.merge(p, req.body);
+                personaRepo.merge(p, body);
                 return [4 /*yield*/, personaRepo.save(p)];
             case 2:
                 results = _a.sent();
@@ -498,15 +597,14 @@ var createDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.nombre)
-                    throw new utils_1.Exception("Please provide a nombre");
+                    throw new utils_1.Exception("Por favor ingresa un nombre para el departamento");
                 departamentoRepo = typeorm_1.getRepository(Departamento_1.Departamento);
                 return [4 /*yield*/, departamentoRepo.findOne({ where: { nombre: req.body.nombre } })];
             case 1:
                 departamento = _a.sent();
                 if (departamento)
-                    throw new utils_1.Exception("Departamento already exists with this nombre");
+                    throw new utils_1.Exception("Ya existe un departamento con este nombre");
                 newDepartamento = departamentoRepo.create(req.body);
                 return [4 /*yield*/, departamentoRepo.save(newDepartamento)];
             case 2:
@@ -517,13 +615,13 @@ var createDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
 }); };
 exports.createDepartamento = createDepartamento;
 var getDepartamentos = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var departamentoes;
+    var departamentos;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).find()];
             case 1:
-                departamentoes = _a.sent();
-                return [2 /*return*/, res.json(departamentoes)];
+                departamentos = _a.sent();
+                return [2 /*return*/, res.json(departamentos)];
         }
     });
 }); };
@@ -545,17 +643,16 @@ var updateDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.id)
-                    throw new utils_1.Exception("Please provide a id");
+                    throw new utils_1.Exception("Por favor ingresa el id del departamento");
                 if (!req.body.nombre)
-                    throw new utils_1.Exception("Please provide a nombre");
+                    throw new utils_1.Exception("Por favor ingresa un nombre para el Departamento");
                 departamentoRepo = typeorm_1.getRepository(Departamento_1.Departamento);
                 return [4 /*yield*/, departamentoRepo.findOne(req.body.id)];
             case 1:
                 departamento = _a.sent();
                 if (!departamento)
-                    throw new utils_1.Exception("Departamento not exist");
+                    throw new utils_1.Exception("El Departamento con ese nombre no existe");
                 departamentoRepo.merge(departamento, req.body);
                 return [4 /*yield*/, departamentoRepo.save(departamento)];
             case 2:
