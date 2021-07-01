@@ -26,7 +26,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 exports.__esModule = true;
 exports.Empresa = void 0;
 var Users_1 = require("./Users");
-var Localidad_1 = require("./Localidad");
 var typeorm_1 = require("typeorm");
 var Empresa_Persona_1 = require("./Empresa_Persona");
 var Empresa = /** @class */ (function (_super) {
@@ -44,7 +43,7 @@ var Empresa = /** @class */ (function (_super) {
     ], Empresa.prototype, "nombre_fantasia");
     __decorate([
         typeorm_1.PrimaryColumn({ unique: true }),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Empresa.prototype, "RUT");
     __decorate([
         typeorm_1.Column(),
@@ -103,11 +102,7 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "imagen");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresas; }),
-        __metadata("design:type", Localidad_1.Localidad)
-    ], Empresa.prototype, "localidades");
-    __decorate([
-        typeorm_1.ManyToOne(function () { return Users_1.Users; }, function (user) { return user.empresas; }),
+        typeorm_1.ManyToOne(function () { return Users_1.Users; }, function (user) { return user.empresa; }),
         __metadata("design:type", Array)
     ], Empresa.prototype, "user");
     __decorate([

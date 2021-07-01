@@ -46,42 +46,45 @@ var verifyAdmin = function (req, res, next) {
         return res.status(400).json('El usuario no es Admin');
 };
 //Users
-router.get('/user', verifyToken, verifyAdmin, utils_1.safe(actions.getUsers));
-router.get('/user/:id', verifyToken, verifyAdmin, utils_1.safe(actions.getUser));
-router.post('/user', verifyToken, verifyAdmin, utils_1.safe(actions.createUser));
-router.put('/user', verifyToken, verifyAdmin, utils_1.safe(actions.updateUser));
-router["delete"]('/user/:id', verifyToken, verifyAdmin, utils_1.safe(actions.deleteUser));
+router.get('/user', utils_1.safe(actions.getUsers));
+router.get('/user/:id', utils_1.safe(actions.getUser));
+router.post('/user', utils_1.safe(actions.createUser));
+router.put('/user', utils_1.safe(actions.updateUser));
+router["delete"]('/user/:id', utils_1.safe(actions.deleteUser));
 //Empresa
-router.get('/empresa', verifyToken, verifyAdmin, utils_1.safe(actions.getEmpresas));
-router.get('/empresa/:RUT', verifyToken, utils_1.safe(actions.getEmpresa));
-router.post('/empresa', verifyToken, verifyAdmin, utils_1.safe(actions.createEmpresa));
-router.put('/empresa', verifyToken, utils_1.safe(actions.updateEmpresa));
-router["delete"]('/empresa/:RUT', verifyToken, verifyAdmin, utils_1.safe(actions.deleteEmpresa));
+router.get('/empresa', utils_1.safe(actions.getEmpresas));
+router.get('/empresa/:RUT', utils_1.safe(actions.getEmpresa));
+router.post('/empresa', utils_1.safe(actions.createEmpresa));
+router.put('/empresa', utils_1.safe(actions.updateEmpresa));
+router["delete"]('/empresa/:RUT', utils_1.safe(actions.deleteEmpresa));
+//mi_empresa
+router.get('/mi_empresa/', utils_1.safe(actions.getMIEmpresa));
+router.put('/mi_empresa', utils_1.safe(actions.updateMiEmpresa));
 //Persona
-router.get('/persona', verifyToken, utils_1.safe(actions.getPersonas));
-router.get('/persona/:email', verifyToken, verifyAdmin, utils_1.safe(actions.getPersona));
-router.post('/persona', verifyToken, verifyAdmin, utils_1.safe(actions.createPersona));
-router.put('/persona', verifyToken, verifyAdmin, utils_1.safe(actions.updatePersona));
-router["delete"]('/persona/:id', verifyToken, verifyAdmin, utils_1.safe(actions.deletePersona));
+router.get('/persona', utils_1.safe(actions.getPersonas));
+router.get('/persona/:email', utils_1.safe(actions.getPersona));
+router.post('/persona', utils_1.safe(actions.createPersona));
+router.put('/persona', utils_1.safe(actions.updatePersona));
+router["delete"]('/persona/:id', utils_1.safe(actions.deletePersona));
 //Localidad
-router.get('/localidad', verifyToken, utils_1.safe(actions.getLocalidades));
-router.get('/localidad/:id', verifyToken, utils_1.safe(actions.getLocalidad));
-router.post('/localidad', verifyToken, verifyAdmin, utils_1.safe(actions.createLocalidad));
-router.put('/localidad', verifyToken, verifyAdmin, utils_1.safe(actions.updateLocalidad));
-router["delete"]('/localidad/:id', verifyToken, verifyAdmin, utils_1.safe(actions.deleteLocalidad));
+router.get('/localidad', utils_1.safe(actions.getLocalidades));
+router.get('/localidad/:id', utils_1.safe(actions.getLocalidad));
+router.post('/localidad', utils_1.safe(actions.createLocalidad));
+router.put('/localidad', utils_1.safe(actions.updateLocalidad));
+router["delete"]('/localidad/:id', utils_1.safe(actions.deleteLocalidad));
 //Departamento
-router.get('/departamento', verifyToken, utils_1.safe(actions.getDepartamentos));
-router.get('/departamento/:id', verifyToken, utils_1.safe(actions.getDepartamento));
-router.post('/departamento', verifyToken, verifyAdmin, utils_1.safe(actions.createDepartamento));
-router.put('/departamento', verifyToken, verifyAdmin, utils_1.safe(actions.updateDepartamento));
-router["delete"]('/departamento/:id', verifyToken, verifyAdmin, utils_1.safe(actions.deleteDepartamento));
+router.get('/departamento', utils_1.safe(actions.getDepartamentos));
+router.get('/departamento/:id', utils_1.safe(actions.getDepartamento));
+router.post('/departamento', utils_1.safe(actions.createDepartamento));
+router.put('/departamento', utils_1.safe(actions.updateDepartamento));
+router["delete"]('/departamento/:id', utils_1.safe(actions.deleteDepartamento));
 //empresa_persona
 router.get('/empresa_persona/:empresaId', utils_1.safe(actions.getEmpresasPersonas));
 router.get('/empresa_persona', utils_1.safe(actions.getEmpresaPersonas));
-router.get('/empresa_persona/:empresaId/:personaId', verifyToken, utils_1.safe(actions.getEmpresaPersona));
-router.post('/empresa_persona', verifyToken, verifyAdmin, utils_1.safe(actions.createEmpresaPersona));
-router.put('/empresa_persona', verifyToken, verifyAdmin, utils_1.safe(actions.updateEmpresaPersona));
-router["delete"]('/empresa_persona/:empresaId/:personaId', verifyToken, verifyAdmin, utils_1.safe(actions.deleteEmpresaPersona));
+router.get('/empresa_persona/:empresaId/:personaId', utils_1.safe(actions.getEmpresaPersona));
+router.post('/empresa_persona', utils_1.safe(actions.createEmpresaPersona));
+router.put('/empresa_persona', utils_1.safe(actions.updateEmpresaPersona));
+router["delete"]('/empresa_persona/:empresaId/:personaId', utils_1.safe(actions.deleteEmpresaPersona));
 //localidades
-router.get('/departamento/:id/localidades', verifyToken, utils_1.safe(actions.getLocalidadesDeDepartamento));
+router.get('/departamento/:id/localidades', utils_1.safe(actions.getLocalidadesDeDepartamento));
 exports["default"] = router;
