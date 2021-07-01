@@ -348,7 +348,7 @@ var getPersona = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.getPersona = getPersona;
 var updatePersona = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var personaRepo, p, results;
+    var body, personaRepo, p, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -357,19 +357,28 @@ var updatePersona = function (req, res) { return __awaiter(void 0, void 0, void 
                     throw new utils_1.Exception("Please provide a nombre");
                 if (!req.body.apellido)
                     throw new utils_1.Exception("Please provide a apellido");
-                if (!req.body.email)
+                if (!req.body.emailNuevo)
+                    throw new utils_1.Exception("Please provide an email");
+                if (!req.body.emailActual)
                     throw new utils_1.Exception("Please provide an email");
                 if (!req.body.celular)
                     throw new utils_1.Exception("Please provide a celular");
                 if (!req.body.estado)
                     throw new utils_1.Exception("Please provide is estado");
+                body = {
+                    nombre: req.body.nombre,
+                    apellido: req.body.apellido,
+                    email: req.body.emailNuevo,
+                    celular: req.body.celular,
+                    estado: req.body.estado
+                };
                 personaRepo = typeorm_1.getRepository(Persona_1.Persona);
-                return [4 /*yield*/, personaRepo.findOne({ where: { email: req.body.email } })];
+                return [4 /*yield*/, personaRepo.findOne({ where: { email: req.body.emailActual } })];
             case 1:
                 p = _a.sent();
                 if (!p)
                     throw new utils_1.Exception("User not exist");
-                personaRepo.merge(p, req.body);
+                personaRepo.merge(p, body);
                 return [4 /*yield*/, personaRepo.save(p)];
             case 2:
                 results = _a.sent();
@@ -481,15 +490,14 @@ var createDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.nombre)
-                    throw new utils_1.Exception("Please provide a nombre");
+                    throw new utils_1.Exception("Por favor ingresa un nombre para el departamento");
                 departamentoRepo = typeorm_1.getRepository(Departamento_1.Departamento);
                 return [4 /*yield*/, departamentoRepo.findOne({ where: { nombre: req.body.nombre } })];
             case 1:
                 departamento = _a.sent();
                 if (departamento)
-                    throw new utils_1.Exception("Departamento already exists with this nombre");
+                    throw new utils_1.Exception("Ya existe un departamento con este nombre");
                 newDepartamento = departamentoRepo.create(req.body);
                 return [4 /*yield*/, departamentoRepo.save(newDepartamento)];
             case 2:
@@ -500,13 +508,13 @@ var createDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
 }); };
 exports.createDepartamento = createDepartamento;
 var getDepartamentos = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var departamentoes;
+    var departamentos;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).find()];
             case 1:
-                departamentoes = _a.sent();
-                return [2 /*return*/, res.json(departamentoes)];
+                departamentos = _a.sent();
+                return [2 /*return*/, res.json(departamentos)];
         }
     });
 }); };
@@ -528,17 +536,16 @@ var updateDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.id)
-                    throw new utils_1.Exception("Please provide a id");
+                    throw new utils_1.Exception("Por favor ingresa el id del departamento");
                 if (!req.body.nombre)
-                    throw new utils_1.Exception("Please provide a nombre");
+                    throw new utils_1.Exception("Por favor ingresa un nombre para el Departamento");
                 departamentoRepo = typeorm_1.getRepository(Departamento_1.Departamento);
                 return [4 /*yield*/, departamentoRepo.findOne(req.body.id)];
             case 1:
                 departamento = _a.sent();
                 if (!departamento)
-                    throw new utils_1.Exception("Departamento not exist");
+                    throw new utils_1.Exception("El Departamento con ese nombre no existe");
                 departamentoRepo.merge(departamento, req.body);
                 return [4 /*yield*/, departamentoRepo.save(departamento)];
             case 2:

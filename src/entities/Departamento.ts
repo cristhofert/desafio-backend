@@ -1,15 +1,17 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable, OneToMany
+    Entity, Column, PrimaryGeneratedColumn,
+    BaseEntity, OneToMany
 } from 'typeorm';
+import { Localidad } from './Localidad';
 
 @Entity()
-export class Departamento extends BaseEntity{
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column({unique: true})
-  nombre: string; 
+export class Departamento extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+    
+    @Column({ unique: true })
+    nombre: string;
 
-  @OneToMany(() => Departamento, departamento => departamento.id)
-  departamento: Departamento[];
+    @OneToMany(() => Localidad, localidad => localidad.departamento)
+    localidades: Localidad[];
 }

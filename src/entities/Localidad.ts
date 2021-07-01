@@ -1,19 +1,17 @@
 import { Departamento } from './Departamento';
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, OneToMany,
-  BaseEntity, JoinTable
+    Entity, Column, PrimaryGeneratedColumn, ManyToOne,
+    BaseEntity
 } from 'typeorm';
 
 @Entity()
-export class Localidad extends BaseEntity{
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  nombre: string;
-  
-  @ManyToOne(() => Departamento, departamento => departamento.id)
-  departamento: Departamento;
+export class Localidad extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @OneToMany(() => Localidad, localidad => localidad.id)
-  localidad: Localidad[];
+    @Column()
+    nombre: string;
+
+    @ManyToOne(() => Departamento, departamento => departamento.localidades)
+    departamento: Departamento;
 }
