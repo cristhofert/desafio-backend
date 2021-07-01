@@ -1,6 +1,6 @@
 import { Empresa_Persona } from './Empresa_Persona';
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToOne, 
+  Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany,
   BaseEntity, JoinTable
 } from 'typeorm';
 
@@ -11,15 +11,19 @@ export class Persona extends BaseEntity{
  
   @Column()
   nombre: string;
+
   @Column()
   apellido: string;
+
   @Column({unique: true})
   email: string;
+
   @Column()
   celular: string;
+  
   @Column()
   estado: string;
  
-  @ManyToOne(() => Empresa_Persona, empresa_persona => empresa_persona.persona)
+  @OneToMany(() => Empresa_Persona, empresa_persona => empresa_persona.persona)
   empresa_persona: Empresa_Persona[];
 }

@@ -38,11 +38,11 @@ var Empresa_Persona = /** @class */ (function (_super) {
         __metadata("design:type", Number)
     ], Empresa_Persona.prototype, "id");
     __decorate([
-        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.RUT; }),
+        typeorm_1.ManyToOne(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.empresa_persona; }),
         __metadata("design:type", Empresa_1.Empresa)
     ], Empresa_Persona.prototype, "empresa");
     __decorate([
-        typeorm_1.OneToMany(function () { return Persona_1.Persona; }, function (persona) { return persona.id; }),
+        typeorm_1.ManyToOne(function () { return Persona_1.Persona; }, function (persona) { return persona.empresa_persona; }),
         __metadata("design:type", Persona_1.Persona)
     ], Empresa_Persona.prototype, "persona");
     __decorate([

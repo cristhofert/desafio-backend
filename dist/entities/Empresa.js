@@ -103,15 +103,15 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "imagen");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.id; }),
+        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresas; }),
         __metadata("design:type", Localidad_1.Localidad)
-    ], Empresa.prototype, "localidad");
+    ], Empresa.prototype, "localidades");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Users_1.Users; }, function (user) { return user.id; }),
+        typeorm_1.ManyToOne(function () { return Users_1.Users; }, function (user) { return user.empresas; }),
         __metadata("design:type", Array)
-    ], Empresa.prototype, "users");
+    ], Empresa.prototype, "user");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.empresa; }),
+        typeorm_1.OneToMany(function () { return Empresa_Persona_1.Empresa_Persona; }, function (empresa_persona) { return empresa_persona.empresa; }),
         __metadata("design:type", Array)
     ], Empresa.prototype, "empresa_persona");
     Empresa = __decorate([

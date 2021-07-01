@@ -41,7 +41,11 @@ var Departamento = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Departamento.prototype, "nombre");
     __decorate([
+<<<<<<< HEAD
         typeorm_1.OneToMany(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.departamento; }),
+=======
+        typeorm_1.OneToMany(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.departamentos; }),
+>>>>>>> 29f29b1cfe7ccd54d8838c55d8a4fb2bd625aa40
         __metadata("design:type", Array)
     ], Departamento.prototype, "localidades");
     Departamento = __decorate([

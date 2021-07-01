@@ -9,6 +9,43 @@ import { Localidad } from './entities/Localidad'
 import { Empresa_Persona } from './entities/Empresa_Persona'
 import jwt from 'jsonwebtoken'
 
+interface IToken {
+    user: Users,
+    iat: number,
+    exp: number
+}
+
+function validate_isRUT(rut: string)
+{
+	if (rut.length != 12){
+		return false;
+	}
+	if (!/^([0-9])*$/.test(rut)){
+               return false;
+  	}
+	let dc = rut.substr(11, 1);
+	rut = rut.substr(0, 11);
+	let total = 0;
+	let factor = 2;
+ 
+	for (let i = 10; i >= 0; i--) {
+		total += (factor * Number(rut.substr(i, 1)));
+		factor = (factor == 9)?2:++factor;
+	}
+ 
+	var dv = 11 - (total % 11);
+ 
+	if (dv == 11){
+		dv = 0;
+	}else if(dv == 10){
+		dv = 1;
+	}
+	if(dv == Number(dc)){
+		return true;
+	}
+	return false;
+}
+
 //USER
 export const createUser = async (req: Request, res:Response): Promise<Response> =>{
 
@@ -37,6 +74,12 @@ export const getUsers = async (req: Request, res: Response): Promise<Response> =
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{
 		const users = await getRepository(Users).findOne({where: {username: req.params.username}});
 		return res.json(users);
+}
+export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> =>{
+        const departamento = await getRepository(Departamento).findOne(req.params.id);
+        if(!departamento) throw new Exception("Departamento not exist")
+		const localidades = await getRepository(Localidad).find({where: {departamentos: departamento}});
+		return res.json(localidades);
 }
 
 export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
@@ -82,7 +125,9 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.estado) throw new Exception("Please provide is estado")
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
-	if(!req.body.imagen) throw new Exception("Please provide is imagen")
+    if(!req.body.imagen) throw new Exception("Please provide is imagen")
+    if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
+    
 
 	const empresaRepo = getRepository(Empresa)
 	// fetch for any Empresa with this email
@@ -105,8 +150,8 @@ export const getEmpresa = async (req: Request, res: Response): Promise<Response>
 }
 
 export const updateEmpresa = async (req: Request, res:Response): Promise<Response> =>{
-
-	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
+    
+    // important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.razon_social) throw new Exception("Please provide a razon_social")
 	if(!req.body.nombre_fantasia) throw new Exception("Please provide an nombre_fantasia")
 	if(!req.body.RUT) throw new Exception("Please provide a RUT")
@@ -123,7 +168,7 @@ export const updateEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
 	if(!req.body.imagen) throw new Exception("Please provide is imagen")
-
+    
 	const empresaRepo = getRepository(Empresa)
 	// fetch for any Empresa with this email
 	const empresa = await empresaRepo.findOne({ where: {RUT: req.body.RUT }})
@@ -135,9 +180,45 @@ export const updateEmpresa = async (req: Request, res:Response): Promise<Respons
 }
 
 export const deleteEmpresa = async (req: Request, res:Response): Promise<Response> =>{
-        const results = await  getRepository(Empresa).delete(req.params.RUT);
-        return res.send(results);
-    }
+    const results = await  getRepository(Empresa).delete(req.params.RUT);
+    return res.send(results);
+}
+// Mi Empresa
+export const getMIEmpresa = async (req: Request, res: Response): Promise<Response> =>{
+    const token = req.user as IToken;
+    return res.json(token.user.empresa);
+}
+
+export const updateMiEmpresa = async (req: Request, res:Response): Promise<Response> =>{
+    const token = req.user as IToken;
+    
+    // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+    if(!req.body.razon_social) throw new Exception("Please provide a razon_social")
+    if(!req.body.nombre_fantasia) throw new Exception("Please provide an nombre_fantasia")
+    if(!req.body.RUT) throw new Exception("Please provide a RUT")
+    if(!req.body.email) throw new Exception("Please provide is email")
+    if(!req.body.celular) throw new Exception("Please provide is celular")
+    if(!req.body.telefono) throw new Exception("Please provide is telefono")
+    if(!req.body.nro_BPS) throw new Exception("Please provide is nro_BPS")
+    if(!req.body.nro_referencia) throw new Exception("Please provide is nro_referencia")
+    if(!req.body.actividad_principal) throw new Exception("Please provide is actividad_principal")
+    if(!req.body.actividad_secunadria) throw new Exception("Please provide is actividad_secunadria")
+    if(!req.body.fecha_afiliacion) throw new Exception("Please provide is fecha_afiliacion")
+    if(!req.body.fecha_inicio_empresa) throw new Exception("Please provide is fecha_inicio_empresa")
+    if(!req.body.estado) throw new Exception("Please provide is estado")
+    if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
+    if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
+    if(!req.body.imagen) throw new Exception("Please provide is imagen")
+
+    const empresaRepo = getRepository(Empresa)
+    // fetch for any Empresa with this email
+    const empresa = token.user.empresa;
+    if(!empresa) throw new Exception("Empresa not exist")
+
+    empresaRepo.merge(empresa, req.body);
+    const results = await getRepository(Empresa).save(empresa);
+    return res.json(results);
+}
 
 //Persona
 export const createPersona = async (req: Request, res:Response): Promise<Response> =>{
@@ -300,26 +381,35 @@ export const createEmpresaPersona = async (req: Request, res:Response): Promise<
 
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.empresaId) throw new Exception("Please provide a empresa")
-	if(!req.body.personaId) throw new Exception("Please provide a persona")
+    if(!req.body.personaId) throw new Exception("Please provide a persona")
+    if(!req.body.cargo) throw new Exception("Please provide a persona")
 
 	// fetch for any user with this email
 	const persona = await getRepository(Persona).findOne(req.body.personaId)
-	const empresa = await getRepository(Empresa).findOne(req.body.empresaId)
-	if(persona && empresa) throw new Exception("Persona and Empresa relationship exists")
+    const empresa = await getRepository(Empresa).findOne({where: {RUT: req.body.empresaId }})
+	if(!persona || !empresa) throw new Exception("Persona and Empresa relationship exists")
     
 	const empresaPersonaRepo = getRepository(Empresa_Persona)
-    const newEmpresaPersona = empresaPersonaRepo.create(req.body);
+    const newEmpresaPersona = empresaPersonaRepo.create();
+    newEmpresaPersona.persona = persona
+    newEmpresaPersona.empresa = empresa
+    newEmpresaPersona.cargo = req.body.cargo
 	const results = await empresaPersonaRepo.save(newEmpresaPersona);
 	return res.json(results);
 }
 
 export const getEmpresaPersonas = async (req: Request, res: Response): Promise<Response> =>{
-		const empresaPersonaes = await getRepository(Empresa_Persona).find();
+		const empresaPersonaes = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"]});
 		return res.json(empresaPersonaes);
 }
 
 export const getEmpresaPersona = async (req: Request, res: Response): Promise<Response> =>{
 		const empresaPersona = await getRepository(Empresa_Persona).findOne({where: {empresa: req.params.empresaId, persona: req.params.personaId}});
+		return res.json(empresaPersona);
+}
+
+export const getEmpresasPersonas = async (req: Request, res: Response): Promise<Response> =>{
+        const empresaPersona = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"], where: { empresa: req.params.empresaId } });
 		return res.json(empresaPersona);
 }
 

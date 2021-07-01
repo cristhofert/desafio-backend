@@ -2,7 +2,7 @@ import { Persona } from './Persona';
 import { Empresa } from './Empresa';
 import {
   Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable, OneToMany, PrimaryColumn
+  BaseEntity, JoinTable, OneToMany, PrimaryColumn, ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -10,10 +10,10 @@ export class Empresa_Persona extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: number;
 
-  @OneToMany(() => Empresa, empresa => empresa.RUT)
+  @ManyToOne(() => Empresa, empresa => empresa.empresa_persona)
   empresa: Empresa;
 
-  @OneToMany(() => Persona, persona => persona.id)
+  @ManyToOne(() => Persona, persona => persona.empresa_persona)
   persona: Persona;
 
   @Column()

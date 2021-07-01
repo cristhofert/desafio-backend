@@ -3,6 +3,7 @@ import {
     Entity, Column, PrimaryGeneratedColumn, ManyToOne,
     BaseEntity
 } from 'typeorm';
+import { Empresa } from './Empresa';
 
 @Entity()
 export class Localidad extends BaseEntity {

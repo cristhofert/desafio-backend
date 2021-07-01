@@ -27,6 +27,7 @@ exports.__esModule = true;
 exports.Localidad = void 0;
 var Departamento_1 = require("./Departamento");
 var typeorm_1 = require("typeorm");
+var Empresa_1 = require("./Empresa");
 var Localidad = /** @class */ (function (_super) {
     __extends(Localidad, _super);
     function Localidad() {
@@ -43,7 +44,15 @@ var Localidad = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.ManyToOne(function () { return Departamento_1.Departamento; }, function (departamento) { return departamento.localidades; }),
         __metadata("design:type", Departamento_1.Departamento)
+<<<<<<< HEAD
     ], Localidad.prototype, "departamento");
+=======
+    ], Localidad.prototype, "departamentos");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.localidades; }),
+        __metadata("design:type", Array)
+    ], Localidad.prototype, "empresas");
+>>>>>>> 29f29b1cfe7ccd54d8838c55d8a4fb2bd625aa40
     Localidad = __decorate([
         typeorm_1.Entity()
     ], Localidad);
