@@ -136,14 +136,12 @@ var getLocalidadesDeDepartamento = function (req, res) { return __awaiter(void 0
     var departamento, localidades;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).findOne(req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).findOne({ relations: ["localidades"], where: { id: req.params.id } })];
             case 1:
                 departamento = _a.sent();
                 if (!departamento)
-                    throw new utils_1.Exception("Departamento not exist");
-                return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).find({ where: { departamentos: departamento } })];
-            case 2:
-                localidades = _a.sent();
+                    throw new utils_1.Exception("No existe el departamento");
+                localidades = departamento.localidades;
                 return [2 /*return*/, res.json(localidades)];
         }
     });
@@ -508,24 +506,29 @@ var deletePersona = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.deletePersona = deletePersona;
 //Localidad
 var createLocalidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var localidadRepo, localidad, newLocalidad, results;
+    var localidadRepo, departamento, newLocalidad, existe;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.nombre)
-                    throw new utils_1.Exception("Please provide a nombre");
+                    throw new utils_1.Exception("Por favor ingresa un nombre");
                 localidadRepo = typeorm_1.getRepository(Localidad_1.Localidad);
-                return [4 /*yield*/, localidadRepo.findOne({ where: { nombre: req.body.nombre } })];
+                return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).findOne({ relations: ["localidades"], where: { id: req.params.id } })];
             case 1:
-                localidad = _a.sent();
-                if (localidad)
-                    throw new utils_1.Exception("Localidad already exists with this nombre");
-                newLocalidad = localidadRepo.create(req.body);
-                return [4 /*yield*/, localidadRepo.save(newLocalidad)];
+                departamento = _a.sent();
+                if (!departamento)
+                    throw new utils_1.Exception("El departamento no existe");
+                newLocalidad = localidadRepo.create();
+                newLocalidad.nombre = req.body.nombre;
+                existe = departamento.localidades.includes(newLocalidad);
+                if (!!existe) return [3 /*break*/, 3];
+                departamento.localidades.push(newLocalidad);
+                return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).save(departamento)];
             case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3: throw new utils_1.Exception("Ya existe una localidad con este nombre");
+            case 4: return [2 /*return*/, res.json(newLocalidad)];
         }
     });
 }); };
@@ -559,17 +562,14 @@ var updateLocalidad = function (req, res) { return __awaiter(void 0, void 0, voi
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-                if (!req.body.id)
-                    throw new utils_1.Exception("Please provide a id");
                 if (!req.body.nombre)
                     throw new utils_1.Exception("Please provide a nombre");
                 localidadRepo = typeorm_1.getRepository(Localidad_1.Localidad);
-                return [4 /*yield*/, localidadRepo.findOne(req.body.id)];
+                return [4 /*yield*/, localidadRepo.findOne(req.params.id)];
             case 1:
                 localidad = _a.sent();
                 if (!localidad)
-                    throw new utils_1.Exception("Localidad not exist");
+                    throw new utils_1.Exception("La Localidad no existe");
                 localidadRepo.merge(localidad, req.body);
                 return [4 /*yield*/, localidadRepo.save(localidad)];
             case 2:

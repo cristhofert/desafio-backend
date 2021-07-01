@@ -58,8 +58,8 @@ router.delete('/persona/:id', safe(actions.deletePersona));
 //Localidad
 router.get('/localidad', safe(actions.getLocalidades));
 router.get('/localidad/:id', safe(actions.getLocalidad));
-router.post('/localidad', safe(actions.createLocalidad));
-router.put('/localidad', safe(actions.updateLocalidad));
+router.post('/localidad/:id', safe(actions.createLocalidad));
+router.put('/localidad/:id', safe(actions.updateLocalidad));
 router.delete('/localidad/:id', safe(actions.deleteLocalidad));
 
 //Departamento
