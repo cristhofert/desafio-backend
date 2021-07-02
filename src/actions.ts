@@ -210,7 +210,7 @@ export const updateMiEmpresa = async (req: Request, res:Response): Promise<Respo
     if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
     if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
-
+	
     // fetch for any Empresa with this email
     const empresa = token.user.empresa;
     if(!empresa || Array.isArray(empresa)) throw new Exception("Empresa not exist")
@@ -221,9 +221,18 @@ export const updateMiEmpresa = async (req: Request, res:Response): Promise<Respo
     return res.json(results);
 }
 
+export const getMiAsociados = async (req: Request, res: Response): Promise<Response> =>{
+	const token = req.user as IToken;
+
+	const empresaPersona = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"],
+	 	where: { empresa: token.user.empresa.RUT } });
+	console.log(empresaPersona);
+	return res.json(empresaPersona);
+}
+
 //Persona
 export const createPersona = async (req: Request, res:Response): Promise<Response> =>{
-
+	
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.nombre) throw new Exception("Please provide a nombre")
 	if(!req.body.apellido) throw new Exception("Please provide a apellido")
@@ -413,6 +422,7 @@ export const getEmpresasPersonas = async (req: Request, res: Response): Promise<
         const empresaPersona = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"], where: { empresa: req.params.empresaId } });
 		return res.json(empresaPersona);
 }
+
 
 export const updateEmpresaPersona = async (req: Request, res:Response): Promise<Response> =>{
 

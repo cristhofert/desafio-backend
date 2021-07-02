@@ -48,6 +48,7 @@ router.delete('/empresa/:RUT', safe(actions.deleteEmpresa));
 //mi_empresa
 router.get('/mi_empresa/',verifyToken, safe(actions.getMIEmpresa));
 router.put('/mi_empresa', verifyToken, safe(actions.updateMiEmpresa));
+router.put('/asociados', verifyToken, safe(actions.getMiAsociados));
 //Persona
 router.get('/persona', safe(actions.getPersonas));
 router.get('/persona/:email', safe(actions.getPersona));

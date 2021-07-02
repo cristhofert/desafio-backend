@@ -60,6 +60,7 @@ router["delete"]('/empresa/:RUT', utils_1.safe(actions.deleteEmpresa));
 //mi_empresa
 router.get('/mi_empresa/', verifyToken, utils_1.safe(actions.getMIEmpresa));
 router.put('/mi_empresa', verifyToken, utils_1.safe(actions.updateMiEmpresa));
+router.put('/asociativa', verifyToken, utils_1.safe(actions.getMiAsociados));
 //Persona
 router.get('/persona', utils_1.safe(actions.getPersonas));
 router.get('/persona/:email', utils_1.safe(actions.getPersona));

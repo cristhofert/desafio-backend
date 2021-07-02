@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.getMiAsociados = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -399,6 +399,22 @@ var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.updateMiEmpresa = updateMiEmpresa;
+var getMiAsociados = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, empresaPersona;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona).find({ relations: ["persona", "empresa"],
+                        where: { empresa: token.user.empresa.RUT } })];
+            case 1:
+                empresaPersona = _a.sent();
+                console.log(empresaPersona);
+                return [2 /*return*/, res.json(empresaPersona)];
+        }
+    });
+}); };
+exports.getMiAsociados = getMiAsociados;
 //Persona
 var createPersona = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var personaRepo, persona, newPersona, results;
