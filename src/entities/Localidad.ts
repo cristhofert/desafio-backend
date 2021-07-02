@@ -13,6 +13,8 @@ export class Localidad extends BaseEntity {
     @Column()
     nombre: string;
 
-    @ManyToOne(() => Departamento, departamento => departamento.localidades)
+    @ManyToOne(() => Departamento, departamento => departamento.localidades, {
+        onDelete: 'CASCADE'
+    })
     departamento: Departamento;
 }
