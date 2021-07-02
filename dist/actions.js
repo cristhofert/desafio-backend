@@ -663,11 +663,16 @@ var updateDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
 }); };
 exports.updateDepartamento = updateDepartamento;
 var deleteDepartamento = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var results;
+    var departamento, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento)["delete"](req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).findOne({ relations: ["localidades"], where: { id: req.params.id } })];
             case 1:
+                departamento = _a.sent();
+                if (!departamento)
+                    throw new utils_1.Exception("El departamento no existe!");
+                return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).remove(departamento)];
+            case 2:
                 results = _a.sent();
                 return [2 /*return*/, res.send(results)];
         }

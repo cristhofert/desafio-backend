@@ -377,7 +377,9 @@ export const updateDepartamento = async (req: Request, res:Response): Promise<Re
 }
 
 export const deleteDepartamento = async (req: Request, res:Response): Promise<Response> =>{
-        const results = await getRepository(Departamento).delete(req.params.id);
+		const departamento = await getRepository(Departamento).findOne({relations: ["localidades"], where: {id: req.params.id}})
+		if(!departamento) throw new Exception ("El departamento no existe!");
+        const results = await getRepository(Departamento).remove(departamento);
         return res.send(results);
     }
 
