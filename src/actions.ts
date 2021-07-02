@@ -126,7 +126,7 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
-    if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
+    /* if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto") */
     
 
 	const empresaRepo = getRepository(Empresa)
