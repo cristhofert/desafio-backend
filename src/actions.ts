@@ -76,9 +76,9 @@ export const getUser = async (req: Request, res: Response): Promise<Response> =>
 		return res.json(users);
 }
 export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> =>{
-        const departamento = await getRepository(Departamento).findOne(req.params.id);
-        if(!departamento) throw new Exception("Departamento not exist")
-		const localidades = await getRepository(Localidad).find({where: {departamentos: departamento}});
+        const departamento = await getRepository(Departamento).findOne({relations: ["localidades"], where: {id: req.params.id}});
+        if(!departamento) throw new Exception("No existe el departamento")
+		const localidades = departamento.localidades;
 		return res.json(localidades);
 }
 
@@ -144,7 +144,7 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
-    if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
+    /* if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto") */
     
 
 	const empresaRepo = getRepository(Empresa)
@@ -314,17 +314,25 @@ export const deletePersona = async (req: Request, res:Response): Promise<Respons
 //Localidad
 export const createLocalidad = async (req: Request, res:Response): Promise<Response> =>{
 
-	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.nombre) throw new Exception("Please provide a nombre")
+	if(!req.body.nombre) throw new Exception("Por favor ingresa un nombre");
 
-	const localidadRepo = getRepository(Localidad)
-	// fetch for any user with this email
-	const localidad = await localidadRepo.findOne({ where: {nombre: req.body.nombre }})
-	if(localidad) throw new Exception("Localidad already exists with this nombre")
+	const localidadRepo = getRepository(Localidad);
 
-    const newLocalidad = localidadRepo.create(req.body);
-	const results = await localidadRepo.save(newLocalidad);
-	return res.json(results);
+	const departamento = await getRepository(Departamento).findOne({relations: ["localidades"], where: {id: req.params.id}});
+	if(!departamento) throw new Exception("El departamento no existe");
+
+	const newLocalidad = localidadRepo.create();
+	newLocalidad.nombre = req.body.nombre;
+
+	const existe = departamento.localidades.includes(newLocalidad);
+	if(!existe){
+		departamento.localidades.push(newLocalidad);
+		await getRepository(Departamento).save(departamento);
+	} else {
+		throw new Exception("Ya existe una localidad con este nombre");
+	}
+	
+	return res.json(newLocalidad);
 }
 
 export const getLocalidades = async (req: Request, res: Response): Promise<Response> =>{
@@ -338,15 +346,12 @@ export const getLocalidad = async (req: Request, res: Response): Promise<Respons
 }
 
 export const updateLocalidad = async (req: Request, res:Response): Promise<Response> =>{
-
-    // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.id) throw new Exception("Please provide a id")
 	if(!req.body.nombre) throw new Exception("Please provide a nombre")
 
 	const localidadRepo = getRepository(Localidad)
-	// fetch for any user with this email
-	const localidad = await localidadRepo.findOne(req.body.id)
-	if(!localidad) throw new Exception("Localidad not exist")
+	
+	const localidad = await localidadRepo.findOne(req.params.id)
+	if(!localidad) throw new Exception("La Localidad no existe")
 
     localidadRepo.merge(localidad, req.body);
 	const results = await localidadRepo.save(localidad);
@@ -400,7 +405,9 @@ export const updateDepartamento = async (req: Request, res:Response): Promise<Re
 }
 
 export const deleteDepartamento = async (req: Request, res:Response): Promise<Response> =>{
-        const results = await getRepository(Departamento).delete(req.params.id);
+		const departamento = await getRepository(Departamento).findOne({relations: ["localidades"], where: {id: req.params.id}})
+		if(!departamento) throw new Exception ("El departamento no existe!");
+        const results = await getRepository(Departamento).remove(departamento);
         return res.send(results);
     }
 

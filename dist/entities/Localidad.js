@@ -42,7 +42,9 @@ var Localidad = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Localidad.prototype, "nombre");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Departamento_1.Departamento; }, function (departamento) { return departamento.localidades; }),
+        typeorm_1.ManyToOne(function () { return Departamento_1.Departamento; }, function (departamento) { return departamento.localidades; }, {
+            onDelete: 'CASCADE'
+        }),
         __metadata("design:type", Departamento_1.Departamento)
     ], Localidad.prototype, "departamento");
     __decorate([

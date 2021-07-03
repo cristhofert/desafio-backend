@@ -72,8 +72,8 @@ router["delete"]('/persona/:id', utils_1.safe(actions.deletePersona));
 //Localidad
 router.get('/localidad', utils_1.safe(actions.getLocalidades));
 router.get('/localidad/:id', utils_1.safe(actions.getLocalidad));
-router.post('/localidad', utils_1.safe(actions.createLocalidad));
-router.put('/localidad', utils_1.safe(actions.updateLocalidad));
+router.post('/localidad/:id', utils_1.safe(actions.createLocalidad));
+router.put('/localidad/:id', utils_1.safe(actions.updateLocalidad));
 router["delete"]('/localidad/:id', utils_1.safe(actions.deleteLocalidad));
 //Departamento
 router.get('/departamento', utils_1.safe(actions.getDepartamentos));
