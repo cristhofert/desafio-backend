@@ -77,6 +77,7 @@ router.put('/localidad/:id', utils_1.safe(actions.updateLocalidad));
 router["delete"]('/localidad/:id', utils_1.safe(actions.deleteLocalidad));
 //Departamento
 router.get('/departamento', utils_1.safe(actions.getDepartamentos));
+router.get('/departamentoYlocalidad', utils_1.safe(actions.getDepartamentosYlocalidades));
 router.get('/departamento/:id', utils_1.safe(actions.getDepartamento));
 router.post('/departamento', utils_1.safe(actions.createDepartamento));
 router.put('/departamento', utils_1.safe(actions.updateDepartamento));

@@ -67,6 +67,7 @@ router.delete('/localidad/:id', safe(actions.deleteLocalidad));
 
 //Departamento
 router.get('/departamento', safe(actions.getDepartamentos));
+router.get('/departamentoYlocalidad', safe(actions.getDepartamentosYlocalidades))
 router.get('/departamento/:id', safe(actions.getDepartamento));
 router.post('/departamento', safe(actions.createDepartamento));
 router.put('/departamento', safe(actions.updateDepartamento));

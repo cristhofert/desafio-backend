@@ -72,7 +72,7 @@ export const getUsers = async (req: Request, res: Response): Promise<Response> =
 }
 
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{
-		const users = await getRepository(Users).findOne({where: {username: req.params.username}, relations: ["empresa"]});
+		const users = await getRepository(Users).findOne({where: {username: req.params.username}});
 		return res.json(users);
 }
 export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> =>{
@@ -80,24 +80,6 @@ export const getLocalidadesDeDepartamento = async (req: Request, res: Response):
         if(!departamento) throw new Exception("No existe el departamento")
 		const localidades = departamento.localidades;
 		return res.json(localidades);
-}
-
-export const asignarEmpresaAlUsuario = async (req: Request, res:Response): Promise<Response> =>{
-	if(!req.params.RUT) throw new Exception("Please provide a RUT")
-
-	const token = req.user as IToken;
-
-	const userRepo =  getRepository(Users)
-	const empresa = await getRepository(Empresa).findOne({where: {RUT: req.params.RUT}});
-	//const user = await userRepo.findOne({where:{id: token.user.id}, relations: ["empresa"]});
-
-	//if(!user) throw new Exception("User not exist")
-	if(!empresa) throw new Exception("Empresa not exist")
-
-	console.log(empresa)
-	const results = await userRepo.update( token.user.id, {empresa})
-	//const results = await userRepo.save(user);
-	return res.json(results);
 }
 
 export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
@@ -144,7 +126,7 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
-    /* if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto") */
+    if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
     
 
 	const empresaRepo = getRepository(Empresa)
@@ -204,7 +186,6 @@ export const deleteEmpresa = async (req: Request, res:Response): Promise<Respons
 // Mi Empresa
 export const getMIEmpresa = async (req: Request, res: Response): Promise<Response> =>{
     const token = req.user as IToken;
-	console.log(token.user)
     return res.json(token.user.empresa);
 }
 
@@ -228,29 +209,20 @@ export const updateMiEmpresa = async (req: Request, res:Response): Promise<Respo
     if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
     if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
-	
+
+    const empresaRepo = getRepository(Empresa)
     // fetch for any Empresa with this email
     const empresa = token.user.empresa;
-    if(!empresa || Array.isArray(empresa)) throw new Exception("Empresa not exist")
-	
-    const empresaRepo = getRepository(Empresa)
+    if(!empresa) throw new Exception("Empresa not exist")
+
     empresaRepo.merge(empresa, req.body);
     const results = await getRepository(Empresa).save(empresa);
     return res.json(results);
 }
 
-export const getMiAsociados = async (req: Request, res: Response): Promise<Response> =>{
-	const token = req.user as IToken;
-
-	const empresaPersona = await getRepository(Empresa_Persona).find({ relations: ["persona", "empresa"],
-	 	where: { empresa: token.user.empresa.RUT } });
-	console.log(empresaPersona);
-	return res.json(empresaPersona);
-}
-
 //Persona
 export const createPersona = async (req: Request, res:Response): Promise<Response> =>{
-	
+
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.nombre) throw new Exception("Please provide a nombre")
 	if(!req.body.apellido) throw new Exception("Please provide a apellido")
@@ -309,7 +281,7 @@ export const updatePersona = async (req: Request, res:Response): Promise<Respons
 export const deletePersona = async (req: Request, res:Response): Promise<Response> =>{
         const results = await  getRepository(Users).delete(req.params.id);
         return res.send(results);
-    }
+}
 
 //Localidad
 export const createLocalidad = async (req: Request, res:Response): Promise<Response> =>{
@@ -405,25 +377,16 @@ export const updateDepartamento = async (req: Request, res:Response): Promise<Re
 }
 
 export const deleteDepartamento = async (req: Request, res:Response): Promise<Response> =>{
-		const departamento = await getRepository(Departamento).findOne({relations: ["localidades"], where: {id: req.params.id}})
-		if(!departamento) throw new Exception ("El departamento no existe!");
-        const results = await getRepository(Departamento).remove(departamento);
+        const results = await getRepository(Departamento).delete(req.params.id);
         return res.send(results);
     }
-
-//Asociado 
-export const createAsociadoNuevo = async (req: Request, res:Response): Promise<Response> =>{
-	const token = req.user as IToken;
-	req.body.empresaId = token.user.empresa.RUT
-	return await createEmpresaPersona(req, res)
-}
 
 //EmpresaPersona
 export const createEmpresaPersona = async (req: Request, res:Response): Promise<Response> =>{
 
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.empresaId) throw new Exception("Please provide a empresa id")
-    if(!req.body.personaId) throw new Exception("Please provide a persona id")
+	if(!req.body.empresaId) throw new Exception("Please provide a empresa")
+    if(!req.body.personaId) throw new Exception("Please provide a persona")
     if(!req.body.cargo) throw new Exception("Please provide a persona")
 
 	// fetch for any user with this email
@@ -455,7 +418,6 @@ export const getEmpresasPersonas = async (req: Request, res: Response): Promise<
 		return res.json(empresaPersona);
 }
 
-
 export const updateEmpresaPersona = async (req: Request, res:Response): Promise<Response> =>{
 
     // important validations to avoid ambiguos errors, the client needs to understand what went wrong
@@ -485,10 +447,10 @@ export const deleteEmpresaPersona = async (req: Request, res:Response): Promise<
     if (!req.body.username) throw new Exception("Please specify an email on your request body", 400)
     if (!req.body.password) throw new Exception("Please specify a password on your request body", 400)
 
-    const userRepo = getRepository(Users)
+    const userRepo = await getRepository(Users)
 
     // We need to validate that a user with this email and password exists in the DB
-    const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password }, relations: ["empresa"] })
+    const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })
     if (!user) throw new Exception("Invalid email or password", 401)
 
     // this is the most important line in this function, it create a JWT token
