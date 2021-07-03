@@ -1,7 +1,7 @@
 import { Empresa } from './Empresa';
 import {
   Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable, OneToMany
+  BaseEntity, JoinTable, OneToMany, ManyToOne
 } from 'typeorm';
 
 @Entity()
@@ -24,6 +24,6 @@ export class Users extends BaseEntity{
   @Column()
   is_admin: boolean;
  
-  @OneToMany(() => Empresa, empresa => empresa.user)
+  @ManyToOne(() => Empresa, empresa => empresa.user)
   empresa: Empresa;
 }

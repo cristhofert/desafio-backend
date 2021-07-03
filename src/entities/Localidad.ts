@@ -1,7 +1,8 @@
 import { Departamento } from './Departamento';
 import {
     Entity, Column, PrimaryGeneratedColumn, ManyToOne,
-    BaseEntity
+    BaseEntity,
+    OneToMany
 } from 'typeorm';
 import { Empresa } from './Empresa';
 
@@ -17,4 +18,8 @@ export class Localidad extends BaseEntity {
         onDelete: 'CASCADE'
     })
     departamento: Departamento;
+
+    @ManyToOne(() => Empresa, empresa => empresa.user)
+    empresa: Empresa[];
+
 }
