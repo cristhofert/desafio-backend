@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.getMiAsociados = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.getMiAsociados = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -124,7 +124,7 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne({ where: { username: req.params.username } })];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne({ where: { username: req.params.username }, relations: ["empresa"] })];
             case 1:
                 users = _a.sent();
                 return [2 /*return*/, res.json(users)];
@@ -149,6 +149,34 @@ var getLocalidadesDeDepartamento = function (req, res) { return __awaiter(void 0
     });
 }); };
 exports.getLocalidadesDeDepartamento = getLocalidadesDeDepartamento;
+var asignarEmpresaAlUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, userRepo, empresa, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.params.RUT)
+                    throw new utils_1.Exception("Please provide a RUT");
+                token = req.user;
+                userRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ where: { RUT: req.params.RUT } })];
+            case 1:
+                empresa = _a.sent();
+                //const user = await userRepo.findOne({where:{id: token.user.id}, relations: ["empresa"]});
+                //if(!user) throw new Exception("User not exist")
+                if (!empresa)
+                    throw new utils_1.Exception("Empresa not exist");
+                console.log(empresa);
+                return [4 /*yield*/, userRepo.update(token.user.id, { empresa: empresa })
+                    //const results = await userRepo.save(user);
+                ];
+            case 2:
+                results = _a.sent();
+                //const results = await userRepo.save(user);
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.asignarEmpresaAlUsuario = asignarEmpresaAlUsuario;
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, results;
     return __generator(this, function (_a) {
@@ -691,6 +719,20 @@ var deleteDepartamento = function (req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.deleteDepartamento = deleteDepartamento;
+//Asociado 
+var createAsociadoNuevo = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                req.body.empresaId = token.user.empresa.RUT;
+                return [4 /*yield*/, exports.createEmpresaPersona(req, res)];
+            case 1: return [2 /*return*/, _a.sent()];
+        }
+    });
+}); };
+exports.createAsociadoNuevo = createAsociadoNuevo;
 //EmpresaPersona
 var createEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var persona, empresa, empresaPersonaRepo, newEmpresaPersona, results;
@@ -699,9 +741,9 @@ var createEmpresaPersona = function (req, res) { return __awaiter(void 0, void 0
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.empresaId)
-                    throw new utils_1.Exception("Please provide a empresa");
+                    throw new utils_1.Exception("Please provide a empresa id");
                 if (!req.body.personaId)
-                    throw new utils_1.Exception("Please provide a persona");
+                    throw new utils_1.Exception("Please provide a persona id");
                 if (!req.body.cargo)
                     throw new utils_1.Exception("Please provide a persona");
                 return [4 /*yield*/, typeorm_1.getRepository(Persona_1.Persona).findOne(req.body.personaId)];
@@ -813,13 +855,9 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     throw new utils_1.Exception("Please specify an email on your request body", 400);
                 if (!req.body.password)
                     throw new utils_1.Exception("Please specify a password on your request body", 400);
-                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)
-                    // We need to validate that a user with this email and password exists in the DB
-                ];
-            case 1:
-                userRepo = _a.sent();
+                userRepo = typeorm_1.getRepository(Users_1.Users);
                 return [4 /*yield*/, userRepo.findOne({ where: { username: req.body.username, password: req.body.password }, relations: ["empresa"] })];
-            case 2:
+            case 1:
                 user = _a.sent();
                 if (!user)
                     throw new utils_1.Exception("Invalid email or password", 401);

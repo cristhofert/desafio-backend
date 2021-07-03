@@ -72,7 +72,7 @@ export const getUsers = async (req: Request, res: Response): Promise<Response> =
 }
 
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{
-		const users = await getRepository(Users).findOne({where: {username: req.params.username}});
+		const users = await getRepository(Users).findOne({where: {username: req.params.username}, relations: ["empresa"]});
 		return res.json(users);
 }
 export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> =>{
@@ -80,6 +80,24 @@ export const getLocalidadesDeDepartamento = async (req: Request, res: Response):
         if(!departamento) throw new Exception("Departamento not exist")
 		const localidades = await getRepository(Localidad).find({where: {departamentos: departamento}});
 		return res.json(localidades);
+}
+
+export const asignarEmpresaAlUsuario = async (req: Request, res:Response): Promise<Response> =>{
+	if(!req.params.RUT) throw new Exception("Please provide a RUT")
+
+	const token = req.user as IToken;
+
+	const userRepo =  getRepository(Users)
+	const empresa = await getRepository(Empresa).findOne({where: {RUT: req.params.RUT}});
+	//const user = await userRepo.findOne({where:{id: token.user.id}, relations: ["empresa"]});
+
+	//if(!user) throw new Exception("User not exist")
+	if(!empresa) throw new Exception("Empresa not exist")
+
+	console.log(empresa)
+	const results = await userRepo.update( token.user.id, {empresa})
+	//const results = await userRepo.save(user);
+	return res.json(results);
 }
 
 export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
@@ -386,12 +404,19 @@ export const deleteDepartamento = async (req: Request, res:Response): Promise<Re
         return res.send(results);
     }
 
+//Asociado 
+export const createAsociadoNuevo = async (req: Request, res:Response): Promise<Response> =>{
+	const token = req.user as IToken;
+	req.body.empresaId = token.user.empresa.RUT
+	return await createEmpresaPersona(req, res)
+}
+
 //EmpresaPersona
 export const createEmpresaPersona = async (req: Request, res:Response): Promise<Response> =>{
 
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.empresaId) throw new Exception("Please provide a empresa")
-    if(!req.body.personaId) throw new Exception("Please provide a persona")
+	if(!req.body.empresaId) throw new Exception("Please provide a empresa id")
+    if(!req.body.personaId) throw new Exception("Please provide a persona id")
     if(!req.body.cargo) throw new Exception("Please provide a persona")
 
 	// fetch for any user with this email
@@ -453,7 +478,7 @@ export const deleteEmpresaPersona = async (req: Request, res:Response): Promise<
     if (!req.body.username) throw new Exception("Please specify an email on your request body", 400)
     if (!req.body.password) throw new Exception("Please specify a password on your request body", 400)
 
-    const userRepo = await getRepository(Users)
+    const userRepo = getRepository(Users)
 
     // We need to validate that a user with this email and password exists in the DB
     const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password }, relations: ["empresa"] })

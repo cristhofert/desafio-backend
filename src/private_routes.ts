@@ -34,10 +34,11 @@ const verifyAdmin = (req: Request,res:Response, next:NextFunction) =>{
 
 //Users
 router.get('/user', safe(actions.getUsers));
-router.get('/user/:id', safe(actions.getUser));
+router.get('/user/:username', safe(actions.getUser));
 router.post('/user', safe(actions.createUser));
 router.put('/user', safe(actions.updateUser));
 router.delete('/user/:id', safe(actions.deleteUser));
+router.post('/user/empresa/:RUT', verifyToken, safe(actions.asignarEmpresaAlUsuario))
 
 //Empresa
 router.get('/empresa', safe(actions.getEmpresas));
@@ -48,7 +49,8 @@ router.delete('/empresa/:RUT', safe(actions.deleteEmpresa));
 //mi_empresa
 router.get('/mi_empresa/',verifyToken, safe(actions.getMIEmpresa));
 router.put('/mi_empresa', verifyToken, safe(actions.updateMiEmpresa));
-router.put('/asociados', verifyToken, safe(actions.getMiAsociados));
+router.get('/asociados', verifyToken, safe(actions.getMiAsociados));
+router.post('/asociados/nuevo', verifyToken, safe(actions.createAsociadoNuevo));
 //Persona
 router.get('/persona', safe(actions.getPersonas));
 router.get('/persona/:email', safe(actions.getPersona));
