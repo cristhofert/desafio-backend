@@ -8,6 +8,7 @@ import { Departamento } from './entities/Departamento'
 import { Localidad } from './entities/Localidad'
 import { Empresa_Persona } from './entities/Empresa_Persona'
 import jwt from 'jsonwebtoken'
+import { Rubro } from './entities/Rubro'
 
 interface IToken {
     user: Users,
@@ -435,16 +436,16 @@ export const updateEmpresaPersona = async (req: Request, res:Response): Promise<
 }
 
 export const deleteEmpresaPersona = async (req: Request, res:Response): Promise<Response> =>{
-        const empresaPersona = await getRepository(Empresa_Persona).findOne({where: {empresa: req.params.empresaId, persona: req.params.personaId}})
-        if(!empresaPersona) throw new Exception("EmpresaPersona not exist")
-        const results = await getRepository(Empresa_Persona).delete(empresaPersona);
-        return res.send(results);
-    }
+	const empresaPersona = await getRepository(Empresa_Persona).findOne({where: {empresa: req.params.empresaId, persona: req.params.personaId}})
+	if(!empresaPersona) throw new Exception("EmpresaPersona not exist")
+	const results = await getRepository(Empresa_Persona).delete(empresaPersona);
+	return res.send(results);
+}
 
-    //LOGIN
-    export const login = async (req: Request, res: Response): Promise<Response> => {
-    
-    if (!req.body.username) throw new Exception("Please specify an email on your request body", 400)
+//LOGIN
+export const login = async (req: Request, res: Response): Promise<Response> => {
+	
+	if (!req.body.username) throw new Exception("Please specify an email on your request body", 400)
     if (!req.body.password) throw new Exception("Please specify a password on your request body", 400)
 
     const userRepo = await getRepository(Users)
@@ -452,10 +453,49 @@ export const deleteEmpresaPersona = async (req: Request, res:Response): Promise<
     // We need to validate that a user with this email and password exists in the DB
     const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })
     if (!user) throw new Exception("Invalid email or password", 401)
-
+	
     // this is the most important line in this function, it create a JWT token
     const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 60 * 60 });
-
+	
     // return the user and the recently created token to the client
     return res.json({ user, token });
+}
+
+export const reportes = async (req: Request, res:Response): Promise<Response> => {
+	return res.json(
+		{
+		"Cantidad_total_de_empresa_activos":
+			await getRepository(Empresa).count({where: {activo: true}}),
+		"Cantidad total de empresa por rubro de actividad":
+			await getRepository(Rubro).createQueryBuilder("rubro")
+			.select("rubro.nombre")
+			.addSelect("COUNT(rubro.empresa)", "count")
+			.groupBy("rubro.nombre")
+			.getRawMany(),
+		"Listado de empresa por rubro de actividad": 
+			await getRepository(Empresa)
+			.createQueryBuilder("empresa")
+			.select("empresa.RUT")
+			.addSelect("empresa.rubro")
+			.groupBy("empresa.rubro")
+			.getRawMany(),
+		"Cantidad total de empresa por localidad": 
+			await getRepository(Localidad).createQueryBuilder("localidad")
+			.select("localidad.nombre")
+			.addSelect("COUNT(localidad.empresa)", "count")
+			.groupBy("localidad.nombre")
+			.getRawMany(),
+		"Altas y bajas del Mes": "Altas y bajas del Mes",
+		"Aniversario de empresa por mes (fecha de inicio actividad)": 
+			await getRepository(Empresa)
+				.createQueryBuilder("empresa")
+				.select("empresa.RUT")
+				.addSelect("empresa.fecha_de_inicio_actividad")
+				.distinctOn(["empresa.fecha_de_inicio_actividad"])
+				.orderBy("empresa.fecha_de_inicio_actividad")
+			,
+		"Listado de empresa y sus contactos asociados": 
+			await getRepository(Empresa_Persona).find({relations: ['empresa', 'persona']})
+
+	});
 }

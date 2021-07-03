@@ -6,6 +6,7 @@ import {
   PrimaryColumn
 } from 'typeorm';
 import { Empresa_Persona } from './Empresa_Persona';
+import { Rubro } from './Rubro';
 
 @Entity()
 export class Empresa extends BaseEntity{
@@ -49,7 +50,7 @@ export class Empresa extends BaseEntity{
   fecha_inicio_empresa: string;
 
   @Column()
-  estado: string;
+  estado: boolean;
 
   @Column()
   fecha_de_baja: string;
@@ -59,6 +60,9 @@ export class Empresa extends BaseEntity{
 
   @Column()
   imagen: string;
+
+  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  rubro: Rubro;
 
   @OneToMany(() => Localidad, localidad => localidad.empresa)
   localidad: Localidad;
