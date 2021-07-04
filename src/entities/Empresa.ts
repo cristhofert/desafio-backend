@@ -64,7 +64,7 @@ export class Empresa extends BaseEntity{
   @OneToMany(() => Rubro, rubro => rubro.empresa)
   rubro: Rubro;
 
-  @OneToMany(() => Localidad, localidad => localidad.empresa)
+  @ManyToOne(() => Localidad, localidad => localidad.empresa)
   localidad: Localidad;
   
   @ManyToOne(() => Users, user => user.empresa)
