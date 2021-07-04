@@ -24,29 +24,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 exports.__esModule = true;
-exports.Habilidad = void 0;
+exports.Rubro = void 0;
 var typeorm_1 = require("typeorm");
-var Oferta_1 = require("./Oferta");
-var Habilidad = /** @class */ (function (_super) {
-    __extends(Habilidad, _super);
-    function Habilidad() {
+var Empresa_1 = require("./Empresa");
+var Rubro = /** @class */ (function (_super) {
+    __extends(Rubro, _super);
+    function Rubro() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
-        typeorm_1.PrimaryGeneratedColumn(),
-        __metadata("design:type", Number)
-    ], Habilidad.prototype, "id");
-    __decorate([
-        typeorm_1.Column(),
+        typeorm_1.PrimaryColumn(),
         __metadata("design:type", String)
-    ], Habilidad.prototype, "nombre");
+    ], Rubro.prototype, "nombre");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Oferta_1.Oferta; }, function (oferta) { return oferta.habilidades; }),
-        __metadata("design:type", Oferta_1.Oferta)
-    ], Habilidad.prototype, "oferta");
-    Habilidad = __decorate([
+        typeorm_1.ManyToOne(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.user; }),
+        __metadata("design:type", Array)
+    ], Rubro.prototype, "empresa");
+    Rubro = __decorate([
         typeorm_1.Entity()
-    ], Habilidad);
-    return Habilidad;
+    ], Rubro);
+    return Rubro;
 }(typeorm_1.BaseEntity));
-exports.Habilidad = Habilidad;
+exports.Rubro = Rubro;

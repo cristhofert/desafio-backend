@@ -19,7 +19,7 @@ export class Localidad extends BaseEntity {
     })
     departamento: Departamento;
 
-    @ManyToOne(() => Empresa, empresa => empresa.user)
+    @OneToMany(() => Empresa, empresa => empresa.localidad)
     empresa: Empresa[];
 
 }

@@ -48,7 +48,7 @@ var Localidad = /** @class */ (function (_super) {
         __metadata("design:type", Departamento_1.Departamento)
     ], Localidad.prototype, "departamento");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.user; }),
+        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.localidad; }),
         __metadata("design:type", Array)
     ], Localidad.prototype, "empresa");
     Localidad = __decorate([

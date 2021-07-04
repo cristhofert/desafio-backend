@@ -127,7 +127,8 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
-    if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
+	if(!req.body.localidadID) throw new Exception("Por favor ingresa una Localidad");
+    //if(!validate_isRUT(req.body.RUT)) throw new Exception("RUT incorrecto")
     
 
 	const empresaRepo = getRepository(Empresa)
@@ -135,8 +136,15 @@ export const createEmpresa = async (req: Request, res:Response): Promise<Respons
 	const empresa = await empresaRepo.findOne({ where: {RUT: req.body.RUT }})
 	if(empresa) throw new Exception("Empresas already exists with this RUT")
 
-	const newEmpresa = getRepository(Empresa).create(req.body);  //Creo un usuario
-	const results = await getRepository(Empresa).save(newEmpresa); //Grabo el nuevo usuario 
+	const body = req.body as Empresa
+	const newEmpresa = getRepository(Empresa).create(body);
+	const localidad = await getRepository(Localidad).findOne({relations: ["empresa"], where: {id: req.body.localidadID}});
+	console.log(newEmpresa, localidad);
+	if(!localidad) throw new Exception("La localidad no existe");
+	localidad.empresa = [...localidad.empresa, newEmpresa];
+	const results = await getRepository(Empresa).save(newEmpresa);
+	await getRepository(Localidad).save(localidad);
+	
 	return res.json(results);
 }
 
@@ -153,22 +161,22 @@ export const getEmpresa = async (req: Request, res: Response): Promise<Response>
 export const updateEmpresa = async (req: Request, res:Response): Promise<Response> =>{
     
     // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if(!req.body.razon_social) throw new Exception("Please provide a razon_social")
-	if(!req.body.nombre_fantasia) throw new Exception("Please provide an nombre_fantasia")
-	if(!req.body.RUT) throw new Exception("Please provide a RUT")
-	if(!req.body.email) throw new Exception("Please provide is email")
-	if(!req.body.celular) throw new Exception("Please provide is celular")
-	if(!req.body.telefono) throw new Exception("Please provide is telefono")
-	if(!req.body.nro_BPS) throw new Exception("Please provide is nro_BPS")
-	if(!req.body.nro_referencia) throw new Exception("Please provide is nro_referencia")
-	if(!req.body.actividad_principal) throw new Exception("Please provide is actividad_principal")
-	if(!req.body.actividad_secunadria) throw new Exception("Please provide is actividad_secunadria")
-	if(!req.body.fecha_afiliacion) throw new Exception("Please provide is fecha_afiliacion")
-	if(!req.body.fecha_inicio_empresa) throw new Exception("Please provide is fecha_inicio_empresa")
-	if(!req.body.estado) throw new Exception("Please provide is estado")
-	if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
-	if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
-	if(!req.body.imagen) throw new Exception("Please provide is imagen")
+	if(!req.body.razon_social) throw new Exception("Por favor ingresa una razon_social")
+	if(!req.body.nombre_fantasia) throw new Exception("Por favor ingresa un nombre_fantasia")
+	if(!req.body.RUT) throw new Exception("Por favor ingresa un RUT")
+	if(!req.body.email) throw new Exception("Por favor ingresa un email")
+	if(!req.body.celular) throw new Exception("Por favor ingresa un celular")
+	if(!req.body.telefono) throw new Exception("Por favor ingresa un telefono")
+	if(!req.body.nro_BPS) throw new Exception("Por favor ingresa un nro_BPS")
+	if(!req.body.nro_referencia) throw new Exception("Por favor ingresa un nro_referencia")
+	if(!req.body.actividad_principal) throw new Exception("Por favor ingresa una actividad_principal")
+	if(!req.body.actividad_secunadria) throw new Exception("Por favor ingresa una actividad_secunadria")
+	if(!req.body.fecha_afiliacion) throw new Exception("Por favor ingresa una fecha_afiliacion")
+	if(!req.body.fecha_inicio_empresa) throw new Exception("Por favor ingresa una fecha_inicio_empresa")
+	if(!req.body.estado) throw new Exception("Por favor ingresa un estado")
+	if(!req.body.fecha_de_baja) throw new Exception("Por favor ingresa una fecha_de_baja")
+	if(!req.body.observaciones) throw new Exception("Por favor ingresa observaciones")
+	if(!req.body.imagen) throw new Exception("Por favor ingresa una imagen")
     
 	const empresaRepo = getRepository(Empresa)
 	// fetch for any Empresa with this email
@@ -354,6 +362,11 @@ export const createDepartamento = async (req: Request, res:Response): Promise<Re
 export const getDepartamentos = async (req: Request, res: Response): Promise<Response> =>{
 		const departamentos = await getRepository(Departamento).find();
 		return res.json(departamentos);
+}
+
+export const getDepartamentosYlocalidades = async (req: Request, res: Response): Promise<Response> =>{
+	const departamentos = await getRepository(Departamento).find({relations: ["localidades"]});
+	return res.json(departamentos);
 }
 
 export const getDepartamento = async (req: Request, res: Response): Promise<Response> =>{

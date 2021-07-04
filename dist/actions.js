@@ -35,11 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -49,6 +54,7 @@ var Departamento_1 = require("./entities/Departamento");
 var Localidad_1 = require("./entities/Localidad");
 var Empresa_Persona_1 = require("./entities/Empresa_Persona");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var Rubro_1 = require("./entities/Rubro");
 function validate_isRUT(rut) {
     if (rut.length != 12) {
         return false;
@@ -192,7 +198,7 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 exports.deleteUser = deleteUser;
 //Empresa
 var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var empresaRepo, empresa, newEmpresa, results;
+    var empresaRepo, empresa, body, newEmpresa, localidad, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -229,18 +235,29 @@ var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
                     throw new utils_1.Exception("Please provide is observaciones");
                 if (!req.body.imagen)
                     throw new utils_1.Exception("Please provide is imagen");
-                if (!validate_isRUT(req.body.RUT))
-                    throw new utils_1.Exception("RUT incorrecto");
+                if (!req.body.localidadID)
+                    throw new utils_1.Exception("Por favor ingresa una Localidad");
                 empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 return [4 /*yield*/, empresaRepo.findOne({ where: { RUT: req.body.RUT } })];
             case 1:
                 empresa = _a.sent();
                 if (empresa)
                     throw new utils_1.Exception("Empresas already exists with this RUT");
-                newEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(newEmpresa)];
+                body = req.body;
+                newEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(body);
+                return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).findOne({ relations: ["empresa"], where: { id: req.body.localidadID } })];
             case 2:
+                localidad = _a.sent();
+                console.log(newEmpresa, localidad);
+                if (!localidad)
+                    throw new utils_1.Exception("La localidad no existe");
+                localidad.empresa = __spreadArray(__spreadArray([], localidad.empresa), [newEmpresa]);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(newEmpresa)];
+            case 3:
                 results = _a.sent();
+                return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).save(localidad)];
+            case 4:
+                _a.sent();
                 return [2 /*return*/, res.json(results)];
         }
     });
@@ -277,37 +294,37 @@ var updateEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.razon_social)
-                    throw new utils_1.Exception("Please provide a razon_social");
+                    throw new utils_1.Exception("Por favor ingresa una razon_social");
                 if (!req.body.nombre_fantasia)
-                    throw new utils_1.Exception("Please provide an nombre_fantasia");
+                    throw new utils_1.Exception("Por favor ingresa un nombre_fantasia");
                 if (!req.body.RUT)
-                    throw new utils_1.Exception("Please provide a RUT");
+                    throw new utils_1.Exception("Por favor ingresa un RUT");
                 if (!req.body.email)
-                    throw new utils_1.Exception("Please provide is email");
+                    throw new utils_1.Exception("Por favor ingresa un email");
                 if (!req.body.celular)
-                    throw new utils_1.Exception("Please provide is celular");
+                    throw new utils_1.Exception("Por favor ingresa un celular");
                 if (!req.body.telefono)
-                    throw new utils_1.Exception("Please provide is telefono");
+                    throw new utils_1.Exception("Por favor ingresa un telefono");
                 if (!req.body.nro_BPS)
-                    throw new utils_1.Exception("Please provide is nro_BPS");
+                    throw new utils_1.Exception("Por favor ingresa un nro_BPS");
                 if (!req.body.nro_referencia)
-                    throw new utils_1.Exception("Please provide is nro_referencia");
+                    throw new utils_1.Exception("Por favor ingresa un nro_referencia");
                 if (!req.body.actividad_principal)
-                    throw new utils_1.Exception("Please provide is actividad_principal");
+                    throw new utils_1.Exception("Por favor ingresa una actividad_principal");
                 if (!req.body.actividad_secunadria)
-                    throw new utils_1.Exception("Please provide is actividad_secunadria");
+                    throw new utils_1.Exception("Por favor ingresa una actividad_secunadria");
                 if (!req.body.fecha_afiliacion)
-                    throw new utils_1.Exception("Please provide is fecha_afiliacion");
+                    throw new utils_1.Exception("Por favor ingresa una fecha_afiliacion");
                 if (!req.body.fecha_inicio_empresa)
-                    throw new utils_1.Exception("Please provide is fecha_inicio_empresa");
+                    throw new utils_1.Exception("Por favor ingresa una fecha_inicio_empresa");
                 if (!req.body.estado)
-                    throw new utils_1.Exception("Please provide is estado");
+                    throw new utils_1.Exception("Por favor ingresa un estado");
                 if (!req.body.fecha_de_baja)
-                    throw new utils_1.Exception("Please provide is fecha_de_baja");
+                    throw new utils_1.Exception("Por favor ingresa una fecha_de_baja");
                 if (!req.body.observaciones)
-                    throw new utils_1.Exception("Please provide is observaciones");
+                    throw new utils_1.Exception("Por favor ingresa observaciones");
                 if (!req.body.imagen)
-                    throw new utils_1.Exception("Please provide is imagen");
+                    throw new utils_1.Exception("Por favor ingresa una imagen");
                 empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 return [4 /*yield*/, empresaRepo.findOne({ where: { RUT: req.body.RUT } })];
             case 1:
@@ -626,6 +643,18 @@ var getDepartamentos = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.getDepartamentos = getDepartamentos;
+var getDepartamentosYlocalidades = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var departamentos;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Departamento_1.Departamento).find({ relations: ["localidades"] })];
+            case 1:
+                departamentos = _a.sent();
+                return [2 /*return*/, res.json(departamentos)];
+        }
+    });
+}); };
+exports.getDepartamentosYlocalidades = getDepartamentosYlocalidades;
 var getDepartamento = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var departamento;
     return __generator(this, function (_a) {
@@ -813,3 +842,58 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 exports.login = login;
+var reportes = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _j;
+    return __generator(this, function (_k) {
+        switch (_k.label) {
+            case 0:
+                _b = (_a = res).json;
+                _j = {};
+                _c = "Cantidad_total_de_empresa_activos";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).count({ where: { activo: true } })];
+            case 1:
+                _j[_c] = _k.sent();
+                _d = "Cantidad total de empresa por rubro de actividad";
+                return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).createQueryBuilder("rubro")
+                        .select("rubro.nombre")
+                        .addSelect("COUNT(rubro.empresa)", "count")
+                        .groupBy("rubro.nombre")
+                        .getRawMany()];
+            case 2:
+                _j[_d] = _k.sent();
+                _e = "Listado de empresa por rubro de actividad";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa)
+                        .createQueryBuilder("empresa")
+                        .select("empresa.RUT")
+                        .addSelect("empresa.rubro")
+                        .groupBy("empresa.rubro")
+                        .getRawMany()];
+            case 3:
+                _j[_e] = _k.sent();
+                _f = "Cantidad total de empresa por localidad";
+                return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).createQueryBuilder("localidad")
+                        .select("localidad.nombre")
+                        .addSelect("COUNT(localidad.empresa)", "count")
+                        .groupBy("localidad.nombre")
+                        .getRawMany()];
+            case 4:
+                _j[_f] = _k.sent(),
+                    _j["Altas y bajas del Mes"] = "Altas y bajas del Mes";
+                _g = "Aniversario de empresa por mes (fecha de inicio actividad)";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa)
+                        .createQueryBuilder("empresa")
+                        .select("empresa.RUT")
+                        .addSelect("empresa.fecha_de_inicio_actividad")
+                        .distinctOn(["empresa.fecha_de_inicio_actividad"])
+                        .orderBy("empresa.fecha_de_inicio_actividad")];
+            case 5:
+                _j[_g] = _k.sent();
+                _h = "Listado de empresa y sus contactos asociados";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona).find({ relations: ['empresa', 'persona'] })];
+            case 6: return [2 /*return*/, _b.apply(_a, [(_j[_h] = _k.sent(),
+                        _j)])];
+        }
+    });
+}); };
+exports.reportes = reportes;
