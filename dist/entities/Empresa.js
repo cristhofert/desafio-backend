@@ -29,6 +29,7 @@ var Users_1 = require("./Users");
 var Localidad_1 = require("./Localidad");
 var typeorm_1 = require("typeorm");
 var Empresa_Persona_1 = require("./Empresa_Persona");
+var Rubro_1 = require("./Rubro");
 var Empresa = /** @class */ (function (_super) {
     __extends(Empresa, _super);
     function Empresa() {
@@ -88,7 +89,7 @@ var Empresa = /** @class */ (function (_super) {
     ], Empresa.prototype, "fecha_inicio_empresa");
     __decorate([
         typeorm_1.Column(),
-        __metadata("design:type", String)
+        __metadata("design:type", Boolean)
     ], Empresa.prototype, "estado");
     __decorate([
         typeorm_1.Column(),
@@ -102,6 +103,10 @@ var Empresa = /** @class */ (function (_super) {
         typeorm_1.Column(),
         __metadata("design:type", String)
     ], Empresa.prototype, "imagen");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
+        __metadata("design:type", Rubro_1.Rubro)
+    ], Empresa.prototype, "rubro");
     __decorate([
         typeorm_1.OneToMany(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresa; }),
         __metadata("design:type", Localidad_1.Localidad)

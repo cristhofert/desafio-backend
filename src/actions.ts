@@ -74,6 +74,7 @@ export const getUsers = async (req: Request, res: Response): Promise<Response> =
 
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{
 		const users = await getRepository(Users).findOne({where: {username: req.params.username}, relations: ["empresa"]});
+		console.log(users)
 		return res.json(users);
 }
 export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> =>{
@@ -102,17 +103,17 @@ export const asignarEmpresaAlUsuario = async (req: Request, res:Response): Promi
 }
 
 export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
-
+	console.log("##################", req.body)
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.username) throw new Exception("Please provide a username")
 	if(!req.body.name) throw new Exception("Please provide a name")
 	if(!req.body.email) throw new Exception("Please provide an email")
 	if(!req.body.password) throw new Exception("Please provide a password")
-	if(!req.body.is_admin) throw new Exception("Please provide is is_admin")
+	if(req.body.is_admin!==true && req.body.is_admin!==false) throw new Exception("Please provide is is_admin")
 
 	const userRepo = getRepository(Users)
 	// fetch for any user with this email
-	const user = await userRepo.findOne({ where: {email: req.body.email }})
+	const user = await userRepo.findOne({ where: {email: req.body.email }, relations: ["empresa"]})
 	if(!user) throw new Exception("User not exist")
 
     userRepo.merge(user, req.body);
@@ -231,10 +232,9 @@ export const updateMiEmpresa = async (req: Request, res:Response): Promise<Respo
     if(!req.body.imagen) throw new Exception("Please provide is imagen")
 	
     // fetch for any Empresa with this email
-    const empresa = token.user.empresa;
-    if(!empresa || Array.isArray(empresa)) throw new Exception("Empresa not exist")
-	
     const empresaRepo = getRepository(Empresa)
+    const empresa = await empresaRepo.findOne(token.user.empresa.RUT);
+    if(!empresa || Array.isArray(empresa)) throw new Exception("Empresa not exist")
     empresaRepo.merge(empresa, req.body);
     const results = await getRepository(Empresa).save(empresa);
     return res.json(results);

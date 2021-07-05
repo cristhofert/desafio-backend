@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.getMiAsociados = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.getMiAsociados = exports.updateMiEmpresa = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -49,6 +49,7 @@ var Departamento_1 = require("./entities/Departamento");
 var Localidad_1 = require("./entities/Localidad");
 var Empresa_Persona_1 = require("./entities/Empresa_Persona");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var Rubro_1 = require("./entities/Rubro");
 function validate_isRUT(rut) {
     if (rut.length != 12) {
         return false;
@@ -127,6 +128,7 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
             case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne({ where: { username: req.params.username }, relations: ["empresa"] })];
             case 1:
                 users = _a.sent();
+                console.log(users);
                 return [2 /*return*/, res.json(users)];
         }
     });
@@ -180,6 +182,7 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                console.log("##################", req.body);
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
                 if (!req.body.username)
                     throw new utils_1.Exception("Please provide a username");
@@ -189,10 +192,10 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                     throw new utils_1.Exception("Please provide an email");
                 if (!req.body.password)
                     throw new utils_1.Exception("Please provide a password");
-                if (!req.body.is_admin)
+                if (req.body.is_admin !== true && req.body.is_admin !== false)
                     throw new utils_1.Exception("Please provide is is_admin");
                 userRepo = typeorm_1.getRepository(Users_1.Users);
-                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email } })];
+                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email }, relations: ["empresa"] })];
             case 1:
                 user = _a.sent();
                 if (!user)
@@ -372,7 +375,7 @@ var getMIEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0
 }); };
 exports.getMIEmpresa = getMIEmpresa;
 var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, empresa, empresaRepo, results;
+    var token, empresaRepo, empresa, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -410,13 +413,15 @@ var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, voi
                     throw new utils_1.Exception("Please provide is observaciones");
                 if (!req.body.imagen)
                     throw new utils_1.Exception("Please provide is imagen");
-                empresa = token.user.empresa;
+                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
+                return [4 /*yield*/, empresaRepo.findOne(token.user.empresa.RUT)];
+            case 1:
+                empresa = _a.sent();
                 if (!empresa || Array.isArray(empresa))
                     throw new utils_1.Exception("Empresa not exist");
-                empresaRepo = typeorm_1.getRepository(Empresa_1.Empresa);
                 empresaRepo.merge(empresa, req.body);
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(empresa)];
-            case 1:
+            case 2:
                 results = _a.sent();
                 return [2 /*return*/, res.json(results)];
         }
@@ -871,3 +876,58 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 exports.login = login;
+var reportes = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _j;
+    return __generator(this, function (_k) {
+        switch (_k.label) {
+            case 0:
+                _b = (_a = res).json;
+                _j = {};
+                _c = "Cantidad_total_de_empresa_activos";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).count({ where: { activo: true } })];
+            case 1:
+                _j[_c] = _k.sent();
+                _d = "Cantidad total de empresa por rubro de actividad";
+                return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).createQueryBuilder("rubro")
+                        .select("rubro.nombre")
+                        .addSelect("COUNT(rubro.empresa)", "count")
+                        .groupBy("rubro.nombre")
+                        .getRawMany()];
+            case 2:
+                _j[_d] = _k.sent();
+                _e = "Listado de empresa por rubro de actividad";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa)
+                        .createQueryBuilder("empresa")
+                        .select("empresa.RUT")
+                        .addSelect("empresa.rubro")
+                        .groupBy("empresa.rubro")
+                        .getRawMany()];
+            case 3:
+                _j[_e] = _k.sent();
+                _f = "Cantidad total de empresa por localidad";
+                return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).createQueryBuilder("localidad")
+                        .select("localidad.nombre")
+                        .addSelect("COUNT(localidad.empresa)", "count")
+                        .groupBy("localidad.nombre")
+                        .getRawMany()];
+            case 4:
+                _j[_f] = _k.sent(),
+                    _j["Altas y bajas del Mes"] = "Altas y bajas del Mes";
+                _g = "Aniversario de empresa por mes (fecha de inicio actividad)";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa)
+                        .createQueryBuilder("empresa")
+                        .select("empresa.RUT")
+                        .addSelect("empresa.fecha_de_inicio_actividad")
+                        .distinctOn(["empresa.fecha_de_inicio_actividad"])
+                        .orderBy("empresa.fecha_de_inicio_actividad")];
+            case 5:
+                _j[_g] = _k.sent();
+                _h = "Listado de empresa y sus contactos asociados";
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_Persona_1.Empresa_Persona).find({ relations: ['empresa', 'persona'] })];
+            case 6: return [2 /*return*/, _b.apply(_a, [(_j[_h] = _k.sent(),
+                        _j)])];
+        }
+    });
+}); };
+exports.reportes = reportes;
