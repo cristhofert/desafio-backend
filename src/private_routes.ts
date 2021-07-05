@@ -62,6 +62,13 @@ router.post('/localidad/:id', safe(actions.createLocalidad));
 router.put('/localidad/:id', safe(actions.updateLocalidad));
 router.delete('/localidad/:id', safe(actions.deleteLocalidad));
 
+//rubro
+router.get('/rubro', safe(actions.getRubros));
+router.get('/rubro/:name', safe(actions.getRubro));
+router.post('/rubro/', safe(actions.createRubro));
+router.put('/rubro/', safe(actions.updateRubro));
+router.delete('/rubro/:name', safe(actions.deleteRubro));
+
 //Departamento
 router.get('/departamento', safe(actions.getDepartamentos));
 router.get('/departamentoYlocalidad', safe(actions.getDepartamentosYlocalidades));
