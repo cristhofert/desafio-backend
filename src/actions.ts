@@ -397,7 +397,7 @@ export const createRubro = async (req: Request, res: Response): Promise<Response
 }
 
 export const getRubros = async (req: Request, res: Response): Promise<Response> => {
-	const rubros = await getRepository(Rubro).find();
+	const rubros = await getRepository(Rubro).find({relations: ["empresa", "empresaSecundaria"]});
 	return res.json(rubros);
 }
 

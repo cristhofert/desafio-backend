@@ -696,7 +696,7 @@ var getRubros = function (req, res) { return __awaiter(void 0, void 0, void 0, f
     var rubros;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).find({ relations: ["empresa", "empresaSecundaria"] })];
             case 1:
                 rubros = _a.sent();
                 return [2 /*return*/, res.json(rubros)];
