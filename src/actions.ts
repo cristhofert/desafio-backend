@@ -154,12 +154,20 @@ export const createEmpresa = async (req: Request, res: Response): Promise<Respon
 	const empresa = await empresaRepo.findOne({ where: { RUT: req.body.RUT } })
 	if (empresa) throw new Exception("Empresas already exists with this RUT")
 
-	const body = req.body as Empresa
+	const rubroPrincipal = await getRepository(Rubro).findOne({where: {nombre: req.body.actividad_principal}});
+	if(!rubroPrincipal) throw new Exception("El rubro principal no existe");
+
+	const rubroSecundario = await getRepository(Rubro).findOne({where: {nombre: req.body.actividad_secunadria}});
+	if(!rubroSecundario) throw new Exception("El rubro principal no existe");
+
+	const nuevoBody = {...req.body, actividad_principal:rubroPrincipal, actividad_secundaria: rubroSecundario }
+	const body = nuevoBody as Empresa
 	const newEmpresa = getRepository(Empresa).create(body);
+
 	const localidad = await getRepository(Localidad).findOne({ relations: ["empresa"], where: { id: req.body.localidadID } });
-	console.log(newEmpresa, localidad);
 	if (!localidad) throw new Exception("La localidad no existe");
 	localidad.empresa = [...localidad.empresa, newEmpresa];
+
 	const results = await getRepository(Empresa).save(newEmpresa);
 	await getRepository(Localidad).save(localidad);
 
@@ -167,7 +175,7 @@ export const createEmpresa = async (req: Request, res: Response): Promise<Respon
 }
 
 export const getEmpresas = async (req: Request, res: Response): Promise<Response> => {
-	const empresas = await getRepository(Empresa).find();
+	const empresas = await getRepository(Empresa).find({relations: ["actividad_principal", "actividad_secundaria"]});
 	return res.json(empresas);
 }
 
@@ -389,7 +397,7 @@ export const createRubro = async (req: Request, res: Response): Promise<Response
 }
 
 export const getRubros = async (req: Request, res: Response): Promise<Response> => {
-	const rubros = await getRepository(Rubro).find();
+	const rubros = await getRepository(Rubro).find({relations: ["empresa", "empresaSecundaria"]});
 	return res.json(rubros);
 }
 
