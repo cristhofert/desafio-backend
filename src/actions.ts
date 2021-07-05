@@ -71,9 +71,10 @@ export const getUsers = async (req: Request, res: Response): Promise<Response> =
 	return res.json(users);
 }
 
-export const getUser = async (req: Request, res: Response): Promise<Response> => {
-	const users = await getRepository(Users).findOne({ where: { username: req.params.username } });
-	return res.json(users);
+export const getUser = async (req: Request, res: Response): Promise<Response> =>{
+		const users = await getRepository(Users).findOne({where: {username: req.params.username}, relations: ["empresa"]});
+		console.log(users)
+		return res.json(users);
 }
 export const getLocalidadesDeDepartamento = async (req: Request, res: Response): Promise<Response> => {
 	const departamento = await getRepository(Departamento).findOne({ relations: ["localidades"], where: { id: req.params.id } });
@@ -100,19 +101,19 @@ export const asignarEmpresaAlUsuario = async (req: Request, res: Response): Prom
 	return res.json(results);
 }
 
-export const updateUser = async (req: Request, res: Response): Promise<Response> => {
-
+export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
+	console.log("##################", req.body)
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if (!req.body.username) throw new Exception("Please provide a username")
-	if (!req.body.name) throw new Exception("Please provide a name")
-	if (!req.body.email) throw new Exception("Please provide an email")
-	if (!req.body.password) throw new Exception("Please provide a password")
-	if (!req.body.is_admin) throw new Exception("Please provide is is_admin")
+	if(!req.body.username) throw new Exception("Please provide a username")
+	if(!req.body.name) throw new Exception("Please provide a name")
+	if(!req.body.email) throw new Exception("Please provide an email")
+	if(!req.body.password) throw new Exception("Please provide a password")
+	if(req.body.is_admin!==true && req.body.is_admin!==false) throw new Exception("Please provide is is_admin")
 
 	const userRepo = getRepository(Users)
 	// fetch for any user with this email
-	const user = await userRepo.findOne({ where: { email: req.body.email } })
-	if (!user) throw new Exception("User not exist")
+	const user = await userRepo.findOne({ where: {email: req.body.email }, relations: ["empresa"]})
+	if(!user) throw new Exception("User not exist")
 
 	userRepo.merge(user, req.body);
 	const results = await getRepository(Users).save(user);
@@ -209,7 +210,8 @@ export const deleteEmpresa = async (req: Request, res: Response): Promise<Respon
 	const results = await getRepository(Empresa).delete(req.params.RUT);
 	return res.send(results);
 }
-// Mi Empresa
+
+
 export const getMIEmpresa = async (req: Request, res: Response): Promise<Response> => {
 	const token = req.user as IToken;
 	return res.json(token.user.empresa);
@@ -226,35 +228,34 @@ export const getMiAsociados = async (req: Request, res: Response): Promise<Respo
 	return res.json(empresaPersona);
 }
 
-export const updateMiEmpresa = async (req: Request, res: Response): Promise<Response> => {
-	const token = req.user as IToken;
-
-	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
-	if (!req.body.razon_social) throw new Exception("Please provide a razon_social")
-	if (!req.body.nombre_fantasia) throw new Exception("Please provide an nombre_fantasia")
-	if (!req.body.RUT) throw new Exception("Please provide a RUT")
-	if (!req.body.email) throw new Exception("Please provide is email")
-	if (!req.body.celular) throw new Exception("Please provide is celular")
-	if (!req.body.telefono) throw new Exception("Please provide is telefono")
-	if (!req.body.nro_BPS) throw new Exception("Please provide is nro_BPS")
-	if (!req.body.nro_referencia) throw new Exception("Please provide is nro_referencia")
-	if (!req.body.actividad_principal) throw new Exception("Please provide is actividad_principal")
-	if (!req.body.actividad_secunadria) throw new Exception("Please provide is actividad_secunadria")
-	if (!req.body.fecha_afiliacion) throw new Exception("Please provide is fecha_afiliacion")
-	if (!req.body.fecha_inicio_empresa) throw new Exception("Please provide is fecha_inicio_empresa")
-	if (!req.body.estado) throw new Exception("Please provide is estado")
-	if (!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
-	if (!req.body.observaciones) throw new Exception("Please provide is observaciones")
-	if (!req.body.imagen) throw new Exception("Please provide is imagen")
-
-	const empresaRepo = getRepository(Empresa)
-	// fetch for any Empresa with this email
-	const empresa = token.user.empresa;
-	if (!empresa) throw new Exception("Empresa not exist")
-
-	empresaRepo.merge(empresa, req.body);
-	const results = await getRepository(Empresa).save(empresa);
-	return res.json(results);
+export const updateMiEmpresa = async (req: Request, res:Response): Promise<Response> =>{
+    const token = req.user as IToken;
+    
+    // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+    if(!req.body.razon_social) throw new Exception("Please provide a razon_social")
+    if(!req.body.nombre_fantasia) throw new Exception("Please provide an nombre_fantasia")
+    if(!req.body.RUT) throw new Exception("Please provide a RUT")
+    if(!req.body.email) throw new Exception("Please provide is email")
+    if(!req.body.celular) throw new Exception("Please provide is celular")
+    if(!req.body.telefono) throw new Exception("Please provide is telefono")
+    if(!req.body.nro_BPS) throw new Exception("Please provide is nro_BPS")
+    if(!req.body.nro_referencia) throw new Exception("Please provide is nro_referencia")
+    if(!req.body.actividad_principal) throw new Exception("Please provide is actividad_principal")
+    if(!req.body.actividad_secunadria) throw new Exception("Please provide is actividad_secunadria")
+    if(!req.body.fecha_afiliacion) throw new Exception("Please provide is fecha_afiliacion")
+    if(!req.body.fecha_inicio_empresa) throw new Exception("Please provide is fecha_inicio_empresa")
+    if(!req.body.estado) throw new Exception("Please provide is estado")
+    if(!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
+    if(!req.body.observaciones) throw new Exception("Please provide is observaciones")
+    if(!req.body.imagen) throw new Exception("Please provide is imagen")
+	
+    // fetch for any Empresa with this email
+    const empresaRepo = getRepository(Empresa)
+    const empresa = await empresaRepo.findOne(token.user.empresa.RUT);
+    if(!empresa || Array.isArray(empresa)) throw new Exception("Empresa not exist")
+    empresaRepo.merge(empresa, req.body);
+    const results = await getRepository(Empresa).save(empresa);
+    return res.json(results);
 }
 
 //Persona
