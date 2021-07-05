@@ -12,7 +12,10 @@ export class Rubro extends BaseEntity {
     @PrimaryColumn()
     nombre: string;
 
-    @ManyToOne(() => Empresa, empresa => empresa.user)
+    @OneToMany(() => Empresa, empresa => empresa.actividad_principal)
     empresa: Empresa[];
+
+    @OneToMany(() => Empresa, empresa => empresa.actividad_secundaria)
+    empresaSecundaria: Empresa[];
 
 }
