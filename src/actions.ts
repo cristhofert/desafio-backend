@@ -350,6 +350,11 @@ export const getLocalidades = async (req: Request, res: Response): Promise<Respo
 	return res.json(localidades);
 }
 
+export const getLocalidadesEmpresas = async (req: Request, res: Response): Promise<Response> => {
+	const localidades = await getRepository(Localidad).find({relations: ["empresa"]});
+	return res.json(localidades);
+}
+
 export const getLocalidad = async (req: Request, res: Response): Promise<Response> => {
 	const localidad = await getRepository(Localidad).findOne(req.params.id);
 	return res.json(localidad);
