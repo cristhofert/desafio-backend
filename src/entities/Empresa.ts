@@ -37,11 +37,11 @@ export class Empresa extends BaseEntity{
   @Column()
   nro_referencia: string;
 
-  @Column()
-  actividad_principal: string;
+  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  actividad_principal: Rubro;
 
-  @Column()
-  actividad_secunadria: string;
+  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  actividad_secundaria: Rubro;
 
   @Column()
   fecha_afiliacion: string;
@@ -60,9 +60,6 @@ export class Empresa extends BaseEntity{
 
   @Column()
   imagen: string;
-
-  @OneToMany(() => Rubro, rubro => rubro.empresa)
-  rubro: Rubro;
 
   @ManyToOne(() => Localidad, localidad => localidad.empresa)
   localidad: Localidad;

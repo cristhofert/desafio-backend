@@ -373,6 +373,51 @@ export const deleteLocalidad = async (req: Request, res: Response): Promise<Resp
 	return res.send(results);
 }
 
+//Rubro
+export const createRubro = async (req: Request, res: Response): Promise<Response> => {
+
+	if (!req.body.nombre) throw new Exception("Por favor ingresa un nombre");
+
+	const rubroRepo = getRepository(Rubro);
+
+	const newRubro = rubroRepo.create();
+	newRubro.nombre = req.body.nombre;
+
+	rubroRepo.save(newRubro)
+
+	return res.json(newRubro);
+}
+
+export const getRubros = async (req: Request, res: Response): Promise<Response> => {
+	const rubros = await getRepository(Rubro).find();
+	return res.json(rubros);
+}
+
+export const getRubro = async (req: Request, res: Response): Promise<Response> => {
+	const rubro = await getRepository(Rubro).findOne(req.params.name);
+	return res.json(rubro);
+}
+
+export const updateRubro = async (req: Request, res: Response): Promise<Response> => {
+	if (!req.body.nombre) throw new Exception("Please provide a nombre")
+	if (!req.body.nombre_nuevo) throw new Exception("Please provide a nombre_nuevo")
+
+	const rubroRepo = getRepository(Rubro)
+
+	const rubro = await rubroRepo.findOne(req.body.nombre)
+	if (!rubro) throw new Exception("La Rubro no existe")
+	await rubroRepo.delete(rubro.nombre);
+
+	const nuevo = rubroRepo.create({nombre: req.body.nombre_nuevo})
+	const results = await rubroRepo.save(nuevo);
+	return res.json(results);
+}
+
+export const deleteRubro = async (req: Request, res: Response): Promise<Response> => {
+	const results = await getRepository(Rubro).delete(req.params.name);
+	return res.send(results);
+}
+
 //Departamento
 export const createDepartamento = async (req: Request, res: Response): Promise<Response> => {
 
