@@ -72,13 +72,13 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "nro_referencia");
     __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
+        typeorm_1.OneToMany(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
+        __metadata("design:type", Rubro_1.Rubro)
     ], Empresa.prototype, "actividad_principal");
     __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Empresa.prototype, "actividad_secunadria");
+        typeorm_1.OneToMany(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
+        __metadata("design:type", Rubro_1.Rubro)
+    ], Empresa.prototype, "actividad_secundaria");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
@@ -104,11 +104,9 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "imagen");
     __decorate([
-        typeorm_1.OneToMany(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
-        __metadata("design:type", Rubro_1.Rubro)
-    ], Empresa.prototype, "rubro");
-    __decorate([
-        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresa; }),
+        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresa; }, {
+            onDelete: 'SET NULL'
+        }),
         __metadata("design:type", Localidad_1.Localidad)
     ], Empresa.prototype, "localidad");
     __decorate([

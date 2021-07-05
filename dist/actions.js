@@ -44,7 +44,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidadesEmpresas = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMiAsociados = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteRubro = exports.updateRubro = exports.getRubro = exports.getRubros = exports.createRubro = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidadesEmpresas = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMiAsociados = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -669,6 +669,83 @@ var deleteLocalidad = function (req, res) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.deleteLocalidad = deleteLocalidad;
+//Rubro
+var createRubro = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var rubroRepo, newRubro;
+    return __generator(this, function (_a) {
+        if (!req.body.nombre)
+            throw new utils_1.Exception("Por favor ingresa un nombre");
+        rubroRepo = typeorm_1.getRepository(Rubro_1.Rubro);
+        newRubro = rubroRepo.create();
+        newRubro.nombre = req.body.nombre;
+        rubroRepo.save(newRubro);
+        return [2 /*return*/, res.json(newRubro)];
+    });
+}); };
+exports.createRubro = createRubro;
+var getRubros = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var rubros;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).find()];
+            case 1:
+                rubros = _a.sent();
+                return [2 /*return*/, res.json(rubros)];
+        }
+    });
+}); };
+exports.getRubros = getRubros;
+var getRubro = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var rubro;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).findOne(req.params.name)];
+            case 1:
+                rubro = _a.sent();
+                return [2 /*return*/, res.json(rubro)];
+        }
+    });
+}); };
+exports.getRubro = getRubro;
+var updateRubro = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var rubroRepo, rubro, nuevo, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.nombre)
+                    throw new utils_1.Exception("Please provide a nombre");
+                if (!req.body.nombre_nuevo)
+                    throw new utils_1.Exception("Please provide a nombre_nuevo");
+                rubroRepo = typeorm_1.getRepository(Rubro_1.Rubro);
+                return [4 /*yield*/, rubroRepo.findOne(req.body.nombre)];
+            case 1:
+                rubro = _a.sent();
+                if (!rubro)
+                    throw new utils_1.Exception("La Rubro no existe");
+                return [4 /*yield*/, rubroRepo["delete"](rubro.nombre)];
+            case 2:
+                _a.sent();
+                nuevo = rubroRepo.create({ nombre: req.body.nombre_nuevo });
+                return [4 /*yield*/, rubroRepo.save(nuevo)];
+            case 3:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.updateRubro = updateRubro;
+var deleteRubro = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro)["delete"](req.params.name)];
+            case 1:
+                results = _a.sent();
+                return [2 /*return*/, res.send(results)];
+        }
+    });
+}); };
+exports.deleteRubro = deleteRubro;
 //Departamento
 var createDepartamento = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var departamentoRepo, departamento, newDepartamento, results;

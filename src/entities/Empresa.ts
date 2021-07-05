@@ -1,7 +1,7 @@
 import { Users } from './Users';
 import { Localidad } from './Localidad';
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, 
+  Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany,
   BaseEntity,
   PrimaryColumn
 } from 'typeorm';
@@ -9,20 +9,20 @@ import { Empresa_Persona } from './Empresa_Persona';
 import { Rubro } from './Rubro';
 
 @Entity()
-export class Empresa extends BaseEntity{
-  @Column({unique: true})
+export class Empresa extends BaseEntity {
+  @Column({ unique: true })
   razon_social: string;
 
   @Column()
   nombre_fantasia: string;
 
-  @PrimaryColumn({unique: true})
+  @PrimaryColumn({ unique: true })
   RUT: string;
 
   @Column()
   direccion: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -37,11 +37,11 @@ export class Empresa extends BaseEntity{
   @Column()
   nro_referencia: string;
 
-  @Column()
-  actividad_principal: string;
+  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  actividad_principal: Rubro;
 
-  @Column()
-  actividad_secunadria: string;
+  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  actividad_secundaria: Rubro;
 
   @Column()
   fecha_afiliacion: string;
@@ -61,12 +61,11 @@ export class Empresa extends BaseEntity{
   @Column()
   imagen: string;
 
-  @OneToMany(() => Rubro, rubro => rubro.empresa)
-  rubro: Rubro;
-
-  @ManyToOne(() => Localidad, localidad => localidad.empresa)
+  @ManyToOne(() => Localidad, localidad => localidad.empresa, {
+    onDelete: 'SET NULL'
+  })
   localidad: Localidad;
-  
+
   @ManyToOne(() => Users, user => user.empresa)
   user: Users[];
 
