@@ -108,11 +108,9 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", Rubro_1.Rubro)
     ], Empresa.prototype, "rubro");
     __decorate([
-<<<<<<< HEAD
-        typeorm_1.OneToMany(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresa; }),
-=======
-        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresa; }),
->>>>>>> 43842f56f714ca03e6f56c7838be8bf1baa9c743
+        typeorm_1.ManyToOne(function () { return Localidad_1.Localidad; }, function (localidad) { return localidad.empresa; }, {
+            onDelete: 'SET NULL'
+        }),
         __metadata("design:type", Localidad_1.Localidad)
     ], Empresa.prototype, "localidad");
     __decorate([
