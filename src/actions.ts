@@ -101,6 +101,24 @@ export const asignarEmpresaAlUsuario = async (req: Request, res: Response): Prom
 	return res.json(results);
 }
 
+export const relacionarUsuarioEmpresa = async (req: Request, res: Response): Promise<Response> => {
+	if (!req.params.RUT) throw new Exception("Please provide a RUT");
+	if (!req.body.username) throw new Exception("Por favor ingresa un username");
+	const userRepo = getRepository(Users);
+
+	const empresa = await getRepository(Empresa).findOne({ where: { RUT: req.params.RUT } });
+	if (!empresa) throw new Exception("Empresa not exist")
+
+	const user = await userRepo.findOne({where:{username: req.body.username}, relations: ["empresa"]});
+	if (!user) throw new Exception("No se encontro el usuario")
+	
+	user.empresa = empresa;
+	const results = await userRepo.save(user);
+	console.log(results);
+
+	return res.json(results);
+}
+
 export const updateUser = async (req: Request, res:Response): Promise<Response> =>{
 	console.log("##################", req.body)
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
@@ -222,7 +240,9 @@ export const deleteEmpresa = async (req: Request, res: Response): Promise<Respon
 
 export const getMIEmpresa = async (req: Request, res: Response): Promise<Response> => {
 	const token = req.user as IToken;
-	return res.json(token.user.empresa);
+	const empresa = await getRepository(Empresa).findOne({relations: ["localidad", "actividad_principal", "actividad_secundaria"], where: {RUT: token.user.empresa.RUT}})
+
+	return res.json(empresa);
 }
 
 export const getMiAsociados = async (req: Request, res: Response): Promise<Response> => {
@@ -249,7 +269,7 @@ export const updateMiEmpresa = async (req: Request, res:Response): Promise<Respo
     if(!req.body.nro_BPS) throw new Exception("Please provide is nro_BPS")
     if(!req.body.nro_referencia) throw new Exception("Please provide is nro_referencia")
     if(!req.body.actividad_principal) throw new Exception("Please provide is actividad_principal")
-    if(!req.body.actividad_secunadria) throw new Exception("Please provide is actividad_secunadria")
+    if(!req.body.actividad_secundaria) throw new Exception("Please provide is actividad_secunadria")
     if(!req.body.fecha_afiliacion) throw new Exception("Please provide is fecha_afiliacion")
     if(!req.body.fecha_inicio_empresa) throw new Exception("Please provide is fecha_inicio_empresa")
     if(!req.body.estado) throw new Exception("Please provide is estado")
@@ -558,7 +578,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 	const userRepo = await getRepository(Users)
 
 	// We need to validate that a user with this email and password exists in the DB
-	const user = await userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })
+	const user = await userRepo.findOne({relations: ["empresa"], where: { username: req.body.username, password: req.body.password } })
 	if (!user) throw new Exception("Invalid email or password", 401)
 
 	// this is the most important line in this function, it create a JWT token
