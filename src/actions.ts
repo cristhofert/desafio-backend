@@ -141,7 +141,7 @@ export const createEmpresa = async (req: Request, res: Response): Promise<Respon
 	if (!req.body.actividad_secunadria) throw new Exception("Please provide is actividad_secunadria")
 	if (!req.body.fecha_afiliacion) throw new Exception("Please provide is fecha_afiliacion")
 	if (!req.body.fecha_inicio_empresa) throw new Exception("Please provide is fecha_inicio_empresa")
-	if (!req.body.estado) throw new Exception("Please provide is estado")
+	if (req.body.estado != true && req.body.estado != false) throw new Exception("Please provide is estado")
 	if (!req.body.fecha_de_baja) throw new Exception("Please provide is fecha_de_baja")
 	if (!req.body.observaciones) throw new Exception("Please provide is observaciones")
 	if (!req.body.imagen) throw new Exception("Please provide is imagen")

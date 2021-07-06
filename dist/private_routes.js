@@ -59,6 +59,7 @@ router.put('/empresa', utils_1.safe(actions.updateEmpresa));
 router["delete"]('/empresa/:RUT', utils_1.safe(actions.deleteEmpresa));
 //mi_empresa
 router.get('/mi_empresa/', verifyToken, utils_1.safe(actions.getMIEmpresa));
+router.post('/mi_empresa/:RUT/', verifyToken, utils_1.safe(actions.asignarEmpresaAlUsuario));
 router.put('/mi_empresa', verifyToken, utils_1.safe(actions.updateMiEmpresa));
 //Persona
 router.get('/persona', utils_1.safe(actions.getPersonas));
