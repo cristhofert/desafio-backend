@@ -57,6 +57,7 @@ router.delete('/persona/:id', safe(actions.deletePersona));
 
 //Localidad
 router.get('/localidad', safe(actions.getLocalidades));
+router.get('/localidad/empresa', safe(actions.getLocalidadesEmpresas));
 router.get('/localidad/:id', safe(actions.getLocalidad));
 router.post('/localidad/:id', safe(actions.createLocalidad));
 router.put('/localidad/:id', safe(actions.updateLocalidad));

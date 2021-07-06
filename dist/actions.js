@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteRubro = exports.updateRubro = exports.getRubro = exports.getRubros = exports.createRubro = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMiAsociados = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteRubro = exports.updateRubro = exports.getRubro = exports.getRubros = exports.createRubro = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidadesEmpresas = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMiAsociados = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -632,6 +632,18 @@ var getLocalidades = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.getLocalidades = getLocalidades;
+var getLocalidadesEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var localidades;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).find({ relations: ["empresa"] })];
+            case 1:
+                localidades = _a.sent();
+                return [2 /*return*/, res.json(localidades)];
+        }
+    });
+}); };
+exports.getLocalidadesEmpresas = getLocalidadesEmpresas;
 var getLocalidad = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var localidad;
     return __generator(this, function (_a) {
