@@ -51,6 +51,7 @@ router.get('/user/:username', utils_1.safe(actions.getUser));
 router.post('/user', utils_1.safe(actions.createUser));
 router.put('/user', utils_1.safe(actions.updateUser));
 router["delete"]('/user/:id', utils_1.safe(actions.deleteUser));
+router.post('/user-empresa/:RUT', utils_1.safe(actions.relacionarUsuarioEmpresa));
 //Empresa
 router.get('/empresa', utils_1.safe(actions.getEmpresas));
 router.get('/empresa/:RUT', utils_1.safe(actions.getEmpresa));
@@ -59,6 +60,7 @@ router.put('/empresa', utils_1.safe(actions.updateEmpresa));
 router["delete"]('/empresa/:RUT', utils_1.safe(actions.deleteEmpresa));
 //mi_empresa
 router.get('/mi_empresa/', verifyToken, utils_1.safe(actions.getMIEmpresa));
+router.get('/mi_empresa/asociados', verifyToken, utils_1.safe(actions.getMiAsociados));
 router.post('/mi_empresa/:RUT/', verifyToken, utils_1.safe(actions.asignarEmpresaAlUsuario));
 router.put('/mi_empresa', verifyToken, utils_1.safe(actions.updateMiEmpresa));
 //Persona
