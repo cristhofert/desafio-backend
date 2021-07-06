@@ -268,7 +268,7 @@ var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
                     throw new utils_1.Exception("Please provide is fecha_afiliacion");
                 if (!req.body.fecha_inicio_empresa)
                     throw new utils_1.Exception("Please provide is fecha_inicio_empresa");
-                if (!req.body.estado)
+                if (req.body.estado != true && req.body.estado != false)
                     throw new utils_1.Exception("Please provide is estado");
                 if (!req.body.fecha_de_baja)
                     throw new utils_1.Exception("Please provide is fecha_de_baja");
