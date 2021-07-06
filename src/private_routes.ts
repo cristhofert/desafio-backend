@@ -38,7 +38,7 @@ router.get('/user/:username', safe(actions.getUser));
 router.post('/user', safe(actions.createUser));
 router.put('/user', safe(actions.updateUser));
 router.delete('/user/:id', safe(actions.deleteUser));
-
+router.post('/user-empresa/:RUT', safe(actions.relacionarUsuarioEmpresa));
 //Empresa
 router.get('/empresa', safe(actions.getEmpresas));
 router.get('/empresa/:RUT', safe(actions.getEmpresa));
@@ -47,6 +47,7 @@ router.put('/empresa', safe(actions.updateEmpresa));
 router.delete('/empresa/:RUT', safe(actions.deleteEmpresa));
 //mi_empresa
 router.get('/mi_empresa/',verifyToken, safe(actions.getMIEmpresa));
+router.get('/mi_empresa/asociados',verifyToken, safe(actions.getMiAsociados));
 router.post('/mi_empresa/:RUT/',verifyToken, safe(actions.asignarEmpresaAlUsuario));
 router.put('/mi_empresa', verifyToken, safe(actions.updateMiEmpresa));
 //Persona

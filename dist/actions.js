@@ -55,7 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteRubro = exports.updateRubro = exports.getRubro = exports.getRubros = exports.createRubro = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidadesEmpresas = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMiAsociados = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
+exports.reportes = exports.login = exports.deleteEmpresaPersona = exports.updateEmpresaPersona = exports.getEmpresasPersonas = exports.getEmpresaPersona = exports.getEmpresaPersonas = exports.createEmpresaPersona = exports.createAsociadoNuevo = exports.deleteDepartamento = exports.updateDepartamento = exports.getDepartamento = exports.getDepartamentosYlocalidades = exports.getDepartamentos = exports.createDepartamento = exports.deleteRubro = exports.updateRubro = exports.getRubro = exports.getRubros = exports.createRubro = exports.deleteLocalidad = exports.updateLocalidad = exports.getLocalidad = exports.getLocalidadesEmpresas = exports.getLocalidades = exports.createLocalidad = exports.deletePersona = exports.updatePersona = exports.getPersona = exports.getPersonas = exports.createPersona = exports.updateMiEmpresa = exports.getMiAsociados = exports.getMIEmpresa = exports.deleteEmpresa = exports.updateEmpresa = exports.getEmpresa = exports.getEmpresas = exports.createEmpresa = exports.deleteUser = exports.updateUser = exports.relacionarUsuarioEmpresa = exports.asignarEmpresaAlUsuario = exports.getLocalidadesDeDepartamento = exports.getUser = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Empresa_1 = require("./entities/Empresa");
@@ -193,6 +193,36 @@ var asignarEmpresaAlUsuario = function (req, res) { return __awaiter(void 0, voi
     });
 }); };
 exports.asignarEmpresaAlUsuario = asignarEmpresaAlUsuario;
+var relacionarUsuarioEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, empresa, user, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.params.RUT)
+                    throw new utils_1.Exception("Please provide a RUT");
+                if (!req.body.username)
+                    throw new utils_1.Exception("Por favor ingresa un username");
+                userRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ where: { RUT: req.params.RUT } })];
+            case 1:
+                empresa = _a.sent();
+                if (!empresa)
+                    throw new utils_1.Exception("Empresa not exist");
+                return [4 /*yield*/, userRepo.findOne({ where: { username: req.body.username }, relations: ["empresa"] })];
+            case 2:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("No se encontro el usuario");
+                user.empresa = empresa;
+                return [4 /*yield*/, userRepo.save(user)];
+            case 3:
+                results = _a.sent();
+                console.log(results);
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.relacionarUsuarioEmpresa = relacionarUsuarioEmpresa;
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, results;
     return __generator(this, function (_a) {
@@ -404,10 +434,16 @@ var deleteEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
 }); };
 exports.deleteEmpresa = deleteEmpresa;
 var getMIEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var token;
+    var token, empresa;
     return __generator(this, function (_a) {
-        token = req.user;
-        return [2 /*return*/, res.json(token.user.empresa)];
+        switch (_a.label) {
+            case 0:
+                token = req.user;
+                return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).findOne({ relations: ["localidad", "actividad_principal", "actividad_secundaria"], where: { RUT: token.user.empresa.RUT } })];
+            case 1:
+                empresa = _a.sent();
+                return [2 /*return*/, res.json(empresa)];
+        }
     });
 }); };
 exports.getMIEmpresa = getMIEmpresa;
@@ -454,7 +490,7 @@ var updateMiEmpresa = function (req, res) { return __awaiter(void 0, void 0, voi
                     throw new utils_1.Exception("Please provide is nro_referencia");
                 if (!req.body.actividad_principal)
                     throw new utils_1.Exception("Please provide is actividad_principal");
-                if (!req.body.actividad_secunadria)
+                if (!req.body.actividad_secundaria)
                     throw new utils_1.Exception("Please provide is actividad_secunadria");
                 if (!req.body.fecha_afiliacion)
                     throw new utils_1.Exception("Please provide is fecha_afiliacion");
@@ -1002,7 +1038,7 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                 ];
             case 1:
                 userRepo = _a.sent();
-                return [4 /*yield*/, userRepo.findOne({ where: { username: req.body.username, password: req.body.password } })];
+                return [4 /*yield*/, userRepo.findOne({ relations: ["empresa"], where: { username: req.body.username, password: req.body.password } })];
             case 2:
                 user = _a.sent();
                 if (!user)
