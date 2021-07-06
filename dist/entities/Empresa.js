@@ -72,11 +72,11 @@ var Empresa = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Empresa.prototype, "nro_referencia");
     __decorate([
-        typeorm_1.OneToMany(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
+        typeorm_1.ManyToOne(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
         __metadata("design:type", Rubro_1.Rubro)
     ], Empresa.prototype, "actividad_principal");
     __decorate([
-        typeorm_1.OneToMany(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresa; }),
+        typeorm_1.ManyToOne(function () { return Rubro_1.Rubro; }, function (rubro) { return rubro.empresaSecundaria; }),
         __metadata("design:type", Rubro_1.Rubro)
     ], Empresa.prototype, "actividad_secundaria");
     __decorate([

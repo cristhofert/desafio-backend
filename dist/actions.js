@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -228,7 +239,7 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 exports.deleteUser = deleteUser;
 //Empresa
 var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var empresaRepo, empresa, body, newEmpresa, localidad, results;
+    var empresaRepo, empresa, rubroPrincipal, rubroSecundario, nuevoBody, body, newEmpresa, localidad, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -273,20 +284,30 @@ var createEmpresa = function (req, res) { return __awaiter(void 0, void 0, void 
                 empresa = _a.sent();
                 if (empresa)
                     throw new utils_1.Exception("Empresas already exists with this RUT");
-                body = req.body;
+                return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).findOne({ where: { nombre: req.body.actividad_principal } })];
+            case 2:
+                rubroPrincipal = _a.sent();
+                if (!rubroPrincipal)
+                    throw new utils_1.Exception("El rubro principal no existe");
+                return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).findOne({ where: { nombre: req.body.actividad_secunadria } })];
+            case 3:
+                rubroSecundario = _a.sent();
+                if (!rubroSecundario)
+                    throw new utils_1.Exception("El rubro principal no existe");
+                nuevoBody = __assign(__assign({}, req.body), { actividad_principal: rubroPrincipal, actividad_secundaria: rubroSecundario });
+                body = nuevoBody;
                 newEmpresa = typeorm_1.getRepository(Empresa_1.Empresa).create(body);
                 return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).findOne({ relations: ["empresa"], where: { id: req.body.localidadID } })];
-            case 2:
+            case 4:
                 localidad = _a.sent();
-                console.log(newEmpresa, localidad);
                 if (!localidad)
                     throw new utils_1.Exception("La localidad no existe");
                 localidad.empresa = __spreadArray(__spreadArray([], localidad.empresa), [newEmpresa]);
                 return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).save(newEmpresa)];
-            case 3:
+            case 5:
                 results = _a.sent();
                 return [4 /*yield*/, typeorm_1.getRepository(Localidad_1.Localidad).save(localidad)];
-            case 4:
+            case 6:
                 _a.sent();
                 return [2 /*return*/, res.json(results)];
         }
@@ -297,7 +318,7 @@ var getEmpresas = function (req, res) { return __awaiter(void 0, void 0, void 0,
     var empresas;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Empresa_1.Empresa).find({ relations: ["actividad_principal", "actividad_secundaria"] })];
             case 1:
                 empresas = _a.sent();
                 return [2 /*return*/, res.json(empresas)];
@@ -687,7 +708,7 @@ var getRubros = function (req, res) { return __awaiter(void 0, void 0, void 0, f
     var rubros;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Rubro_1.Rubro).find({ relations: ["empresa", "empresaSecundaria"] })];
             case 1:
                 rubros = _a.sent();
                 return [2 /*return*/, res.json(rubros)];

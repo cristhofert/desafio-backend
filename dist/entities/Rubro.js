@@ -37,9 +37,13 @@ var Rubro = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Rubro.prototype, "nombre");
     __decorate([
-        typeorm_1.ManyToOne(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.user; }),
+        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.actividad_principal; }),
         __metadata("design:type", Array)
     ], Rubro.prototype, "empresa");
+    __decorate([
+        typeorm_1.OneToMany(function () { return Empresa_1.Empresa; }, function (empresa) { return empresa.actividad_secundaria; }),
+        __metadata("design:type", Array)
+    ], Rubro.prototype, "empresaSecundaria");
     Rubro = __decorate([
         typeorm_1.Entity()
     ], Rubro);

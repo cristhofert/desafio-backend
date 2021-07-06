@@ -37,10 +37,10 @@ export class Empresa extends BaseEntity {
   @Column()
   nro_referencia: string;
 
-  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  @ManyToOne(() => Rubro, rubro => rubro.empresa)
   actividad_principal: Rubro;
 
-  @OneToMany(() => Rubro, rubro => rubro.empresa)
+  @ManyToOne(() => Rubro, rubro => rubro.empresaSecundaria)
   actividad_secundaria: Rubro;
 
   @Column()
