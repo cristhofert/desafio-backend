@@ -193,7 +193,7 @@ export const createEmpresa = async (req: Request, res: Response): Promise<Respon
 }
 
 export const getEmpresas = async (req: Request, res: Response): Promise<Response> => {
-	const empresas = await getRepository(Empresa).find({relations: ["actividad_principal", "actividad_secundaria"]});
+	const empresas = await getRepository(Empresa).find({relations: ["actividad_principal", "actividad_secundaria", "localidad"]});
 	return res.json(empresas);
 }
 
